@@ -15,8 +15,50 @@ $panel = session('panel');
 
         <li class="nav-item">
             <a class="nav-link" href="/panel/SalePanel">
+                <i class="bi bi-cart-dash"></i>
+                <span>Sales Panel</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/panel/PurchasePanel">
                 <i class="bi bi-cart-plus"></i>
-                <span>Sale Panel</span>
+                <span>Purchase Panel</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/panel/AccountPanel">
+                <i class="bi bi-cash"></i>
+                <span>Accounts Panel</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/panel/HRPanel">
+                <i class="bi bi-people"></i>
+                <span>HR Panel</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/panel/ReportPanel">
+                <i class="bi bi-calendar-check"></i>
+                <span>Reports Panel</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/panel/ControlPanel">
+                <i class="bi bi-bank2"></i>
+                <span>Control Panel</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/panel/BusinessPanel">
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Business Panel</span>
             </a>
         </li>
 
