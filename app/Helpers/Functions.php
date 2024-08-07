@@ -116,3 +116,77 @@ function userAction($action)
 
     return $status;
 }
+
+// banglamonth
+function bangla_number( $int ) {
+    $engNumber = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+    $bangNumber = array('১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯', '০');
+
+    $converted = str_replace( $engNumber, $bangNumber, $int );
+    return $converted;
+}
+
+function dateBangla($timestamp = null)
+{
+    if ($timestamp === null) {
+        $timestamp = time();
+    }
+
+    // Bengali months
+    $banglaMonths = [
+        'বৈশাখ', 'জ্যৈষ্ঠ', 'আষাঢ়', 'শ্রাবণ', 'ভাদ্র', 'আশ্বিন',
+        'কার্তিক', 'অগ্রহায়ণ', 'পৌষ', 'মাঘ', 'ফাল্গুন', 'চৈত্র'
+    ];
+
+    $bengaliNewYearStart = [
+        1427 => mktime(0, 0, 0, 4, 14, 2020),
+        1428 => mktime(0, 0, 0, 4, 14, 2021),
+        1429 => mktime(0, 0, 0, 4, 14, 2022),
+        1430 => mktime(0, 0, 0, 4, 14, 2023),
+        1431 => mktime(0, 0, 0, 4, 14, 2024),
+    ];
+
+    $banglaYear = 1427;
+    foreach ($bengaliNewYearStart as $year => $startTimestamp) {
+        if ($timestamp >= $startTimestamp) {
+            $banglaYear = $year;
+        } else {
+            break;
+        }
+    }
+
+    $bengaliYearStart = $bengaliNewYearStart[$banglaYear];
+    $dayOfYear = floor(($timestamp - $bengaliYearStart) / (60 * 60 * 24));
+    $daysInBanglaMonths = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30, 30];
+    $banglaMonth = 0;
+    $banglaDay = $dayOfYear;
+    foreach ($daysInBanglaMonths as $daysInMonth) {
+        if ($banglaDay < $daysInMonth) {
+            break;
+        }
+        $banglaDay -= $daysInMonth;
+        $banglaMonth++;
+    }
+    $banglaMonthName = $banglaMonths[$banglaMonth];
+    $banglaDay += 1;
+
+
+    return getBanglaDay(date("l")). ', '. bangla_number($banglaDay) .' '. $banglaMonthName. ' '. bangla_number($banglaYear);
+}
+
+function getBanglaDay($englishDay) {
+    $dayMapping = [
+        'Sunday'    => 'রবিবার',
+        'Monday'    => 'সোমবার',
+        'Tuesday'   => 'মঙ্গলবার',
+        'Wednesday' => 'বুধবার',
+        'Thursday'  => 'বৃহস্পতিবার',
+        'Friday'    => 'শুক্রবার',
+        'Saturday'  => 'শনিবার'
+    ];
+    if (array_key_exists($englishDay, $dayMapping)) {
+        return $dayMapping[$englishDay];
+    } else {
+        return 'Invalid day';
+    }
+}

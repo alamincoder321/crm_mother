@@ -85,15 +85,23 @@
 
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>Dashboard</h1>
-            <nav>
+            <!-- <h1>Dashboard</h1> -->
+            <nav class="d-flex justify-content-between">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
                     <li class="breadcrumb-item active">@yield('breadcrumb')</li>
                 </ol>
+                <ol class="breadcrumb" style="margin-top: -16px; display: block; text-align: center; border: 4px solid #c1c1c1; border-bottom-left-radius: 40px;border-bottom-right-radius: 40px; margin-bottom: 0; padding-left: 15px; padding-right: 15px; padding-top: 2px;">
+                    <li>
+                        Today, {{date("d M Y")}} || {{dateBangla()}}
+                    </li>
+                    <li id="time" style="font-size: 18px; font-weight: 700; color: #6e6e6e;">
+                        {{date('h:m:s')}}
+                    </li>
+                </ol>
             </nav>
         </div>
-        <section class="section dashboard">
+        <section class="section dashboard mt-3">
             @yield('content')
         </section>
     </main>
@@ -114,6 +122,17 @@
     <!-- Template Main JS File -->
     <script src="{{asset('backend')}}/js/main.js"></script>
     @stack('js')
+    <script>
+        function dateTime() {
+            d = new Date().toDateString();
+            time = new Date().toLocaleTimeString();
+            document.getElementById("time").innerText = time
+            setTimeout(() => {
+                dateTime()
+            }, 1000)
+        }
+        dateTime()
+    </script>
 
 </body>
 

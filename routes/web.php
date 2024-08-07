@@ -19,3 +19,5 @@ Route::group(['prefix' => 'panel'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/{panel}', [DashboardController::class, 'panel'])->name('panel.access');
 });
+
+Route::get('/sale', [DashboardController::class, 'sale']);

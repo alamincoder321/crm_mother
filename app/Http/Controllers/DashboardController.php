@@ -70,5 +70,10 @@ class DashboardController extends Controller
         Session::put('branch', $branch);
         return true;
     }
+
+    public function sale()
+    {
+        return view('pages.sale.index');
+    }
 }
 
