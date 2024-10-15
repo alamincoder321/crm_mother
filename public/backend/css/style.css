@@ -373,11 +373,11 @@ h6 {
 }
 
 .logo span {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 500;
   /* color: #012970; */
   color: #ffff;
-  font-family: "Nunito", sans-serif;
+  font-family: sans-serif;
 }
 
 .header {
@@ -392,7 +392,7 @@ h6 {
 }
 
 .header .toggle-sidebar-btn {
-  font-size: 32px;
+  font-size: 25px;
   padding-left: 10px;
   cursor: pointer;
   color: #fff;
@@ -707,6 +707,7 @@ h6 {
   font-size: 20px;
   padding: 10px 15px;
 }
+
 .sidebar-nav .panel-link:hover {
   background: #8bd8ff !important;
 }
@@ -1251,4 +1252,21 @@ h6 {
   text-align: center;
   font-size: 13px;
   color: #012970;
+}
+
+.form-control {
+  width: 100%;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: none !important;
+}
+
+.col-form-label {
+  font-size: 13px !important;
+  font-weight: 600;
+}
+.form-label {
+  font-size: 13px !important;
+  font-weight: 600;
 }

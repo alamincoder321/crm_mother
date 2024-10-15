@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Branch;
 use App\Models\User;
+use App\Models\Branch;
+use App\Models\CompanyProfile;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -45,6 +46,14 @@ class DatabaseSeeder extends Seeder
             'phone' => '019########',
             'role' => 'Superadmin',
             'branch_id' => 1,
+            'ipAddress' => request()->ip()
+        ]);
+
+        CompanyProfile::create([
+            'name' => 'Company Name',
+            'title' => 'Company Title',
+            'phone' => '017########',
+            'phone' => '017########',
             'ipAddress' => request()->ip()
         ]);
     }

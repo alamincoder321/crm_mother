@@ -571,7 +571,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/companyProfile">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-house-fill"></i>

@@ -356,7 +356,7 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/companyProfile">
                 <i class="bi bi-house-fill"></i>
                 <span>Company Profile</span>
             </a>

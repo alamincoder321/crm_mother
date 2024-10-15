@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>ERP Mother - @yield('title')</title>
+    <title>{{$company->title}}- @yield('title')</title>
     @include("layouts.style")
 
     <style>
@@ -54,8 +54,8 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="/" class="logo d-flex align-items-center w-100">
-                <img src="{{asset('backend')}}/img/logo.png" alt="">
-                <span class="d-none d-lg-block">ERP Mother Software</span>
+                <img src="{{asset($company->logo ? $company->logo : 'backend/img/logo.png')}}" alt="{{$company->title}}">
+                <span class="d-none d-lg-block">{{$company->title}}</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
         </div>
@@ -131,7 +131,7 @@
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
                     <li class="breadcrumb-item active">@yield('breadcrumb')</li>
                 </ol>
-                <ol class="breadcrumb" style="margin-top: -16px; display: block; text-align: center; border: 4px solid #c1c1c1; border-bottom-left-radius: 40px;border-bottom-right-radius: 40px; margin-bottom: 0; padding-left: 15px; padding-right: 15px; padding-top: 2px;">
+                <ol class="breadcrumb d-none d-md-block" style="margin-top: -16px; display: block; text-align: center; border: 4px solid #c1c1c1; border-bottom-left-radius: 40px;border-bottom-right-radius: 40px; margin-bottom: 0; padding-left: 15px; padding-right: 15px; padding-top: 2px;">
                     <li>
                         Today, {{date("d M Y")}} || {{dateBangla()}}
                     </li>
@@ -160,9 +160,31 @@
     <!-- Vendor JS Files -->
     <script src="{{asset('backend')}}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Template Main JS File -->
+    <script src="{{asset('backend')}}/js/jquery.min.js"></script>
     <script src="{{asset('backend')}}/js/main.js"></script>
+    <script src="{{asset('backend')}}/js/vue/vue.min.js"></script>
+    <script src="{{asset('backend')}}/js/vue/axios.min.js"></script>
+    <script src="{{asset('backend')}}/js/vue/moment.js"></script>
+    <script src="{{asset('backend')}}/js/vue/lodash.min.js"></script>
+    <script src="{{asset('backend')}}/js/vue/vue-good-table.min.js"></script>
+    <script src="{{asset('backend')}}/js/vue/vue-select.js"></script>
+    <script src="{{asset('backend')}}/js/toastr.min.js"></script>
     @stack('js')
     <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
         window.onload = function() {
             document.getElementById('preloader').style.display = 'none';
         };

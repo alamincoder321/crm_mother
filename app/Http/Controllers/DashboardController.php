@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\CompanyProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
+    protected $userId;
     protected $branchId;
     public function __construct()
     {
@@ -16,6 +19,7 @@ class DashboardController extends Controller
 
         $this->middleware(function ($request, $next) {
             $this->branchId = $request->session()->get('branch')->id;
+            $this->userId = auth()->user()->id;
             return $next($request);
         });
     }
@@ -71,9 +75,33 @@ class DashboardController extends Controller
         return true;
     }
 
-    public function sale()
+    public function companyProfile()
     {
-        return view('pages.sale.index');
+        return view('pages.control.companyProfile');
+    }
+
+    public function updatecompanyProfile(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'title' => 'required',
+            'phone' => 'required'
+        ]);
+
+        try {
+            $data = CompanyProfile::first();
+            $dataKeys = $request->except("id");
+            foreach ($dataKeys as $key => $value) {
+                $data[$key] = $value;
+            }
+            $data->updated_by = $this->userId;
+            $data->updated_at = Carbon::now();
+            $data->ipAddress = request()->ip();
+            $data->update();
+
+            return response()->json(['status' => true, 'message' => 'Company profile update successfully']);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'message' => 'Something went wrong! ' . $th->getMessage()]);
+        }
     }
 }
-

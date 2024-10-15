@@ -1,5 +1,7 @@
 <?php
 // use App\Models\UserAccess;
+
+use App\Models\CompanyProfile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -189,4 +191,8 @@ function getBanglaDay($englishDay) {
     } else {
         return 'Invalid day';
     }
+}
+
+function company(){
+    return CompanyProfile::first();
 }
