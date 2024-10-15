@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Branch extends Model
+class CompanyProfile extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     public $timestamps = false;
 

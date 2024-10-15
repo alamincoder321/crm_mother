@@ -3,7 +3,6 @@ $panel = session('panel');
 @endphp
 
 <aside id="sidebar" class="sidebar">
-
     <ul class="sidebar-nav" id="sidebar-nav">
         @if ($panel == 'dashboard' || $panel == '')
         <li class="nav-item">
@@ -19,42 +18,42 @@ $panel = session('panel');
                 <span>Sales Panel</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/panel/PurchasePanel">
                 <i class="bi bi-cart-plus"></i>
                 <span>Purchase Panel</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/panel/AccountPanel">
                 <i class="bi bi-cash"></i>
                 <span>Accounts Panel</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/panel/HRPanel">
                 <i class="bi bi-people"></i>
                 <span>HR Panel</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/panel/ReportPanel">
                 <i class="bi bi-calendar-check"></i>
                 <span>Reports Panel</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/panel/ControlPanel">
                 <i class="bi bi-bank2"></i>
                 <span>Control Panel</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/panel/BusinessPanel">
                 <i class="bi bi-graph-up-arrow"></i>
@@ -71,29 +70,298 @@ $panel = session('panel');
         </li>
         <li class="nav-item">
             <a class="nav-link panel-link" href="/panel/SalePanel">
-                <span>Sales Panel</span>
+                <span>Sale Panel</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-cart-dash"></i>
+                <span>Sale Entry</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-file-text"></i>
+                <span>Sale Record</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-arrow-return-left"></i>
+                <span>SaleReturn Entry</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-file-text"></i>
+                <span>SaleReturn Record</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-file-plus"></i>
+                <span>Quotation Entry</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-file-text"></i>
+                <span>Quotation Record</span>
+            </a>
+        </li>
+
+        @elseif($panel == 'PurchasePanel')
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link panel-link" href="/panel/PurchasePanel">
+                <span>Purchase Panel</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="">
                 <i class="bi bi-cart-plus"></i>
-                <span>Sale Entry</span>
+                <span>Purchase Entry</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-menu-button-wide"></i><span>Components</span><i class="bi bi-chevron-down ms-auto"></i>
+            <a class="nav-link" href="">
+                <i class="bi bi-file-text"></i>
+                <span>Purchase Record</span>
             </a>
-            <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="components-alerts.html">
-                        <i class="bi bi-circle"></i><span>Alerts</span>
-                    </a>
-                </li>
-            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-arrow-return-left"></i>
+                <span>Return Entry</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-file-text"></i>
+                <span>Return Record</span>
+            </a>
+        </li>
+
+        @elseif($panel == 'AccountPanel')
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link panel-link" href="/panel/AccountPanel">
+                <span>Account Panel</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-cash-coin"></i>
+                <span>Cash Transaction Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Cash Transaction Record</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-bank"></i>
+                <span>Bank Transaction</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Bank Transaction Record</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Expense Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Expense Record</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Account Head Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Bank Head Entry</span>
+            </a>
+        </li>
+
+        @elseif($panel == 'HRPanel')
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link panel-link" href="/panel/HRPanel">
+                <span>HR Panel</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-receipt"></i>
+                <span>Salary Generate</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-file-text"></i>
+                <span>Salary Record</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-people"></i>
+                <span>Employee Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Employee List</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Department Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Designation Entry</span>
+            </a>
+        </li>
+
+        @elseif($panel == 'ControlPanel')
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link panel-link" href="/panel/ControlPanel">
+                <span>Control Panel</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Product Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Product List</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-person"></i>
+                <span>Supplier Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Supplier List</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-person"></i>
+                <span>Customer Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-list-ul"></i>
+                <span>Customer List</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-globe"></i>
+                <span>Area Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-box"></i>
+                <span>Unit Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-tags"></i>
+                <span>Category Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-plus-circle"></i>
+                <span>Brand Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-person-fill-add"></i>
+                <span>User Entry</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-house-fill"></i>
+                <span>Company Profile</span>
+            </a>
         </li>
         @endif
-
     </ul>
 
 </aside>

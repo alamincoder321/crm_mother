@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->integer('branch_id');
             $table->char('status', 1)->default('a');
             $table->string('action')->nullable()->comment('e=>entry u=>update d=>delete');
-            $table->ipAddress('ip_address');
+            $table->ipAddress('ipAddress');
             $table->timestamps();
             $table->softDeletes();
         });

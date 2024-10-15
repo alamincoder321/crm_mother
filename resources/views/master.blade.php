@@ -6,9 +6,49 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>ERP Mother - @yield('title')</title>
     @include("layouts.style")
+
+    <style>
+        /* Preloader styles */
+        #preloader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 10px solid #f3f3f3;
+            border-top: 10px solid #3498db;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        /* Keyframes for spinner animation */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
 
     <header id="header" class="header fixed-top d-flex align-items-center">
 
@@ -123,6 +163,9 @@
     <script src="{{asset('backend')}}/js/main.js"></script>
     @stack('js')
     <script>
+        window.onload = function() {
+            document.getElementById('preloader').style.display = 'none';
+        };
         function dateTime() {
             d = new Date().toDateString();
             time = new Date().toLocaleTimeString();

@@ -16,23 +16,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // organization create
-        Branch::create([
-            'code' => 'OR00001',
-            'name' => 'Big Technology Ltd.',
-            'title' => 'Big Technology Ltd.',
-            'phone' => '017########',
-            'added_by' => 1,
-            'ip_address' => request()->ip()
-        ]);
-        Branch::create([
-            'code' => 'OR00002',
-            'name' => 'Second Organization',
-            'title' => 'Second Organization',
-            'phone' => '017########',
-            'added_by' => 1,
-            'ip_address' => request()->ip()
-        ]);
+        // branch create
+        Branch::create(
+            [
+                'code' => 'B00001',
+                'name' => 'Main Branch',
+                'title' => 'Main Branch',
+                'phone' => '017########',
+                'created_by' => 1,
+                'ipAddress' => request()->ip()
+            ],
+            [
+                'code' => 'B00002',
+                'name' => 'Second Branch',
+                'title' => 'Second Branch',
+                'phone' => '017########',
+                'created_by' => 1,
+                'ipAddress' => request()->ip()
+            ]
+        );
 
         User::create([
             'code' => 'U00001',
@@ -43,7 +45,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '019########',
             'role' => 'Superadmin',
             'branch_id' => 1,
-            'ip_address' => request()->ip()
+            'ipAddress' => request()->ip()
         ]);
     }
 }

@@ -20,12 +20,14 @@ class CreateBranchesTable extends Migration
             $table->string('title');
             $table->text('address', 500)->nullable();
             $table->string('phone', 15);
-            $table->integer('added_by')->index();
+            $table->char('status', 1)->default('a');
+            $table->integer('created_by')->index();
+            $table->dateTime('created_at')->useCurrent();
             $table->integer('updated_by')->nullable()->index();
-            $table->timestamps();
+            $table->dateTime('updated_at')->nullable();
             $table->integer('deleted_by')->nullable()->index();
             $table->softDeletes();
-            $table->ipAddress('ip_address');
+            $table->ipAddress('ipAddress');
         });
     }
 
