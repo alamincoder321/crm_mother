@@ -328,7 +328,7 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/unit">
                 <i class="bi bi-box"></i>
                 <span>Unit Entry</span>
             </a>
@@ -349,7 +349,7 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/user">
                 <i class="bi bi-person-fill-add"></i>
                 <span>User Entry</span>
             </a>

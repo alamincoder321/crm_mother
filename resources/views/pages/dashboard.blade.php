@@ -531,7 +531,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/unit">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-box"></i>
@@ -561,7 +561,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/user">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-person-fill-add"></i>

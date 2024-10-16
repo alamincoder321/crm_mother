@@ -7,6 +7,7 @@ use App\Models\CompanyProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
@@ -90,9 +91,40 @@ class DashboardController extends Controller
 
         try {
             $data = CompanyProfile::first();
-            $dataKeys = $request->except("id");
+            if($request->logo == 'null'){
+                if (File::exists($data->logo)) {
+                    File::delete($data->logo);
+                }
+                $data->logo = NULL;
+            }
+            if($request->favicon == 'null'){
+                if (File::exists($data->favicon)) {
+                    File::delete($data->favicon);
+                }
+                $data->favicon = NULL;
+            }
+            $dataKeys = $request->except('id', 'logo', 'favicon');
             foreach ($dataKeys as $key => $value) {
                 $data[$key] = $value;
+            }
+            
+            if ($request->hasFile('logo')) {
+                if (File::exists($data->logo)) {
+                    File::delete($data->logo);
+                }
+                $data->logo = imageUpload($request, 'logo', 'uploads/logo', 'logo');
+            }
+            if($request->favicon == NULL){
+                if (File::exists($data->favicon)) {
+                    File::delete($data->favicon);
+                }
+                $data->favicon = NULL;
+            }
+            if ($request->hasFile('favicon')) {
+                if (File::exists($data->favicon)) {
+                    File::delete($data->favicon);
+                }
+                $data->favicon = imageUpload($request, 'favicon', 'uploads/favicon', 'favicon');
             }
             $data->updated_by = $this->userId;
             $data->updated_at = Carbon::now();

@@ -43,13 +43,13 @@ function imageUpload($request, $image, $directory, $code)
 }
 
 // code generate
-function generateCode($model, $prefix = '', $organization_id = null)
+function generateCode($model, $prefix = '', $branch_id = null)
 {
     $code = "00001";
     $modelName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $model)) . 's';
     $clause = "";
-    if ($organization_id != null) {
-        $clause .= "and organization_id = '$organization_id'";
+    if ($branch_id != null) {
+        $clause .= "and branch_id = '$branch_id'";
     }
     $model = DB::select("select * from `$modelName` where 1 = 1 $clause");
 

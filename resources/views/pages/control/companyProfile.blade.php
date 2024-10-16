@@ -1,19 +1,31 @@
 @extends('master')
 
-@section('title')
-Company Profile
-@endsection
-@section('breadcrumb')
-Update Company Profile
-@endsection
+@section('title', 'Company Profile')
+@section('breadcrumb', 'Update Company Profile')
+
 @section('content')
 <div class="row" id="companyProfile">
     <div class="col-md-4">
         <div class="card mb-1 mb-md-0">
-            <div class="card-body">
-                <div class="form-group">
-                    <label for="image" class="form-label">Image</label>
-                    <input type="file" class="form-control">
+            <div class="card-body" style="padding: 20px;">
+                <div class="form-group ImageBackground">
+                    <span class="text-danger">(150 X 150)PX</span>
+                    <div class="imageContainer">
+                        <img :src="logoSrc" class="imageShow" />
+                        <button type="button" class="close-btn" @click="removeLogo">X</button>
+                    </div>
+                    <label for="logo">Upload Logo</label>
+                    <input type="file" id="logo" class="form-control shadow-none" @change="logoUrl" />
+                </div>
+
+                <div class="form-group ImageBackground">
+                    <span class="text-danger">(100 X 100)PX</span>
+                    <div class="imageContainer">
+                        <img :src="faviconSrc" class="imageShow" />
+                        <button type="button" class="close-btn" @click="removeFavicon">X</button>
+                    </div>
+                    <label for="favicon">Upload Favicon</label>
+                    <input type="file" id="favicon" class="form-control shadow-none" @change="faviconUrl" />
                 </div>
             </div>
         </div>
@@ -72,12 +84,19 @@ Update Company Profile
     new Vue({
         el: '#companyProfile',
         data: {
-            company: @json(company())
+            company: @json(company()),
+            logoSrc: "/noImage.jpg",
+            faviconSrc: "/noImage.jpg",
         },
-
+        created() {
+            this.logoSrc = this.company.logo ? this.company.logo : '/noImage.jpg';
+            this.faviconSrc = this.company.favicon ? this.company.favicon : '/noImage.jpg';
+        },
         methods: {
             updateCompanyProfile(event) {
                 let formdata = new FormData(event.target);
+                formdata.append('logo', this.company.logo);
+                formdata.append('favicon', this.company.favicon);
                 axios.post('/update-companyProfile', formdata)
                     .then(res => {
                         if (res.data.status) {
@@ -96,6 +115,70 @@ Update Company Profile
                         }
 
                     })
+            },
+
+            logoUrl(event) {
+                const WIDTH = 150;
+                const HEIGHT = 150;
+                if (event.target.files[0]) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(event.target.files[0]);
+                    reader.onload = (ev) => {
+                        let img = new Image();
+                        img.src = ev.target.result;
+                        img.onload = async e => {
+                            let canvas = document.createElement('canvas');
+                            canvas.width = WIDTH;
+                            canvas.height = HEIGHT;
+                            const context = canvas.getContext("2d");
+                            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            let new_img_url = context.canvas.toDataURL(event.target.files[0].type);
+                            this.logoSrc = new_img_url;
+                            const resizedImage = await new Promise(rs => canvas.toBlob(rs, 'image/jpeg', 1))
+                            this.company.logo = new File([resizedImage], event.target.files[0].name, {
+                                type: resizedImage.type
+                            });
+                        }
+                    }
+                } else {
+                    event.target.value = '';
+                }
+            },
+            faviconUrl(event) {
+                const WIDTH = 100;
+                const HEIGHT = 100;
+                if (event.target.files[0]) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(event.target.files[0]);
+                    reader.onload = (ev) => {
+                        let img = new Image();
+                        img.src = ev.target.result;
+                        img.onload = async e => {
+                            let canvas = document.createElement('canvas');
+                            canvas.width = WIDTH;
+                            canvas.height = HEIGHT;
+                            const context = canvas.getContext("2d");
+                            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            let new_img_url = context.canvas.toDataURL(event.target.files[0].type);
+                            this.faviconSrc = new_img_url;
+                            const resizedImage = await new Promise(rs => canvas.toBlob(rs, 'image/jpeg', 1))
+                            this.company.favicon = new File([resizedImage], event.target.files[0].name, {
+                                type: resizedImage.type
+                            });
+                        }
+                    }
+                } else {
+                    event.target.value = '';
+                }
+            },
+
+            removeLogo() {
+                this.logoSrc = "/noImage.jpg";
+                this.company.logo = null;
+            },
+            removeFavicon() {
+                this.faviconSrc = "/noImage.jpg";
+                this.company.favicon = null;
             }
         },
     })

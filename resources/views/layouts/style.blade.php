@@ -1,5 +1,5 @@
 <!-- Favicons -->
-<link href="{{asset($company->favicon ? $company->favicon : 'backend/img/favicon.png')}}" rel="icon">
+<link href="{{asset($company->favicon ? $company->favicon : 'noImage.jpg')}}" rel="icon">
 <link href="{{asset('backend')}}/img/apple-touch-icon.png" rel="apple-touch-icon">
 
 <!-- Google Fonts -->
@@ -12,5 +12,6 @@
 <!-- Template Main CSS File -->
 <link href="{{asset('backend')}}/css/style.css" rel="stylesheet">
 <link href="{{asset('backend')}}/css/custom.css" rel="stylesheet">
+<link rel="stylesheet" href="{{asset('backend')}}/css/vue-good-table.css">
 <link rel="stylesheet" href="{{asset('backend')}}/css/toastr.min.css">
 @stack('style')
