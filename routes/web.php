@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\AreaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 
@@ -39,3 +42,24 @@ Route::post('/get-unit', [UnitController::class, 'index'])->name('unit.index');
 Route::post('/unit', [UnitController::class, 'store'])->name('unit.store');
 Route::post('/update-unit', [UnitController::class, 'update'])->name('unit.update');
 Route::post('/delete-unit', [UnitController::class, 'destroy'])->name('unit.delete');
+
+// category route
+Route::get('/category', [CategoryController::class, 'create'])->name('category.create');
+Route::post('/get-category', [CategoryController::class, 'index'])->name('category.index');
+Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
+Route::post('/update-category', [CategoryController::class, 'update'])->name('category.update');
+Route::post('/delete-category', [CategoryController::class, 'destroy'])->name('category.delete');
+
+// brand route
+Route::get('/brand', [BrandController::class, 'create'])->name('brand.create');
+Route::post('/get-brand', [BrandController::class, 'index'])->name('brand.index');
+Route::post('/brand', [BrandController::class, 'store'])->name('brand.store');
+Route::post('/update-brand', [BrandController::class, 'update'])->name('brand.update');
+Route::post('/delete-brand', [BrandController::class, 'destroy'])->name('brand.delete');
+
+// area route
+Route::get('/area', [AreaController::class, 'create'])->name('area.create');
+Route::post('/get-area', [AreaController::class, 'index'])->name('area.index');
+Route::post('/area', [AreaController::class, 'store'])->name('area.store');
+Route::post('/update-area', [AreaController::class, 'update'])->name('area.update');
+Route::post('/delete-area', [AreaController::class, 'destroy'])->name('area.delete');

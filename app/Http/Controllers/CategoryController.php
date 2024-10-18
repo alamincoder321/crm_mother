@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Unit;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
-class UnitController extends Controller
+class CategoryController extends Controller
 {
     protected $userId;
     protected $branchId;
@@ -25,13 +25,13 @@ class UnitController extends Controller
 
     public function index(Request $request)
     {
-        $unit = Unit::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
+        $unit = Category::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
         return response()->json($unit);
     }
 
     public function create()
     {
-        return view('pages.control.unit');
+        return view('pages.control.category');
     }
 
     public function store(Request $request)
@@ -40,7 +40,7 @@ class UnitController extends Controller
         $validator = Validator::make($request->all(), [
             'name'     => [
                 'required',
-                Rule::unique('units')
+                Rule::unique('categories')
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
                     })
@@ -49,14 +49,14 @@ class UnitController extends Controller
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $check = Unit::where('name', $request->name)->withTrashed()->first();
+            $check = Category::where('name', $request->name)->withTrashed()->first();
             if (!empty($check) && $check->deleted_at != NULL) {
                 $check->status = 'a';
                 $check->deleted_by = NULL;
                 $check->deleted_at = NULL;
                 $check->update();
             } else {
-                $data = new Unit();
+                $data = new Category();
                 $dataKey = $request->except('id');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
@@ -67,7 +67,7 @@ class UnitController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Unit has created successfully"]);
+            return response()->json(['status' => true, 'message' => "Category has created successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -79,7 +79,7 @@ class UnitController extends Controller
         $validator = Validator::make($request->all(), [
             'name'     => [
                 'required',
-                Rule::unique('units')
+                Rule::unique('categories')
                     ->ignore($request->id)
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
@@ -89,7 +89,7 @@ class UnitController extends Controller
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $data = Unit::find($request->id);
+            $data = Category::find($request->id);
             $dataKey = $request->except('id');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
@@ -100,7 +100,7 @@ class UnitController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Unit has updated successfully"]);
+            return response()->json(['status' => true, 'message' => "Category has updated successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -109,14 +109,14 @@ class UnitController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $data = Unit::find($request->id);
+            $data = Category::find($request->id);
             $data->deleted_by = $this->userId;
             $data->status = 'd';
             $data->ipAddress = request()->ip();
             $data->update();
 
             $data->delete();
-            return response()->json(['status' => true, 'message' => "Unit has deleted successfully"]);
+            return response()->json(['status' => true, 'message' => "Category has deleted successfully"]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }

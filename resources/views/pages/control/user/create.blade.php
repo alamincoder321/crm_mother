@@ -59,7 +59,7 @@
                                 <label class="col-md-3 col-12"></label>
                                 <div class="col-md-3 col-12">
                                     <label for="status">
-                                        <input type="checkbox" name="status" id="status" :false-value="'p'" :true-value="'a'" v-model="user.status"/>
+                                        <input type="checkbox" name="status" id="status" :false-value="'p'" :true-value="'a'" v-model="user.status" />
                                         IsActive
                                     </label>
                                 </div>
@@ -216,6 +216,21 @@
                     this.user[item] = row[item];
                 })
                 this.imageSrc = row.image ? '/' + row.image : "/noImage.jpg";
+            },
+
+            deleteData(rowId) {
+                if (!confirm('Are you sure ?')) {
+                    return;
+                }
+                axios.post('/delete-user', {
+                        id: rowId
+                    })
+                    .then(res => {
+                        if (res.data.status) {
+                            toastr.success(res.data.message);
+                            this.getUser();
+                        }
+                    })
             },
 
             clearData() {

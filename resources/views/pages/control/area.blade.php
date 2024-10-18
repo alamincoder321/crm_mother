@@ -1,27 +1,27 @@
 @extends('master')
 
-@section('title', 'Unit Entry')
-@section('breadcrumb', 'Unit Entry')
+@section('title', 'Area Entry')
+@section('breadcrumb', 'Area Entry')
 @section('content')
-<div class="row" id="unit">
+<div class="row" id="area">
     <div class="col-12 col-md-12">
         <div class="card mb-0">
             <div class="card-body">
-                <h5 class="card-title">Unit Entry Form</h5>
+                <h5 class="card-title">Area Entry Form</h5>
                 <form @submit.prevent="saveData($event)">
                     <div class="row">
                         <div class="col-12 col-md-6 offset-md-3">
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="name">Name:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="name" name="name" v-model="unit.name" />
+                                    <input type="text" class="form-control" autocomplete="off" id="name" name="name" v-model="area.name" />
                                 </div>
                             </div>
                             <div class="mt-1 text-end">
                                 <button class="btn btn-danger" type="button">Reset</button>
                                 <button class="btn btn-primary" type="submit" :disabled="onProgress">
-                                    <span v-if="unit.id == ''">Save</span>
-                                    <span v-if="unit.id != ''">Update</span>
+                                    <span v-if="area.id == ''">Save</span>
+                                    <span v-if="area.id != ''">Update</span>
                                 </button>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="col-12 col-md-12 mt-1">
-        <vue-good-table :columns="columns" :rows="units" :fixed-header="false" :pagination-options="{
+        <vue-good-table :columns="columns" :rows="areas" :fixed-header="false" :pagination-options="{
                 enabled: true,
                 perPage: 100,
             }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
@@ -54,7 +54,7 @@
 @push("js")
 <script>
     new Vue({
-        el: "#unit",
+        el: "#area",
         data() {
             return {
                 columns: [{
@@ -74,36 +74,36 @@
                         field: "before"
                     }
                 ],
-                unit: {
+                area: {
                     id: '',
                     name: '',
                 },
-                units: [],
+                areas: [],
                 onProgress: false,
             }
         },
 
         created() {
-            this.getUnit();
+            this.getArea();
         },
 
         methods: {
-            getUnit() {
-                axios.post('/get-unit')
+            getArea() {
+                axios.post('/get-area')
                     .then(res => {
-                        this.units = res.data;
+                        this.areas = res.data;
                     })
             },
             saveData(event) {
                 let formdata = new FormData(event.target);
-                formdata.append('id', this.unit.id);
-                let url = this.unit.id != '' ? '/update-unit' : '/unit'
+                formdata.append('id', this.area.id);
+                let url = this.area.id != '' ? '/update-area' : '/area'
                 this.onProgress = true;
                 axios.post(url, formdata)
                     .then(res => {
                         toastr.success(res.data.message);
                         this.clearData();
-                        this.getUnit();
+                        this.getArea();
                     })
                     .catch(err => {
                         this.onProgress = false
@@ -125,9 +125,9 @@
             },
 
             editData(row) {
-                let keys = Object.keys(this.unit);
+                let keys = Object.keys(this.area);
                 keys.forEach(item => {
-                    this.unit[item] = row[item];
+                    this.area[item] = row[item];
                 })
             },
 
@@ -135,19 +135,19 @@
                 if (!confirm('Are you sure ?')) {
                     return;
                 }
-                axios.post('/delete-unit', {
+                axios.post('/delete-area', {
                         id: rowId
                     })
                     .then(res => {
                         if (res.data.status) {
                             toastr.success(res.data.message);
-                            this.getUnit();
+                            this.getArea();
                         }
                     })
             },
 
             clearData() {
-                this.unit = {
+                this.area = {
                     id: '',
                     name: '',
                 }

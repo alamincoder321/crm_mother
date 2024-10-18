@@ -68,11 +68,10 @@
 
                     <div class="row mb-2">
                         <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-primary">Submit Form</button>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
                         </div>
                     </div>
-
-                </form><!-- End General Form Elements -->
+                </form>
             </div>
         </div>
     </div>

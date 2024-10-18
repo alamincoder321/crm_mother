@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // branch create
-        Branch::create(
+        Branch::insert([
             [
                 'code' => 'B00001',
                 'name' => 'Main Branch',
@@ -35,18 +35,31 @@ class DatabaseSeeder extends Seeder
                 'created_by' => 1,
                 'ipAddress' => request()->ip()
             ]
-        );
+        ]);
 
-        User::create([
-            'code' => 'U00001',
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make(1),
-            'phone' => '019########',
-            'role' => 'Superadmin',
-            'branch_id' => 1,
-            'ipAddress' => request()->ip()
+        User::insert([
+            [
+                'code' => 'U00001',
+                'name' => 'Admin',
+                'username' => 'admin',
+                'email' => 'admin@gmail.com',
+                'password' => Hash::make(1),
+                'phone' => '019########',
+                'role' => 'Superadmin',
+                'branch_id' => 1,
+                'ipAddress' => request()->ip()
+            ],
+            [
+                'code' => 'U00002',
+                'name' => 'Al Amin Islam',
+                'username' => 'alamin',
+                'email' => 'alamin@gmail.com',
+                'password' => Hash::make(1),
+                'phone' => '017########',
+                'role' => 'admin',
+                'branch_id' => 2,
+                'ipAddress' => request()->ip()
+            ]
         ]);
 
         CompanyProfile::create([

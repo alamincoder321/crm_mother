@@ -1,27 +1,33 @@
 @extends('master')
 
-@section('title', 'Unit Entry')
-@section('breadcrumb', 'Unit Entry')
+@section('title', 'Category Entry')
+@section('breadcrumb', 'Category Entry')
 @section('content')
-<div class="row" id="unit">
+<div class="row" id="category">
     <div class="col-12 col-md-12">
         <div class="card mb-0">
             <div class="card-body">
-                <h5 class="card-title">Unit Entry Form</h5>
+                <h5 class="card-title">Category Entry Form</h5>
                 <form @submit.prevent="saveData($event)">
                     <div class="row">
                         <div class="col-12 col-md-6 offset-md-3">
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="name">Name:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="name" name="name" v-model="unit.name" />
+                                    <input type="text" class="form-control" autocomplete="off" id="name" name="name" v-model="category.name" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="details">Details:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="text" class="form-control" autocomplete="off" id="details" name="details" v-model="category.details" />
                                 </div>
                             </div>
                             <div class="mt-1 text-end">
                                 <button class="btn btn-danger" type="button">Reset</button>
                                 <button class="btn btn-primary" type="submit" :disabled="onProgress">
-                                    <span v-if="unit.id == ''">Save</span>
-                                    <span v-if="unit.id != ''">Update</span>
+                                    <span v-if="category.id == ''">Save</span>
+                                    <span v-if="category.id != ''">Update</span>
                                 </button>
                             </div>
                         </div>
@@ -32,7 +38,7 @@
     </div>
 
     <div class="col-12 col-md-12 mt-1">
-        <vue-good-table :columns="columns" :rows="units" :fixed-header="false" :pagination-options="{
+        <vue-good-table :columns="columns" :rows="categories" :fixed-header="false" :pagination-options="{
                 enabled: true,
                 perPage: 100,
             }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
@@ -54,12 +60,16 @@
 @push("js")
 <script>
     new Vue({
-        el: "#unit",
+        el: "#category",
         data() {
             return {
                 columns: [{
                         label: "Name",
                         field: 'name'
+                    },
+                    {
+                        label: "Details",
+                        field: 'details'
                     },
                     {
                         label: "Added_By",
@@ -74,36 +84,37 @@
                         field: "before"
                     }
                 ],
-                unit: {
+                category: {
                     id: '',
                     name: '',
+                    details: '',
                 },
-                units: [],
+                categories: [],
                 onProgress: false,
             }
         },
 
         created() {
-            this.getUnit();
+            this.getCategory();
         },
 
         methods: {
-            getUnit() {
-                axios.post('/get-unit')
+            getCategory() {
+                axios.post('/get-category')
                     .then(res => {
-                        this.units = res.data;
+                        this.categories = res.data;
                     })
             },
             saveData(event) {
                 let formdata = new FormData(event.target);
-                formdata.append('id', this.unit.id);
-                let url = this.unit.id != '' ? '/update-unit' : '/unit'
+                formdata.append('id', this.category.id);
+                let url = this.category.id != '' ? '/update-category' : '/category'
                 this.onProgress = true;
                 axios.post(url, formdata)
                     .then(res => {
                         toastr.success(res.data.message);
                         this.clearData();
-                        this.getUnit();
+                        this.getCategory();
                     })
                     .catch(err => {
                         this.onProgress = false
@@ -125,9 +136,9 @@
             },
 
             editData(row) {
-                let keys = Object.keys(this.unit);
+                let keys = Object.keys(this.category);
                 keys.forEach(item => {
-                    this.unit[item] = row[item];
+                    this.category[item] = row[item];
                 })
             },
 
@@ -135,21 +146,22 @@
                 if (!confirm('Are you sure ?')) {
                     return;
                 }
-                axios.post('/delete-unit', {
+                axios.post('/delete-category', {
                         id: rowId
                     })
                     .then(res => {
                         if (res.data.status) {
                             toastr.success(res.data.message);
-                            this.getUnit();
+                            this.getCategory();
                         }
                     })
             },
 
             clearData() {
-                this.unit = {
+                this.category = {
                     id: '',
                     name: '',
+                    details: '',
                 }
                 this.onProgress = false;
             },

@@ -321,7 +321,7 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/area">
                 <i class="bi bi-globe"></i>
                 <span>Area Entry</span>
             </a>
@@ -335,14 +335,14 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/category">
                 <i class="bi bi-tags"></i>
                 <span>Category Entry</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/brand">
                 <i class="bi bi-plus-circle"></i>
                 <span>Brand Entry</span>
             </a>
