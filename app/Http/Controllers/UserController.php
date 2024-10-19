@@ -53,7 +53,7 @@ class UserController extends Controller
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
             $check = User::where('username', $request->username)->withTrashed()->first();
-            if (!empty($check)) {
+            if (!empty($check) && $check->deleted_at != NULL) {
                 $check->status = 'a';
                 $check->deleted_at = NULL;
                 $check->update();

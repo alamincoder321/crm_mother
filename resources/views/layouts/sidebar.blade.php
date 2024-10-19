@@ -294,14 +294,14 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/supplier">
                 <i class="bi bi-person"></i>
                 <span>Supplier Entry</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/supplierList">
                 <i class="bi bi-list-ul"></i>
                 <span>Supplier List</span>
             </a>

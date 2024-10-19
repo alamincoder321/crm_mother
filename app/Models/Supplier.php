@@ -26,4 +26,9 @@ class Supplier extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by', 'id')->select('id', 'name', 'username')->withTrashed();
     }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id', 'id')->select('id', 'name')->withTrashed();
+    }
 }

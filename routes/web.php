@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 
@@ -63,3 +64,11 @@ Route::post('/get-area', [AreaController::class, 'index'])->name('area.index');
 Route::post('/area', [AreaController::class, 'store'])->name('area.store');
 Route::post('/update-area', [AreaController::class, 'update'])->name('area.update');
 Route::post('/delete-area', [AreaController::class, 'destroy'])->name('area.delete');
+
+// supplier route
+Route::get('/supplier', [SupplierController::class, 'create'])->name('supplier.create');
+Route::get('/supplierList', [SupplierController::class, 'supplierList'])->name('supplier.list');
+Route::post('/get-supplier', [SupplierController::class, 'index'])->name('supplier.index');
+Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
+Route::post('/update-supplier', [SupplierController::class, 'update'])->name('supplier.update');
+Route::post('/delete-supplier', [SupplierController::class, 'destroy'])->name('supplier.delete');

@@ -169,8 +169,8 @@
     <script src="{{asset('backend')}}/js/vue/vue-good-table.min.js"></script>
     <script src="{{asset('backend')}}/js/vue/vue-select.js"></script>
     <script src="{{asset('backend')}}/js/toastr.min.js"></script>
-    @stack('js')
     <script>
+        Vue.component('v-select', VueSelect.VueSelect);
         toastr.options = {
             "closeButton": true,
             "debug": false,
@@ -188,6 +188,7 @@
         window.onload = function() {
             document.getElementById('preloader').style.display = 'none';
         };
+
         function dateTime() {
             d = new Date().toDateString();
             time = new Date().toLocaleTimeString();
@@ -198,6 +199,7 @@
         }
         dateTime()
     </script>
+    @stack('js')
 
 </body>
 
