@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
@@ -72,3 +73,11 @@ Route::post('/get-supplier', [SupplierController::class, 'index'])->name('suppli
 Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
 Route::post('/update-supplier', [SupplierController::class, 'update'])->name('supplier.update');
 Route::post('/delete-supplier', [SupplierController::class, 'destroy'])->name('supplier.delete');
+
+// customer route
+Route::get('/customer', [CustomerController::class, 'create'])->name('customer.create');
+Route::get('/customerList', [CustomerController::class, 'customerList'])->name('customer.list');
+Route::post('/get-customer', [CustomerController::class, 'index'])->name('customer.index');
+Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
+Route::post('/update-customer', [CustomerController::class, 'update'])->name('customer.update');
+Route::post('/delete-customer', [CustomerController::class, 'destroy'])->name('customer.delete');

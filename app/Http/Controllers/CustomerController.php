@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Supplier;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
-class SupplierController extends Controller
+class CustomerController extends Controller
 {
     protected $userId;
     protected $branchId;
@@ -26,25 +26,28 @@ class SupplierController extends Controller
 
     public function index(Request $request)
     {
-        $suppliers = Supplier::with('adUser', 'upUser', 'area')->where('branch_id', $this->branchId);
-        if (!empty($request->supplierId)) {
-            $suppliers = $suppliers->where('id', $request->supplierId);
+        $customers = Customer::with('adUser', 'upUser', 'area')->where('branch_id', $this->branchId);
+        if (!empty($request->customerId)) {
+            $customers = $customers->where('id', $request->customerId);
+        }
+        if (!empty($request->customer_type)) {
+            $customers = $customers->where('customer_type', $request->customer_type);
         }
         if (!empty($request->areaId)) {
-            $suppliers = $suppliers->where('area_id', $request->areaId);
+            $customers = $customers->where('area_id', $request->areaId);
         }
-        $suppliers = $suppliers->latest()->get();
-        return response()->json($suppliers);
+        $customers = $customers->latest()->get();
+        return response()->json($customers);
     }
 
     public function create()
     {
-        return view('pages.control.supplier.create');
+        return view('pages.control.customer.create');
     }
 
-    public function supplierList()
+    public function customerList()
     {
-        return view('pages.control.supplier.index');
+        return view('pages.control.customer.index');
     }
 
 
@@ -55,7 +58,7 @@ class SupplierController extends Controller
             'name'     => 'required',
             'phone' => [
                 'required',
-                Rule::unique('suppliers')
+                Rule::unique('customers')
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
                     })
@@ -64,20 +67,20 @@ class SupplierController extends Controller
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $check = Supplier::where('phone', $request->phone)->withTrashed()->first();
+            $check = Customer::where('phone', $request->phone)->withTrashed()->first();
             if (!empty($check) && $check->deleted_at != NULL) {
                 $check->status = 'a';
                 $check->deleted_at = NULL;
                 $check->update();
             } else {
-                $data = new Supplier();
-                $data->code = generateCode('Supplier', 'S', $this->branchId);
+                $data = new Customer();
+                $data->code = generateCode('Customer', 'C', $this->branchId);
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
                 }
                 if ($request->hasFile('image')) {
-                    $data->image = imageUpload($request, 'image', 'uploads/supplier', $data->code . '_' . $this->branchId);
+                    $data->image = imageUpload($request, 'image', 'uploads/customer', $data->code . '_' . $this->branchId);
                 }
                 $data->created_by = $this->userId;
                 $data->ipAddress = request()->ip();
@@ -85,7 +88,7 @@ class SupplierController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Supplier has created successfully"]);
+            return response()->json(['status' => true, 'message' => "Customer has created successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -98,7 +101,7 @@ class SupplierController extends Controller
             'name'     => 'required',
             'phone' => [
                 'required',
-                Rule::unique('suppliers')
+                Rule::unique('customers')
                     ->ignore($request->id)
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
@@ -108,7 +111,7 @@ class SupplierController extends Controller
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $data = Supplier::find($request->id);
+            $data = Customer::find($request->id);
             $dataKey = $request->except('id', 'image');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
@@ -117,7 +120,7 @@ class SupplierController extends Controller
                 if (File::exists($data->image)) {
                     File::delete($data->image);
                 }
-                $data->image = imageUpload($request, 'image', 'uploads/supplier', $data->code . '_' . $this->branchId);
+                $data->image = imageUpload($request, 'image', 'uploads/customer', $data->code . '_' . $this->branchId);
             }
             $data->updated_by = $this->userId;
             $data->updated_at = Carbon::now();
@@ -125,7 +128,7 @@ class SupplierController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Supplier has updated successfully"]);
+            return response()->json(['status' => true, 'message' => "Customer has updated successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -134,13 +137,13 @@ class SupplierController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $data = Supplier::find($request->id);
+            $data = Customer::find($request->id);
             $data->status = 'd';
             $data->ipAddress = request()->ip();
             $data->update();
 
             $data->delete();
-            return response()->json(['status' => true, 'message' => "Supplier has deleted successfully"]);
+            return response()->json(['status' => true, 'message' => "Customer has deleted successfully"]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }

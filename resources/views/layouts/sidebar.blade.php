@@ -307,14 +307,14 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/customer">
                 <i class="bi bi-person"></i>
                 <span>Customer Entry</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="customerList">
                 <i class="bi bi-list-ul"></i>
                 <span>Customer List</span>
             </a>

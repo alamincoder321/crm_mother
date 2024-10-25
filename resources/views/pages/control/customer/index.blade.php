@@ -1,7 +1,7 @@
 @extends('master')
 
-@section('title', 'Supplier List')
-@section('breadcrumb', 'Supplier List')
+@section('title', 'Customer List')
+@section('breadcrumb', 'Customer List')
 @push('style')
 <style>
     .table>thead>tr>th {
@@ -12,7 +12,7 @@
 </style>
 @endpush
 @section('content')
-<div id="supplierList">
+<div id="customerList">
     <div class="row">
         <div class="col-12 col-md-12">
             <div class="card m-0">
@@ -23,6 +23,14 @@
                             <select id="searchType" class="form-select" v-model="searchType" @change="onChangeSearchType">
                                 <option value="">All</option>
                                 <option value="area">By Area</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="searchType">Type</label>
+                            <select id="searchType" class="form-select" v-model="customer_type">
+                                <option value="">All</option>
+                                <option value="retail">Retail</option>
+                                <option value="wholesale">Wholesale</option>
                             </select>
                         </div>
                         <div class="form-group" :class="searchType == 'area' ? '' : 'd-none'" v-if="searchType == 'area'">
@@ -58,25 +66,29 @@
                                     <th>Code</th>
                                     <th>Name</th>
                                     <th>Owner</th>
+                                    <th>Customer_Type</th>
                                     <th>Phone</th>
                                     <th>Area</th>
                                     <th>Address</th>
                                     <th>Prev_Balance</th>
+                                    <th>Credit_Limit</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in suppliers">
+                                <tr v-for="(item, index) in customers">
                                     <td v-html="index + 1"></td>
                                     <td v-html="item.code"></td>
                                     <td v-html="item.name"></td>
                                     <td v-html="item.owner"></td>
+                                    <td v-html="item.customer_type"></td>
                                     <td v-html="item.phone"></td>
                                     <td v-html="item.area?.name"></td>
                                     <td v-html="item.address"></td>
                                     <td v-html="item.previous_due"></td>
+                                    <td v-html="item.credit_limit"></td>
                                 </tr>
-                                <tr :class="suppliers.length == 0 ? '' : 'd-none'" v-if="suppliers.length == 0">
-                                    <td colspan="8" class="text-center">Not Found Data</td>
+                                <tr :class="customers.length == 0 ? '' : 'd-none'" v-if="customers.length == 0">
+                                    <td colspan="10" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -92,10 +104,11 @@
 @push('js')
 <script>
     new Vue({
-        el: '#supplierList',
+        el: '#customerList',
         data: {
             searchType: '',
-            suppliers: [],
+            customer_type: '',
+            customers: [],
             areas: [],
             selectedArea: null,
             isLoading: null
@@ -116,17 +129,19 @@
             onChangeSearchType() {
                 this.suppliers = [];
                 this.selectedArea = null;
+                this.customer_type = "";
                 this.isLoading = null;
             },
 
             showList() {
                 let filter = {
-                    areaId: this.selectedArea ? this.selectedArea.id : ''
+                    areaId: this.selectedArea ? this.selectedArea.id : '',
+                    customer_type: this.customer_type
                 }
                 this.isLoading = false;
-                axios.post('/get-supplier', filter)
+                axios.post('/get-customer', filter)
                     .then(res => {
-                        this.suppliers = res.data
+                        this.customers = res.data
                         this.isLoading = true;
                     })
             },
@@ -136,7 +151,7 @@
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col-12 text-center">
-								<h5>Supplier List</h5>
+								<h5>Customer List</h5>
 							</div>
 						</div>
 						<div class="row">

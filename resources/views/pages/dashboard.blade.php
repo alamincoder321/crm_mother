@@ -51,8 +51,8 @@ $panel = session('panel');
 @section('content')
 <div class="row">
     @if ($panel == 'dashboard' || $panel == '')
-    <div class="col-12 col-md-8 offset-md-2">
-        <img class="w-100" src="{{asset('backend')}}/img/header.jpg" alt="header logo" style="border-radius: 20px;border: 1px solid rgb(0, 126, 187);box-shadow: rgb(0, 126, 187) 0px 5px 0px 0px;">
+    <div class="col-12 col-md-8 offset-md-2 text-center">
+        <img class="w-75" src="{{asset('backend')}}/img/header.png" alt="header logo" style="border-radius: 20px;border: 1px solid rgb(0, 126, 187);box-shadow: rgb(0, 126, 187) 0px 5px 0px 0px;">
     </div>
 
     <div class="col-md-12 my-3"></div>
@@ -501,7 +501,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/customer">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-person"></i>
@@ -511,7 +511,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/customerList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-list-ul"></i>
