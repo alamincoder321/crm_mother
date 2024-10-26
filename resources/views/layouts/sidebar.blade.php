@@ -314,7 +314,7 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="customerList">
+            <a class="nav-link" href="/customerList">
                 <i class="bi bi-list-ul"></i>
                 <span>Customer List</span>
             </a>

@@ -136,4 +136,9 @@ class DashboardController extends Controller
             return response()->json(['status' => false, 'message' => 'Something went wrong! ' . $th->getMessage()]);
         }
     }
+
+    public function getHeaderInfo()
+    {
+        return view('layouts.headerInfo');
+    }
 }

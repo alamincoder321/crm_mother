@@ -24,6 +24,7 @@ Route::get('/logout', [DashboardController::class, 'Logout'])->middleware('auth'
 //company profile update
 Route::get('/companyProfile', [DashboardController::class, 'companyProfile'])->name('companyProfile');
 Route::post('/update-companyProfile', [DashboardController::class, 'updatecompanyProfile'])->name('update.companyProfile');
+Route::get('/get-headerInfo', [DashboardController::class, 'getHeaderInfo'])->name('get.headerInfo');
 
 //panel and dashboard route
 Route::group(['prefix' => 'panel'], function () {

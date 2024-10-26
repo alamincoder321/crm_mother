@@ -9,6 +9,9 @@
         background-color: gray;
         color: #fff;
     }
+    iframe{
+        display: none;
+    }
 </style>
 @endpush
 @section('content')
@@ -132,40 +135,43 @@
             },
 
             async print() {
-                let reportContent = `
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-12 text-center">
-								<h5>Supplier List</h5>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-12">
-								${document.querySelector('#reportContent').innerHTML}
-							</div>
-						</div>
-					</div>
-				`;
-
-                var reportWindow = window.open('', 'PRINT', `height=${screen.height}, width=${screen.width}`);
-                reportWindow.document.write(`
-					@include("layouts.headerInfo")
-				`);
-                reportWindow.document.body.innerHTML += reportContent;
-                reportWindow.document.head.innerHTML += `
-					<link href="{{asset('backend')}}/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-                    <link href="{{asset('backend')}}/css/custom.css" rel="stylesheet">
-                    <style>
-                        .table>:not(caption)>*>* {
-                            font-size: 14px !important;
-                        }
-                    </style>
-				`;
-
-                reportWindow.focus();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                reportWindow.print();
-                reportWindow.close();
+                const printWindow = document.createElement('iframe');
+                document.body.appendChild(printWindow);
+                printWindow.srcdoc = `
+                <html>
+                    <head>
+                        <style>
+                            .table>:not(caption)>*>* {
+                                font-size: 10px !important;
+                            }
+                            address p{
+                                margin: 0 !important;
+                            }                                        
+                        </style>
+                    </head>
+                    <body>
+                        @include('layouts.headerInfo')
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h5>Supplier List</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    ${document.getElementById('reportContent').innerHTML}
+                                </div>
+                            </div>
+                        </div>
+                    </body>
+                </html>
+                `;
+                printWindow.onload = async function() {
+                    printWindow.contentWindow.focus();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    printWindow.contentWindow.print();
+                    document.body.removeChild(printWindow);
+                };
             }
         },
     })

@@ -2,7 +2,9 @@
 
 @section('title', 'Company Profile')
 @section('breadcrumb', 'Update Company Profile')
-
+@push('style')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
+@endpush
 @section('content')
 <div class="row" id="companyProfile">
     <div class="col-md-4">
@@ -62,7 +64,7 @@
                     <div class="row mb-2">
                         <label for="address" class="col-3 col-form-label">Address</label>
                         <div class="col-9">
-                            <textarea name="address" id="address" v-model="company.address" class="form-control" autocomplete="off"></textarea>
+                            <textarea rows="4" name="address" id="address" v-html="company.address" class="form-control" autocomplete="off"></textarea>
                         </div>
                     </div>
 
@@ -79,7 +81,13 @@
 @endsection
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 <script>
+    $(document).ready(function() {
+        $('#address').summernote({
+            height: 150,
+        });
+    });
     new Vue({
         el: '#companyProfile',
         data: {
@@ -96,6 +104,7 @@
                 let formdata = new FormData(event.target);
                 formdata.append('logo', this.company.logo);
                 formdata.append('favicon', this.company.favicon);
+                formdata.append('address', $('#address').summernote('code'));
                 axios.post('/update-companyProfile', formdata)
                     .then(res => {
                         if (res.data.status) {

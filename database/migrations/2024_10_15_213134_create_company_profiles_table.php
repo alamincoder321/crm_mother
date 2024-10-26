@@ -19,7 +19,7 @@ class CreateCompanyProfilesTable extends Migration
             $table->string('title');
             $table->string('phone', 15);
             $table->string('email')->nullable();
-            $table->string('address')->nullable();
+            $table->longText('address')->nullable();
             $table->string('favicon')->nullable();
             $table->string('logo')->nullable();
             $table->foreignId('updated_by')->nullable()->constrained('users', 'id');
