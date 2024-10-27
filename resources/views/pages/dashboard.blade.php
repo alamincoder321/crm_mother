@@ -461,7 +461,7 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/product">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-plus-circle"></i>
@@ -471,7 +471,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/productList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-list-ul"></i>

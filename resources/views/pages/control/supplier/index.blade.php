@@ -9,9 +9,6 @@
         background-color: gray;
         color: #fff;
     }
-    iframe{
-        display: none;
-    }
 </style>
 @endpush
 @section('content')
@@ -32,7 +29,7 @@
                             <label for="searchType">Area</label>
                             <v-select :options="areas" v-model="selectedArea" label="name"></v-select>
                         </div>
-                        <div class="form-group">
+                        <div class="text-end">
                             <button type="submit" class="btn btn-primary btn-sm">Show</button>
                         </div>
                     </form>
@@ -51,9 +48,9 @@
             <div class="card m-0">
                 <div class="card-body pt-1 pb-3 px-2">
                     <div class="text-end">
-                        <a href="" @click.prevent="print"><i class="bi bi-printer"></i></a>
+                        <a href="" @click.prevent="print" title="Print"><i class="bi bi-printer"></i></a>
                     </div>
-                    <div id="reportContent">
+                    <div id="reportContent" style="overflow-x: auto;">
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -64,7 +61,6 @@
                                     <th>Phone</th>
                                     <th>Area</th>
                                     <th>Address</th>
-                                    <th>Prev_Balance</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,10 +72,9 @@
                                     <td v-html="item.phone"></td>
                                     <td v-html="item.area?.name"></td>
                                     <td v-html="item.address"></td>
-                                    <td v-html="item.previous_due"></td>
                                 </tr>
                                 <tr :class="suppliers.length == 0 ? '' : 'd-none'" v-if="suppliers.length == 0">
-                                    <td colspan="8" class="text-center">Not Found Data</td>
+                                    <td colspan="7" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -135,42 +130,40 @@
             },
 
             async print() {
+                const oldTitle = window.document.title;
+                window.document.title = "Supplier List"
                 const printWindow = document.createElement('iframe');
                 document.body.appendChild(printWindow);
                 printWindow.srcdoc = `
-                <html>
-                    <head>
-                        <style>
-                            .table>:not(caption)>*>* {
-                                font-size: 10px !important;
-                            }
-                            address p{
-                                margin: 0 !important;
-                            }                                        
-                        </style>
-                    </head>
-                    <body>
-                        @include('layouts.headerInfo')
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <h5>Supplier List</h5>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    ${document.getElementById('reportContent').innerHTML}
-                                </div>
+                    <style>
+                        .table>:not(caption)>*>* {
+                            font-size: 11px !important;
+                        }
+                        address p{
+                            margin: 0 !important;
+                        }                                        
+                    </style>
+
+                    @include('layouts.headerInfo')
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h5>Supplier List</h5>
                             </div>
                         </div>
-                    </body>
-                </html>
+                        <div class="row">
+                            <div class="col-12">
+                                ${document.getElementById('reportContent').innerHTML}
+                            </div>
+                        </div>
+                    </div>
                 `;
                 printWindow.onload = async function() {
                     printWindow.contentWindow.focus();
                     await new Promise(resolve => setTimeout(resolve, 500));
                     printWindow.contentWindow.print();
                     document.body.removeChild(printWindow);
+                    window.document.title = oldTitle;
                 };
             }
         },

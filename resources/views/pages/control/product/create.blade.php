@@ -1,74 +1,90 @@
 @extends('master')
 
-@section('title', 'Supplier Entry')
-@section('breadcrumb', 'Supplier Entry')
+@section('title', 'Product Entry')
+@section('breadcrumb', 'Product Entry')
 @section('content')
-<div class="row" id="supplier">
+<div class="row" id="product">
     <div class="col-12 col-md-12">
         <div class="card mb-0">
             <div class="card-body">
-                <h5 class="card-title">Supplier Entry Form</h5>
+                <h5 class="card-title">Product Entry Form</h5>
                 <form @submit.prevent="saveData($event)">
                     <div class="row">
                         <div class="col-12 col-md-5">
                             <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="brand_id">Brand:</label>
+                                <div class="col-8 col-md-9">
+                                    <v-select :options="brands" v-model="selectedBrand" label="name"></v-select>
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="category_id">Category:</label>
+                                <div class="col-8 col-md-9">
+                                    <v-select :options="categories" v-model="selectedCategory" label="name"></v-select>
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="name">Name:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="name" name="name" v-model="supplier.name" />
+                                    <input type="text" class="form-control" autocomplete="off" id="name" name="name" v-model="product.name" />
                                 </div>
                             </div>
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="owner">Owner:</label>
+                                <label class="form-label col-4 col-md-3" for="category_id">Unit:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="owner" name="owner" v-model="supplier.owner" />
+                                    <v-select :options="units" v-model="selectedUnit" label="name"></v-select>
                                 </div>
                             </div>
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="address">Address:</label>
+                                <label class="form-label col-4 col-md-3" for="vat">Vat:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="address" name="address" v-model="supplier.address" />
-                                </div>
-                            </div>
-
-                            <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="area_id">Area:</label>
-                                <div class="col-8 col-md-9">
-                                    <v-select :options="areas" v-model="selectedArea" label="name"></v-select>
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="vat" name="vat" v-model="product.vat" />
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-md-5">
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="phone">Mobile:</label>
+                                <label class="form-label col-4 col-md-3" for="reorder">Reorder:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="number" class="form-control" autocomplete="off" id="phone" name="phone" v-model="supplier.phone" />
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="reorder" name="reorder" v-model="product.reorder" />
                                 </div>
                             </div>
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="email">Email:</label>
+                                <label class="form-label col-4 col-md-3" for="purchase_rate">PurchaseRate:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="email" class="form-control" autocomplete="off" id="email" name="email" v-model="supplier.email" />
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="purchase_rate" name="purchase_rate" v-model="product.purchase_rate" />
                                 </div>
                             </div>
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="previous_due">Prev. Balance:</label>
+                                <label class="form-label col-4 col-md-3" for="sale_rate">SaleRate:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="previous_due" name="previous_due" v-model="supplier.previous_due" />
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="sale_rate" name="sale_rate" v-model="product.sale_rate" />
                                 </div>
                             </div>
-                            <div class="mt-1 row">
-                                <label class="col-md-3 col-12"></label>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="wholesale_rate">WholeSale:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="wholesale_rate" name="wholesale_rate" v-model="product.wholesale_rate" />
+                                </div>
+                            </div>
+                            <div class="mt-md-0 mt-1 row">
                                 <div class="col-md-3 col-12">
-                                    <label for="status">
-                                        <input type="checkbox" name="status" id="status" :false-value="'p'" :true-value="'a'" v-model="supplier.status" />
+                                    <label for="is_service" class="form-label">
+                                        <input type="checkbox" name="is_service" id="is_service" :false-value="'0'" :true-value="'1'" v-model="product.is_service" />
+                                        IsService
+                                    </label>
+                                </div>
+                                <div class="col-md-3 col-12">
+                                    <label for="status" class="form-label">
+                                        <input type="checkbox" name="status" id="status" :false-value="'p'" :true-value="'a'" v-model="product.status" />
                                         IsActive
                                     </label>
                                 </div>
                                 <div class="col-md-6 col-12 text-end">
                                     <button class="btn btn-danger" type="button">Reset</button>
                                     <button class="btn btn-primary" type="submit" :disabled="onProgress">
-                                        <span v-if="supplier.id == ''">Save</span>
-                                        <span v-if="supplier.id != ''">Update</span>
+                                        <span v-if="product.id == ''">Save</span>
+                                        <span v-if="product.id != ''">Update</span>
                                     </button>
                                 </div>
                             </div>
@@ -88,7 +104,7 @@
     </div>
 
     <div class="col-12 col-md-12 mt-1">
-        <vue-good-table :columns="columns" :rows="suppliers" :fixed-header="false" :pagination-options="{
+        <vue-good-table :columns="columns" :rows="products" :fixed-header="false" :pagination-options="{
                 enabled: true,
                 perPage: 100,
             }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
@@ -110,15 +126,10 @@
 @push("js")
 <script>
     new Vue({
-        el: "#supplier",
+        el: "#product",
         data() {
             return {
                 columns: [{
-                        label: "Image",
-                        field: 'imgSrc',
-                        html: true
-                    },
-                    {
                         label: "Code",
                         field: 'code'
                     },
@@ -127,20 +138,24 @@
                         field: 'name'
                     },
                     {
-                        label: "Owner",
-                        field: 'owner'
+                        label: "Brand",
+                        field: 'brand.name'
                     },
                     {
-                        label: "Mobile",
-                        field: 'phone'
+                        label: "Category",
+                        field: 'category.name'
                     },
                     {
-                        label: "Area",
-                        field: 'area.name'
+                        label: "Purchase_Rate",
+                        field: 'purchase_rate'
                     },
                     {
-                        label: "Prev_Balance",
-                        field: 'previous_due'
+                        label: "Sale_Rate",
+                        field: 'sale_rate'
+                    },
+                    {
+                        label: "Unit",
+                        field: 'unit.name'
                     },
                     {
                         label: "Status",
@@ -162,21 +177,28 @@
                         field: "before"
                     }
                 ],
-                supplier: {
+                product: {
                     id: '',
+                    brand_id: '',
+                    category_id: '',
+                    unit_id: '',
                     name: '',
-                    owner: '',
-                    email: '',
-                    phone: '',
-                    address: '',
-                    area_id: '',
-                    previous_due: 0,
+                    vat: 0,
+                    reorder: 0,
+                    purchase_rate: 0,
+                    sale_rate: 0,
+                    wholesale_rate: 0,
+                    is_service: 0,
                     status: 'a',
                     image: ''
                 },
-                suppliers: [],
-                areas: [],
-                selectedArea: null,
+                products: [],
+                categories: [],
+                selectedCategory: null,
+                brands: [],
+                selectedBrand: null,
+                units: [],
+                selectedUnit: null,
 
                 imageSrc: "/noImage.jpg",
                 onProgress: false,
@@ -184,40 +206,56 @@
         },
 
         created() {
-            this.getArea();
-            this.getSupplier();
+            this.getBrand();
+            this.getCategory();
+            this.getUnit();
+            this.getProduct();
         },
 
         methods: {
-            getArea() {
-                axios.post('/get-area')
+            getBrand() {
+                axios.post('/get-brand')
                     .then(res => {
-                        this.areas = res.data;
+                        this.brands = res.data;
                     })
             },
-            getSupplier() {
-                axios.post('/get-supplier')
+            getCategory() {
+                axios.post('/get-category')
                     .then(res => {
-                        this.suppliers = res.data.map((item, index) => {
+                        this.categories = res.data;
+                    })
+            },
+            getUnit() {
+                axios.post('/get-unit')
+                    .then(res => {
+                        this.units = res.data;
+                    })
+            },
+            getProduct() {
+                axios.post('/get-product')
+                    .then(res => {
+                        this.products = res.data.map((item, index) => {
                             item.statusTxt = item.status == 'a' ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-warning'>Deactive</span>";
-                            item.imgSrc = `<a href="${item.image ? '/'+item.image : '/noImage.jpg'}"><img src="${item.image ? '/'+item.image : '/noImage.jpg'}" style="width:30px;height:30px;" class="rounded"/></a>`;
                             return item;
                         });
                     })
             },
             saveData(event) {
                 let formdata = new FormData(event.target);
-                formdata.append('id', this.supplier.id);
-                formdata.append('image', this.supplier.image);
-                formdata.append('status', this.supplier.status);
-                formdata.append('area_id', this.selectedArea ? this.selectedArea.id : '');
-                let url = this.supplier.id != '' ? '/update-supplier' : '/supplier'
+                formdata.append('id', this.product.id);
+                formdata.append('image', this.product.image);
+                formdata.append('status', this.product.status);
+                formdata.append('is_service', this.product.is_service);
+                formdata.append('brand_id', this.selectedBrand ? this.selectedBrand.id : '');
+                formdata.append('category_id', this.selectedCategory ? this.selectedCategory.id : '');
+                formdata.append('unit_id', this.selectedUnit ? this.selectedUnit.id : '');
+                let url = this.product.id != '' ? '/update-product' : '/product'
                 this.onProgress = true;
                 axios.post(url, formdata)
                     .then(res => {
                         toastr.success(res.data.message);
                         this.clearData();
-                        this.getSupplier();
+                        this.getProduct();
                     })
                     .catch(err => {
                         this.onProgress = false
@@ -239,13 +277,21 @@
             },
 
             editData(row) {
-                let keys = Object.keys(this.supplier);
+                let keys = Object.keys(this.product);
                 keys.forEach(item => {
-                    this.supplier[item] = row[item];
+                    this.product[item] = row[item];
                 })
-                this.selectedArea = {
-                    id: row.area_id,
-                    name: row.area?.name
+                this.selectedBrand = {
+                    id: row.brand_id,
+                    name: row.brand?.name
+                }
+                this.selectedCategory = {
+                    id: row.category_id,
+                    name: row.category?.name
+                }
+                this.selectedUnit = {
+                    id: row.unit_id,
+                    name: row.unit?.name
                 }
                 this.imageSrc = row.image ? '/' + row.image : "/noImage.jpg";
             },
@@ -254,27 +300,30 @@
                 if (!confirm('Are you sure ?')) {
                     return;
                 }
-                axios.post('/delete-supplier', {
+                axios.post('/delete-product', {
                         id: rowId
                     })
                     .then(res => {
                         if (res.data.status) {
                             toastr.success(res.data.message);
-                            this.getSupplier();
+                            this.getProduct();
                         }
                     })
             },
 
             clearData() {
-                this.supplier = {
+                this.product = {
                     id: '',
+                    brand_id: '',
+                    category_id: '',
+                    unit_id: '',
                     name: '',
-                    owner: '',
-                    email: '',
-                    phone: '',
-                    address: '',
-                    area_id: '',
-                    previous_due: 0,
+                    vat: 0,
+                    reorder: 0,
+                    purchase_rate: 0,
+                    sale_rate: 0,
+                    wholesale_rate: 0,
+                    is_service: 0,
                     status: 'a',
                     image: ''
                 }
@@ -300,7 +349,7 @@
                             let new_img_url = context.canvas.toDataURL(event.target.files[0].type);
                             this.imageSrc = new_img_url;
                             const resizedImage = await new Promise(rs => canvas.toBlob(rs, 'image/jpeg', 1))
-                            this.supplier.image = new File([resizedImage], event.target.files[0].name, {
+                            this.product.image = new File([resizedImage], event.target.files[0].name, {
                                 type: resizedImage.type
                             });
                         }

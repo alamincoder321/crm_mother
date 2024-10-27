@@ -281,14 +281,14 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/product">
                 <i class="bi bi-plus-circle"></i>
                 <span>Product Entry</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/productList">
                 <i class="bi bi-list-ul"></i>
                 <span>Product List</span>
             </a>
