@@ -135,6 +135,9 @@ class SupplierController extends Controller
     {
         try {
             $data = Supplier::find($request->id);
+            if (File::exists($data->image)) {
+                File::delete($data->image);
+            }
             $data->status = 'd';
             $data->ipAddress = request()->ip();
             $data->update();

@@ -5,6 +5,7 @@ use App\Models\CompanyProfile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 function send_error($message, $errors = null, $code = 404)
 {

@@ -2,6 +2,13 @@
 
 @section('title', 'Product Entry')
 @section('breadcrumb', 'Product Entry')
+@push('style')
+<style>
+    .textDanger {
+        background-color: #ffc80082 !important;
+    }
+</style>
+@endpush
 @section('content')
 <div class="row" id="product">
     <div class="col-12 col-md-12">
@@ -11,6 +18,12 @@
                 <form @submit.prevent="saveData($event)">
                     <div class="row">
                         <div class="col-12 col-md-5">
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="code">Product Code:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="text" class="form-control" autocomplete="off" id="code" name="code" v-model="product.code" />
+                                </div>
+                            </div>
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="brand_id">Brand:</label>
                                 <div class="col-8 col-md-9">
@@ -35,17 +48,25 @@
                                     <v-select :options="units" v-model="selectedUnit" label="name"></v-select>
                                 </div>
                             </div>
-                            <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="vat">Vat:</label>
-                                <div class="col-8 col-md-9">
-                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="vat" name="vat" v-model="product.vat" />
-                                </div>
-                            </div>
                         </div>
                         <div class="col-12 col-md-5">
                             <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="per_unit">Per Unit:</label>
+                                <div class="col-8 col-md-3">
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="per_unit" name="per_unit" v-model="product.per_unit" />
+                                </div>
+                                <label class="form-label col-4 col-md-3" for="convertion_name">Conv. Name:</label>
+                                <div class="col-8 col-md-3">
+                                    <input type="text" class="form-control" autocomplete="off" id="convertion_name" name="convertion_name" v-model="product.convertion_name" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="vat">Vat:</label>
+                                <div class="col-8 col-md-3">
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="vat" name="vat" v-model="product.vat" />
+                                </div>
                                 <label class="form-label col-4 col-md-3" for="reorder">Reorder:</label>
-                                <div class="col-8 col-md-9">
+                                <div class="col-8 col-md-3">
                                     <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="reorder" name="reorder" v-model="product.reorder" />
                                 </div>
                             </div>
@@ -70,13 +91,13 @@
                             <div class="mt-md-0 mt-1 row">
                                 <div class="col-md-3 col-12">
                                     <label for="is_service" class="form-label">
-                                        <input type="checkbox" name="is_service" id="is_service" :false-value="'0'" :true-value="'1'" v-model="product.is_service" />
+                                        <input type="checkbox" id="is_service" :false-value="0" :true-value="1" v-model="product.is_service" />
                                         IsService
                                     </label>
                                 </div>
                                 <div class="col-md-3 col-12">
                                     <label for="status" class="form-label">
-                                        <input type="checkbox" name="status" id="status" :false-value="'p'" :true-value="'a'" v-model="product.status" />
+                                        <input type="checkbox" id="status" :false-value="'p'" :true-value="'a'" v-model="product.status" />
                                         IsActive
                                     </label>
                                 </div>
@@ -107,7 +128,7 @@
         <vue-good-table :columns="columns" :rows="products" :fixed-header="false" :pagination-options="{
                 enabled: true,
                 perPage: 100,
-            }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
+            }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" :row-style-class="rowStyleClass" max-height="550px">
             <template #table-row="props">
                 <span class="d-flex gap-2 justify-content-end" v-if="props.column.field == 'before'">
                     <a href="" title="edit" @click.prevent="editData(props.row)">
@@ -130,6 +151,11 @@
         data() {
             return {
                 columns: [{
+                        label: "Image",
+                        field: 'imgSrc',
+                        html: true
+                    },
+                    {
                         label: "Code",
                         field: 'code'
                     },
@@ -158,6 +184,11 @@
                         field: 'unit.name'
                     },
                     {
+                        label: "IsProduct",
+                        field: 'isService',
+                        html: true,
+                    },
+                    {
                         label: "Status",
                         field: 'statusTxt',
                         html: true,
@@ -179,12 +210,15 @@
                 ],
                 product: {
                     id: '',
+                    code: "{{generateCode('Product', 'P')}}",
                     brand_id: '',
                     category_id: '',
                     unit_id: '',
                     name: '',
                     vat: 0,
                     reorder: 0,
+                    per_unit: 0,
+                    convertion_name: '',
                     purchase_rate: 0,
                     sale_rate: 0,
                     wholesale_rate: 0,
@@ -213,6 +247,9 @@
         },
 
         methods: {
+            rowStyleClass(row) {
+                return row.status == 'p' ? 'textDanger' : ''
+            },
             getBrand() {
                 axios.post('/get-brand')
                     .then(res => {
@@ -236,6 +273,8 @@
                     .then(res => {
                         this.products = res.data.map((item, index) => {
                             item.statusTxt = item.status == 'a' ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-warning'>Deactive</span>";
+                            item.imgSrc = `<a href="${item.image ? '/'+item.image : '/noImage.jpg'}"><img src="${item.image ? '/'+item.image : '/noImage.jpg'}" style="width:30px;height:30px;" class="rounded"/></a>`;
+                            item.isService = item.is_service == 0 ? "<span class='badge bg-success'>Yes</span>" : "<span class='badge bg-warning'>No</span>";
                             return item;
                         });
                     })
@@ -281,18 +320,12 @@
                 keys.forEach(item => {
                     this.product[item] = row[item];
                 })
-                this.selectedBrand = {
-                    id: row.brand_id,
-                    name: row.brand?.name
+
+                if (row.brand_id != null) {
+                    this.selectedBrand = this.brands.find(item => item.id == row.brand_id);
                 }
-                this.selectedCategory = {
-                    id: row.category_id,
-                    name: row.category?.name
-                }
-                this.selectedUnit = {
-                    id: row.unit_id,
-                    name: row.unit?.name
-                }
+                this.selectedCategory = this.categories.find(item => item.id == row.category_id);
+                this.selectedUnit = this.units.find(item => item.id == row.unit_id);
                 this.imageSrc = row.image ? '/' + row.image : "/noImage.jpg";
             },
 
@@ -314,12 +347,15 @@
             clearData() {
                 this.product = {
                     id: '',
+                    code: "{{generateCode('Product', 'P')}}",
                     brand_id: '',
                     category_id: '',
                     unit_id: '',
                     name: '',
                     vat: 0,
                     reorder: 0,
+                    per_unit: 0,
+                    convertion_name: '',
                     purchase_rate: 0,
                     sale_rate: 0,
                     wholesale_rate: 0,

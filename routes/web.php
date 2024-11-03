@@ -1,16 +1,20 @@
 <?php
 
-use App\Http\Controllers\AreaController;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationtController;
+use App\Http\Controllers\EmployeeController;
 
 Route::fallback(function () {
     return view('error.404');
@@ -32,6 +36,8 @@ Route::group(['prefix' => 'panel'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/{panel}', [DashboardController::class, 'panel'])->name('panel.access');
 });
+
+// ============================= Control Panel Route ==============================
 
 // user route
 Route::get('/user', [UserController::class, 'create'])->name('user.create');
@@ -91,3 +97,28 @@ Route::post('/get-product', [ProductController::class, 'index'])->name('product.
 Route::post('/product', [ProductController::class, 'store'])->name('product.store');
 Route::post('/update-product', [ProductController::class, 'update'])->name('product.update');
 Route::post('/delete-product', [ProductController::class, 'destroy'])->name('product.delete');
+
+
+// ======================================== HR Panel =====================================
+
+// department route
+Route::get('/department', [DepartmentController::class, 'create'])->name('department.create');
+Route::post('/get-department', [DepartmentController::class, 'index'])->name('department.index');
+Route::post('/department', [DepartmentController::class, 'store'])->name('department.store');
+Route::post('/update-department', [DepartmentController::class, 'update'])->name('department.update');
+Route::post('/delete-department', [DepartmentController::class, 'destroy'])->name('department.delete');
+
+// designation route
+Route::get('/designation', [DesignationtController::class, 'create'])->name('designation.create');
+Route::post('/get-designation', [DesignationtController::class, 'index'])->name('designation.index');
+Route::post('/designation', [DesignationtController::class, 'store'])->name('designation.store');
+Route::post('/update-designation', [DesignationtController::class, 'update'])->name('designation.update');
+Route::post('/delete-designation', [DesignationtController::class, 'destroy'])->name('designation.delete');
+
+// employee route
+Route::get('/employee', [EmployeeController::class, 'create'])->name('employee.create');
+Route::get('/employeeList', [EmployeeController::class, 'employeeList'])->name('employee.list');
+Route::post('/get-employee', [EmployeeController::class, 'index'])->name('employee.index');
+Route::post('/employee', [EmployeeController::class, 'store'])->name('employee.store');
+Route::post('/update-employee', [EmployeeController::class, 'update'])->name('employee.update');
+Route::post('/delete-employee', [EmployeeController::class, 'destroy'])->name('employee.delete');

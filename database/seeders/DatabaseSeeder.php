@@ -67,6 +67,7 @@ class DatabaseSeeder extends Seeder
             'title' => 'Company Title',
             'phone' => '017########',
             'phone' => '017########',
+            'url' => request()->getHost(),
             'ipAddress' => request()->ip()
         ]);
     }

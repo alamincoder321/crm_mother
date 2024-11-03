@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
-use App\Models\CompanyProfile;
 use Illuminate\Http\Request;
+use App\Models\CompanyProfile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -91,13 +91,13 @@ class DashboardController extends Controller
 
         try {
             $data = CompanyProfile::first();
-            if($request->logo == 'null'){
+            if ($request->logo == 'null') {
                 if (File::exists($data->logo)) {
                     File::delete($data->logo);
                 }
                 $data->logo = NULL;
             }
-            if($request->favicon == 'null'){
+            if ($request->favicon == 'null') {
                 if (File::exists($data->favicon)) {
                     File::delete($data->favicon);
                 }
@@ -107,14 +107,14 @@ class DashboardController extends Controller
             foreach ($dataKeys as $key => $value) {
                 $data[$key] = $value;
             }
-            
+
             if ($request->hasFile('logo')) {
                 if (File::exists($data->logo)) {
                     File::delete($data->logo);
                 }
                 $data->logo = imageUpload($request, 'logo', 'uploads/logo', 'logo');
             }
-            if($request->favicon == NULL){
+            if ($request->favicon == NULL) {
                 if (File::exists($data->favicon)) {
                     File::delete($data->favicon);
                 }

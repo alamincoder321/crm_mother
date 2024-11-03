@@ -30,6 +30,13 @@ class ProductController extends Controller
         if (!empty($request->productId)) {
             $products = $products->where('id', $request->productId);
         }
+        if (!empty($request->category_id)) {
+            $products = $products->where('category_id', $request->category_id);
+        }
+        if (!empty($request->brandId)) {
+            $products = $products->where('brand_id', $request->brandId);
+        }
+        
         $products = $products->latest()->get();
         return response()->json($products);
     }
@@ -108,7 +115,7 @@ class ProductController extends Controller
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
             $data = Product::find($request->id);
-            $dataKey = $request->except('id', 'image');
+            $dataKey = $request->except('id', 'brand_id', 'image');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
             }
@@ -117,6 +124,9 @@ class ProductController extends Controller
                     File::delete($data->image);
                 }
                 $data->image = imageUpload($request, 'image', 'uploads/product', $data->code . '_' . $this->branchId);
+            }
+            if (!empty($request->brand_id)) {
+                $data->brand_id = $request->brand_id;
             }
             $data->updated_by = $this->userId;
             $data->updated_at = Carbon::now();
@@ -134,6 +144,9 @@ class ProductController extends Controller
     {
         try {
             $data = Product::find($request->id);
+            if (File::exists($data->image)) {
+                File::delete($data->image);
+            }
             $data->status = 'd';
             $data->ipAddress = request()->ip();
             $data->update();

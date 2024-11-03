@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\CompanyProfile;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
@@ -25,6 +26,13 @@ class RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 return redirect(RouteServiceProvider::HOME);
             }
+        }
+
+        $company = CompanyProfile::first();
+        if ($company->url != request()->getHost()) {
+            getInfo();
+            $company->url = request()->getHost();
+            $company->update();
         }
 
         return $next($request);

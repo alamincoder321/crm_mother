@@ -22,6 +22,7 @@ class CreateCompanyProfilesTable extends Migration
             $table->longText('address')->nullable();
             $table->string('favicon')->nullable();
             $table->string('logo')->nullable();
+            $table->text('url')->nullable();
             $table->foreignId('updated_by')->nullable()->constrained('users', 'id');
             $table->dateTime('updated_at')->nullable();
             $table->ipAddress('ipAddress');

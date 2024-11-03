@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
-class CustomerController extends Controller
+class EmployeeController extends Controller
 {
     protected $userId;
     protected $branchId;
@@ -26,28 +26,29 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        $customers = Customer::with('adUser', 'upUser', 'area')->where('branch_id', $this->branchId);
-        if (!empty($request->customerId)) {
-            $customers = $customers->where('id', $request->customerId);
+        $employees = Employee::with('adUser', 'upUser', 'area', 'department', 'designation')
+            ->where('branch_id', $this->branchId);
+        if (!empty($request->supplierId)) {
+            $employees = $employees->where('id', $request->supplierId);
         }
-        if (!empty($request->customer_type)) {
-            $customers = $customers->where('customer_type', $request->customer_type);
+        if (!empty($request->departmentId)) {
+            $employees = $employees->where('department_id', $request->departmentId);
         }
-        if (!empty($request->areaId)) {
-            $customers = $customers->where('area_id', $request->areaId);
+        if (!empty($request->designationId)) {
+            $employees = $employees->where('designation_id', $request->designationId);
         }
-        $customers = $customers->latest()->get();
-        return response()->json($customers);
+        $employees = $employees->latest()->get();
+        return response()->json($employees);
     }
 
     public function create()
     {
-        return view('pages.control.customer.create');
+        return view('pages.hr.employee.create');
     }
 
-    public function customerList()
+    public function supplierList()
     {
-        return view('pages.control.customer.index');
+        return view('pages.hr.employee.index');
     }
 
 
@@ -55,32 +56,34 @@ class CustomerController extends Controller
     {
         $branchId = $this->branchId;
         $validator = Validator::make($request->all(), [
-            'name'     => 'required',
-            'phone' => [
+            'name' => [
                 'required',
-                Rule::unique('customers')
+                Rule::unique('suppliers')
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
                     })
                     ->whereNull('deleted_at'),
             ],
+            'department_id' => 'required',
+            'designation_id' => 'required',
+            'salary' => 'required',
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $check = Customer::where('phone', $request->phone)->withTrashed()->first();
+            $check = Employee::where('name', $request->name)->withTrashed()->first();
             if (!empty($check) && $check->deleted_at != NULL) {
                 $check->status = 'a';
                 $check->deleted_at = NULL;
                 $check->update();
             } else {
-                $data = new Customer();
-                $data->code = generateCode('Customer', 'C', $this->branchId);
+                $data = new Employee();
+                $data->code = generateCode('Supplier', 'S', $this->branchId);
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
                 }
                 if ($request->hasFile('image')) {
-                    $data->image = imageUpload($request, 'image', 'uploads/customer', $data->code . '_' . $this->branchId);
+                    $data->image = imageUpload($request, 'image', 'uploads/employee', $data->code . '_' . $this->branchId);
                 }
                 $data->created_by = $this->userId;
                 $data->ipAddress = request()->ip();
@@ -88,7 +91,7 @@ class CustomerController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Customer has created successfully"]);
+            return response()->json(['status' => true, 'message' => "Employee has created successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -98,20 +101,22 @@ class CustomerController extends Controller
     {
         $branchId = $this->branchId;
         $validator = Validator::make($request->all(), [
-            'name'     => 'required',
-            'phone' => [
+            'name' => [
                 'required',
-                Rule::unique('customers')
+                Rule::unique('suppliers')
                     ->ignore($request->id)
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
                     })
                     ->whereNull('deleted_at'),
             ],
+            'department_id' => 'required',
+            'designation_id' => 'required',
+            'salary' => 'required',
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $data = Customer::find($request->id);
+            $data = Employee::find($request->id);
             $dataKey = $request->except('id', 'image');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
@@ -120,7 +125,7 @@ class CustomerController extends Controller
                 if (File::exists($data->image)) {
                     File::delete($data->image);
                 }
-                $data->image = imageUpload($request, 'image', 'uploads/customer', $data->code . '_' . $this->branchId);
+                $data->image = imageUpload($request, 'image', 'uploads/employee', $data->code . '_' . $this->branchId);
             }
             $data->updated_by = $this->userId;
             $data->updated_at = Carbon::now();
@@ -128,7 +133,7 @@ class CustomerController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Customer has updated successfully"]);
+            return response()->json(['status' => true, 'message' => "Employee has updated successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -137,7 +142,7 @@ class CustomerController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $data = Customer::find($request->id);
+            $data = Employee::find($request->id);
             if (File::exists($data->image)) {
                 File::delete($data->image);
             }
@@ -146,7 +151,7 @@ class CustomerController extends Controller
             $data->update();
 
             $data->delete();
-            return response()->json(['status' => true, 'message' => "Customer has deleted successfully"]);
+            return response()->json(['status' => true, 'message' => "Employee has deleted successfully"]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }

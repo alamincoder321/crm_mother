@@ -1,7 +1,7 @@
 @extends('master')
 
-@section('title', 'Customer List')
-@section('breadcrumb', 'Customer List')
+@section('title', 'Product List')
+@section('breadcrumb', 'Product List')
 @push('style')
 <style>
     .table>thead>tr>th {
@@ -12,7 +12,7 @@
 </style>
 @endpush
 @section('content')
-<div id="customerList">
+<div id="productList">
     <div class="row">
         <div class="col-12 col-md-12">
             <div class="card m-0">
@@ -22,20 +22,25 @@
                             <label for="searchType">SearchType</label>
                             <select id="searchType" class="form-select" v-model="searchType" @change="onChangeSearchType">
                                 <option value="">All</option>
-                                <option value="area">By Area</option>
+                                <option value="category">By Category</option>
+                                <option value="brand">By Brand</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="searchType">Type</label>
-                            <select id="searchType" class="form-select" v-model="customer_type">
+                            <label for="priceType">Type</label>
+                            <select id="priceType" class="form-select" v-model="priceType">
                                 <option value="">All</option>
-                                <option value="retail">Retail</option>
-                                <option value="wholesale">Wholesale</option>
+                                <option value="sale">Only Sale Price</option>
+                                <option value="purchase">Only Purchase Price</option>
                             </select>
                         </div>
-                        <div class="form-group" :class="searchType == 'area' ? '' : 'd-none'" v-if="searchType == 'area'">
-                            <label for="searchType">Area</label>
-                            <v-select :options="areas" v-model="selectedArea" label="name"></v-select>
+                        <div class="form-group" :class="searchType == 'category' ? '' : 'd-none'" v-if="searchType == 'category'">
+                            <label for="category_id">Category</label>
+                            <v-select :options="categories" v-model="selectedCategory" label="name"></v-select>
+                        </div>
+                        <div class="form-group" :class="searchType == 'brand' ? '' : 'd-none'" v-if="searchType == 'brand'">
+                            <label for="brand_id">Brand</label>
+                            <v-select :options="brands" v-model="selectedBrand" label="name"></v-select>
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary btn-sm">Show</button>
@@ -65,26 +70,26 @@
                                     <th>Sl</th>
                                     <th>Code</th>
                                     <th>Name</th>
-                                    <th>Owner</th>
-                                    <th>Customer_Type</th>
-                                    <th>Phone</th>
-                                    <th>Area</th>
-                                    <th>Address</th>
+                                    <th>Brand</th>
+                                    <th>Category</th>
+                                    <th :class="priceType == '' || priceType == 'purchase' ? '' : 'd-none'">Purchase_Rate</th>
+                                    <th :class="priceType == '' || priceType == 'sale' ? '' : 'd-none'">Sale_Rate</th>
+                                    <th>Unit</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in customers">
+                                <tr v-for="(item, index) in products">
                                     <td v-html="index + 1"></td>
                                     <td v-html="item.code"></td>
                                     <td v-html="item.name"></td>
-                                    <td v-html="item.owner"></td>
-                                    <td v-html="item.customer_type"></td>
-                                    <td v-html="item.phone"></td>
-                                    <td v-html="item.area?.name"></td>
-                                    <td v-html="item.address"></td>
+                                    <td v-html="item.brand?.name"></td>
+                                    <td v-html="item.category?.name"></td>
+                                    <td v-html="item.purchase_rate" :class="priceType == '' || priceType == 'purchase' ? '' : 'd-none'" class="text-end"></td>
+                                    <td v-html="item.sale_rate" :class="priceType == '' || priceType == 'sale' ? '' : 'd-none'" class="text-end"></td>
+                                    <td v-html="item.unit?.name" class="text-center"></td>
                                 </tr>
-                                <tr :class="customers.length == 0 ? '' : 'd-none'" v-if="customers.length == 0">
-                                    <td colspan="8" class="text-center">Not Found Data</td>
+                                <tr :class="products.length == 0 ? '' : 'd-none'" v-if="products.length == 0">
+                                    <td :colspan="priceType == '' ? 8 : 7" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -100,51 +105,63 @@
 @push('js')
 <script>
     new Vue({
-        el: '#customerList',
+        el: '#productList',
         data: {
             searchType: '',
-            customer_type: '',
-            customers: [],
-            areas: [],
-            selectedArea: null,
+            priceType: '',
+            products: [],
+            categories: [],
+            selectedCategory: null,
+            brands: [],
+            selectedBrand: null,
             isLoading: null
         },
 
-        created() {
-            this.getArea();
-        },
-
         methods: {
-            getArea() {
-                axios.post('/get-area')
+            getBrand() {
+                axios.post('/get-brand')
                     .then(res => {
-                        this.areas = res.data;
+                        this.brands = res.data;
+                    })
+            },
+            getCategory() {
+                axios.post('/get-category')
+                    .then(res => {
+                        this.categories = res.data;
                     })
             },
 
             onChangeSearchType() {
-                this.suppliers = [];
-                this.selectedArea = null;
-                this.customer_type = "";
+                this.products = [];
+                this.categories = [];
+                this.brands = [];
+                this.selectedCategory = null;
+                this.selectedBrand = null;
+                this.priceType = "";
                 this.isLoading = null;
+                if (this.searchType == 'category') {
+                    this.getCategory();
+                } else if (this.searchType == 'brand') {
+                    this.getBrand();
+                }
             },
 
             showList() {
                 let filter = {
-                    areaId: this.selectedArea ? this.selectedArea.id : '',
-                    customer_type: this.customer_type
+                    categoryId: this.selectedCategory ? this.selectedCategory.id : '',
+                    brandId: this.selectedBrand ? this.selectedBrand.id : '',
                 }
                 this.isLoading = false;
-                axios.post('/get-customer', filter)
+                axios.post('/get-product', filter)
                     .then(res => {
-                        this.customers = res.data
+                        this.products = res.data
                         this.isLoading = true;
                     })
             },
 
             async print() {
                 const oldTitle = window.document.title;
-                window.document.title = "Customer List"
+                window.document.title = "Product List"
                 const printWindow = document.createElement('iframe');
                 document.body.appendChild(printWindow);
                 printWindow.srcdoc = `
@@ -161,7 +178,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12 text-center">
-                                <h5>Customer List</h5>
+                                <h5>Product List</h5>
                             </div>
                         </div>
                         <div class="row">
