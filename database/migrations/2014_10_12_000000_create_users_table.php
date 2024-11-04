@@ -22,13 +22,28 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('phone', 15);
             $table->string('role');
+            $table->integer('department_id')->index()->nullable();
+            $table->integer('designation_id')->index()->nullable();
+            $table->enum('gender', ['male', 'female', 'others'])->nullable();
+            $table->date('birth_date')->nullable();
+            $table->date('join_date')->nullable();
+            $table->decimal('gross_salary', 18, 2)->default(0);
+            $table->decimal('basic_salary', 18, 2)->default(0);
+            $table->decimal('house_rent', 18, 2)->default(0);
+            $table->decimal('medical_fee', 18, 2)->default(0);
+            $table->decimal('other_fee', 18, 2)->default(0);
+            $table->string('reference')->nullable();
             $table->string('image')->nullable();
-            $table->integer('branch_id');
             $table->char('status', 1)->default('a');
             $table->string('action')->nullable()->comment('e=>entry u=>update d=>delete');
-            $table->ipAddress('ipAddress');
-            $table->timestamps();
+            $table->integer('created_by')->nullable();
+            $table->dateTime('created_at')->useCurrent();
+            $table->integer('updated_by')->nullable();
+            $table->dateTime('updated_at')->nullable();
+            $table->integer('deleted_by')->nullable();
             $table->softDeletes();
+            $table->ipAddress('ipAddress');
+            $table->integer('branch_id')->index();
         });
     }
 

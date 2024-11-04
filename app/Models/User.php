@@ -18,9 +18,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name', 'username', 'email', 'password', 'role', 'branch_id',
-    ];
+    protected $guarded = ['id'];
 
 
     /**
@@ -31,4 +29,27 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function adUser()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id')->select('id', 'name', 'username')->withTrashed();
+    }
+    public function upUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by', 'id')->select('id', 'name', 'username')->withTrashed();
+    }
+    public function deUser()
+    {
+        return $this->belongsTo(User::class, 'deleted_by', 'id')->select('id', 'name', 'username')->withTrashed();
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'id')->select('id', 'name')->withTrashed();
+    }
+
+    public function designation()
+    {
+        return $this->belongsTo(Designation::class, 'designation_id', 'id')->select('id', 'name')->withTrashed();
+    }
 }

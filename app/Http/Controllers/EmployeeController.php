@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -26,7 +26,8 @@ class EmployeeController extends Controller
 
     public function index(Request $request)
     {
-        $employees = Employee::with('adUser', 'upUser', 'area', 'department', 'designation')
+        $employees = User::with('adUser', 'upUser', 'department', 'designation')
+            ->where('role', 'employee')
             ->where('branch_id', $this->branchId);
         if (!empty($request->supplierId)) {
             $employees = $employees->where('id', $request->supplierId);
@@ -58,7 +59,15 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
-                Rule::unique('suppliers')
+                Rule::unique('users')
+                    ->where(function ($query) use ($branchId) {
+                        $query->where('branch_id', $branchId);
+                    })
+                    ->whereNull('deleted_at'),
+            ],
+            'username' => [
+                'required',
+                Rule::unique('users')
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
                     })
@@ -66,18 +75,17 @@ class EmployeeController extends Controller
             ],
             'department_id' => 'required',
             'designation_id' => 'required',
-            'salary' => 'required',
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $check = Employee::where('name', $request->name)->withTrashed()->first();
+            $check = User::where('name', $request->name)->where('role', 'employee')->withTrashed()->first();
             if (!empty($check) && $check->deleted_at != NULL) {
                 $check->status = 'a';
                 $check->deleted_at = NULL;
                 $check->update();
             } else {
-                $data = new Employee();
-                $data->code = generateCode('Supplier', 'S', $this->branchId);
+                $data = new User();
+                $data->code = generateCode('User', 'U');
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
@@ -85,9 +93,10 @@ class EmployeeController extends Controller
                 if ($request->hasFile('image')) {
                     $data->image = imageUpload($request, 'image', 'uploads/employee', $data->code . '_' . $this->branchId);
                 }
+                $data->role       = 'employee';
                 $data->created_by = $this->userId;
-                $data->ipAddress = request()->ip();
-                $data->branch_id = $this->branchId;
+                $data->ipAddress  = request()->ip();
+                $data->branch_id  = $this->branchId;
                 $data->save();
             }
 
@@ -103,7 +112,16 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
-                Rule::unique('suppliers')
+                Rule::unique('users')
+                    ->ignore($request->id)
+                    ->where(function ($query) use ($branchId) {
+                        $query->where('branch_id', $branchId);
+                    })
+                    ->whereNull('deleted_at'),
+            ],
+            'username' => [
+                'required',
+                Rule::unique('users')
                     ->ignore($request->id)
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
@@ -112,11 +130,10 @@ class EmployeeController extends Controller
             ],
             'department_id' => 'required',
             'designation_id' => 'required',
-            'salary' => 'required',
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $data = Employee::find($request->id);
+            $data = User::find($request->id);
             $dataKey = $request->except('id', 'image');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
@@ -142,7 +159,7 @@ class EmployeeController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $data = Employee::find($request->id);
+            $data = User::find($request->id);
             if (File::exists($data->image)) {
                 File::delete($data->image);
             }

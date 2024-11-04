@@ -30,13 +30,15 @@
                                 </div>
                             </div>
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3" for="address">Address:</label>
+                                <label class="form-label col-4 col-md-3" for="gender">Gender:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="address" name="address" v-model="employee.address" />
+                                    <select name="gender" id="gender" class="form-select" v-model="employee.gender">
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="others">Others</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-5">
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="phone">Mobile:</label>
                                 <div class="col-8 col-md-9">
@@ -47,6 +49,79 @@
                                 <label class="form-label col-4 col-md-3" for="email">Email:</label>
                                 <div class="col-8 col-md-9">
                                     <input type="email" class="form-control" autocomplete="off" id="email" name="email" v-model="employee.email" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="birth_date">Birth Date:</label>
+                                <div class="col-8 col-md-3 pe-md-0">
+                                    <input type="date" class="form-control" autocomplete="off" id="birth_date" name="birth_date" v-model="employee.birth_date" />
+                                </div>
+                                <label class="form-label col-4 col-md-2 pe-md-0" for="join_date">Join Date:</label>
+                                <div class="col-8 col-md-4">
+                                    <input type="date" class="form-control" autocomplete="off" id="join_date" name="join_date" v-model="employee.join_date" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="address">Address:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="text" class="form-control" autocomplete="off" id="address" name="address" v-model="employee.address" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="basic_salary">Basic Salary:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="number" min="0" step="any" class="form-control" @input="calculateSalary($event)" autocomplete="off" id="basic_salary" name="basic_salary" v-model="employee.basic_salary" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="house_rent_percent">House Rent:</label>
+                                <div class="col-8 col-md-4">
+                                    <div class="input-group">
+                                        <input type="number" min="0" step="any" class="form-control" @input="calculateSalary($event)" autocomplete="off" id="house_rent_percent" v-model="house_rent_percent" />
+                                        <span class="btn btn-light">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-8 col-md-5">
+                                    <input type="number" min="0" step="any" class="form-control" @input="calculateSalary($event)" autocomplete="off" name="house_rent" id="house_rent" v-model="employee.house_rent" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="medical_fee_percent">Medical:</label>
+                                <div class="col-8 col-md-4">
+                                    <div class="input-group">
+                                        <input type="number" min="0" step="any" class="form-control" @input="calculateSalary($event)" autocomplete="off" id="medical_fee_percent" v-model="medical_fee_percent" />
+                                        <span class="btn btn-light">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-8 col-md-5">
+                                    <input type="number" min="0" step="any" class="form-control" @input="calculateSalary($event)" autocomplete="off" name="medical_fee" id="medical_fee" v-model="employee.medical_fee" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="other_fee">Others:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="number" min="0" step="any" class="form-control" @input="calculateSalary($event)" autocomplete="off" id="other_fee" name="other_fee" v-model="employee.other_fee" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="gross_salary">Gross Salary:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="gross_salary" name="gross_salary" v-model="employee.gross_salary" readonly />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3 pe-0" for="username">Username:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="text" class="form-control" autocomplete="off" id="username" name="username" v-model="employee.username" />
+                                </div>
+                            </div>
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="password">Password:</label>
+                                <div class="col-8 col-md-9 password position-relative">
+                                    <input type="password" class="form-control" autocomplete="off" id="password" name="password" v-model="employee.password" />
+                                    <i class="bi bi-eye" style="position: absolute;top: 9%;right: 23px;cursor:pointer;" @click="passwordShow($event)"></i>
                                 </div>
                             </div>
                             <div class="mt-1 row">
@@ -149,9 +224,19 @@
                     email: '',
                     phone: '',
                     address: '',
+                    gender: 'male',
+                    join_date: moment().format('YYYY-MM-DD'),
+                    birth_date: moment().format('YYYY-MM-DD'),
+                    basic_salary: 0,
+                    house_rent: 0,
+                    medical_fee: 0,
+                    other_fee: 0,
+                    gross_salary: 0,
                     status: 'a',
                     image: ''
                 },
+                house_rent_percent: 0,
+                medical_fee_percent: 0,
                 employees: [],
                 departments: [],
                 selectedDepartment: null,
@@ -268,6 +353,24 @@
                 this.onProgress = false;
             },
 
+            calculateSalary(event){
+                let basic_salary = this.employee.basic_salary;
+                
+                if(event.target.id == 'house_rent_percent'){
+                    this.employee.house_rent = parseFloat((basic_salary * this.house_rent_percent) / 100).toFixed(2);
+                }
+                if(event.target.id == 'house_rent'){
+                    this.house_rent_percent = parseFloat((this.employee.house_rent * 100) / basic_salary).toFixed(2);
+                }
+                if(event.target.id == 'medical_fee_percent'){
+                    this.employee.medical_fee = parseFloat((basic_salary * this.medical_fee_percent) / 100).toFixed(2);
+                }
+                if(event.target.id == 'medical_fee'){
+                    this.medical_fee_percent = parseFloat((this.employee.medical_fee * 100) / basic_salary).toFixed(2);
+                }
+                this.employee.gross_salary = parseFloat(+basic_salary + +this.employee.house_rent + +this.employee.medical_fee + +this.employee.other_fee).toFixed(2);
+            },
+
             imageUrl(event) {
                 const WIDTH = 150;
                 const HEIGHT = 150;
@@ -293,6 +396,16 @@
                     }
                 } else {
                     event.target.value = '';
+                }
+            },
+            passwordShow(event) {
+                let password = $(".password").find('input').prop('type');
+                if (password == 'password') {
+                    $(".password").find('i').removeProp('class').prop('class', 'bi bi-eye-slash')
+                    $(".password").find('input').removeProp('type').prop('type', 'text');
+                } else {
+                    $(".password").find('i').removeProp('class').prop('class', 'bi bi-eye')
+                    $(".password").find('input').removeProp('type').prop('type', 'password');
                 }
             }
         },
