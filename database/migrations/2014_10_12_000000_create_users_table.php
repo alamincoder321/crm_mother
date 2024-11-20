@@ -16,6 +16,7 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('code');
+            $table->string('emp_code')->nullable();
             $table->string('name');
             $table->string('username');
             $table->string('email');
@@ -27,6 +28,7 @@ class CreateUsersTable extends Migration
             $table->enum('gender', ['male', 'female', 'others'])->nullable();
             $table->date('birth_date')->nullable();
             $table->date('join_date')->nullable();
+            $table->text('address')->nullable();
             $table->decimal('gross_salary', 18, 2)->default(0);
             $table->decimal('basic_salary', 18, 2)->default(0);
             $table->decimal('house_rent', 18, 2)->default(0);

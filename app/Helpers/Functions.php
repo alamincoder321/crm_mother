@@ -2,10 +2,8 @@
 // use App\Models\UserAccess;
 
 use App\Models\CompanyProfile;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 
 function send_error($message, $errors = null, $code = 404)
 {
@@ -53,6 +51,25 @@ function generateCode($model, $prefix = '', $branch_id = null)
         $clause .= "and branch_id = '$branch_id'";
     }
     $model = DB::select("select * from `$modelName` where 1 = 1 $clause");
+
+    $num_rows = count($model);
+    if ($num_rows != 0) {
+        $newCode = $num_rows + 1;
+        $zeros = ['0', '00', '000', '0000'];
+        $code = strlen($newCode) > count($zeros) ? $newCode : $zeros[count($zeros) - strlen($newCode)] . $newCode;
+    }
+    return $prefix . $code;
+}
+// code generate
+function generateEmpCode($model, $prefix = '', $branch_id = null)
+{
+    $code = "00001";
+    $modelName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $model)) . 's';
+    $clause = "";
+    if ($branch_id != null) {
+        $clause .= "and branch_id = '$branch_id'";
+    }
+    $model = DB::select("select * from `$modelName` where role='employee' $clause");
 
     $num_rows = count($model);
     if ($num_rows != 0) {
@@ -121,11 +138,12 @@ function userAction($action)
 }
 
 // banglamonth
-function bangla_number( $int ) {
+function bangla_number($int)
+{
     $engNumber = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
     $bangNumber = array('১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯', '০');
 
-    $converted = str_replace( $engNumber, $bangNumber, $int );
+    $converted = str_replace($engNumber, $bangNumber, $int);
     return $converted;
 }
 
@@ -137,8 +155,18 @@ function dateBangla($timestamp = null)
 
     // Bengali months
     $banglaMonths = [
-        'বৈশাখ', 'জ্যৈষ্ঠ', 'আষাঢ়', 'শ্রাবণ', 'ভাদ্র', 'আশ্বিন',
-        'কার্তিক', 'অগ্রহায়ণ', 'পৌষ', 'মাঘ', 'ফাল্গুন', 'চৈত্র'
+        'বৈশাখ',
+        'জ্যৈষ্ঠ',
+        'আষাঢ়',
+        'শ্রাবণ',
+        'ভাদ্র',
+        'আশ্বিন',
+        'কার্তিক',
+        'অগ্রহায়ণ',
+        'পৌষ',
+        'মাঘ',
+        'ফাল্গুন',
+        'চৈত্র'
     ];
 
     $bengaliNewYearStart = [
@@ -174,10 +202,11 @@ function dateBangla($timestamp = null)
     $banglaDay += 1;
 
 
-    return getBanglaDay(date("l")). ', '. bangla_number($banglaDay) .' '. $banglaMonthName. ' '. bangla_number($banglaYear);
+    return getBanglaDay(date("l")) . ', ' . bangla_number($banglaDay) . ' ' . $banglaMonthName . ' ' . bangla_number($banglaYear);
 }
 
-function getBanglaDay($englishDay) {
+function getBanglaDay($englishDay)
+{
     $dayMapping = [
         'Sunday'    => 'রবিবার',
         'Monday'    => 'সোমবার',
@@ -194,6 +223,7 @@ function getBanglaDay($englishDay) {
     }
 }
 
-function company(){
+function company()
+{
     return CompanyProfile::first();
 }

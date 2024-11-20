@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
@@ -38,6 +39,9 @@ class EmployeeController extends Controller
         if (!empty($request->designationId)) {
             $employees = $employees->where('designation_id', $request->designationId);
         }
+        if (!empty($request->status)) {
+            $employees = $employees->where('status', $request->status);
+        }
         $employees = $employees->latest()->get();
         return response()->json($employees);
     }
@@ -47,7 +51,7 @@ class EmployeeController extends Controller
         return view('pages.hr.employee.create');
     }
 
-    public function supplierList()
+    public function employeeList()
     {
         return view('pages.hr.employee.index');
     }
@@ -68,9 +72,6 @@ class EmployeeController extends Controller
             'username' => [
                 'required',
                 Rule::unique('users')
-                    ->where(function ($query) use ($branchId) {
-                        $query->where('branch_id', $branchId);
-                    })
                     ->whereNull('deleted_at'),
             ],
             'department_id' => 'required',
@@ -86,7 +87,8 @@ class EmployeeController extends Controller
             } else {
                 $data = new User();
                 $data->code = generateCode('User', 'U');
-                $dataKey = $request->except('id', 'image');
+                $data->emp_code = generateEmpCode('User', 'E');
+                $dataKey = $request->except('id', 'image', 'password');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
                 }
@@ -94,6 +96,7 @@ class EmployeeController extends Controller
                     $data->image = imageUpload($request, 'image', 'uploads/employee', $data->code . '_' . $this->branchId);
                 }
                 $data->role       = 'employee';
+                $data->password = Hash::make($request->password);
                 $data->created_by = $this->userId;
                 $data->ipAddress  = request()->ip();
                 $data->branch_id  = $this->branchId;
@@ -123,9 +126,6 @@ class EmployeeController extends Controller
                 'required',
                 Rule::unique('users')
                     ->ignore($request->id)
-                    ->where(function ($query) use ($branchId) {
-                        $query->where('branch_id', $branchId);
-                    })
                     ->whereNull('deleted_at'),
             ],
             'department_id' => 'required',
@@ -134,7 +134,7 @@ class EmployeeController extends Controller
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
             $data = User::find($request->id);
-            $dataKey = $request->except('id', 'image');
+            $dataKey = $request->except('id', 'image', 'password');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
             }
@@ -143,6 +143,9 @@ class EmployeeController extends Controller
                     File::delete($data->image);
                 }
                 $data->image = imageUpload($request, 'image', 'uploads/employee', $data->code . '_' . $this->branchId);
+            }
+            if (!empty($request->password)) {
+                $data->password = Hash::make($request->password);
             }
             $data->updated_by = $this->userId;
             $data->updated_at = Carbon::now();

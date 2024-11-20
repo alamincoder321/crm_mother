@@ -30,7 +30,6 @@ class RedirectIfAuthenticated
 
         $company = CompanyProfile::first();
         if ($company->url != request()->getHost()) {
-            getInfo();
             $company->url = request()->getHost();
             $company->update();
         }

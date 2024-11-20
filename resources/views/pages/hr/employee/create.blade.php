@@ -188,15 +188,23 @@
                     },
                     {
                         label: "Code",
-                        field: 'code'
+                        field: 'emp_code'
                     },
                     {
                         label: "Name",
                         field: 'name'
                     },
                     {
+                        label: "Username",
+                        field: 'username'
+                    },
+                    {
                         label: "Mobile",
                         field: 'phone'
+                    },
+                    {
+                        label: "Basic Salary",
+                        field: 'basic_salary'
                     },
                     {
                         label: "Status",
@@ -232,6 +240,8 @@
                     medical_fee: 0,
                     other_fee: 0,
                     gross_salary: 0,
+                    username: '',
+                    password: '',
                     status: 'a',
                     image: ''
                 },
@@ -316,10 +326,8 @@
                 keys.forEach(item => {
                     this.employee[item] = row[item];
                 })
-                this.selectedDepartment = {
-                    id: row.department_id,
-                    name: row.department?.name
-                }
+                this.selectedDepartment = this.departments.find(item => item.id == row.department_id);
+                this.selectedDesignation = this.designations.find(item => item.id == row.designation_id);
                 this.imageSrc = row.image ? '/' + row.image : "/noImage.jpg";
             },
 
@@ -345,7 +353,16 @@
                     email: '',
                     phone: '',
                     address: '',
-                    department_id: '',
+                    gender: 'male',
+                    join_date: moment().format('YYYY-MM-DD'),
+                    birth_date: moment().format('YYYY-MM-DD'),
+                    basic_salary: 0,
+                    house_rent: 0,
+                    medical_fee: 0,
+                    other_fee: 0,
+                    gross_salary: 0,
+                    username: '',
+                    password: '',
                     status: 'a',
                     image: ''
                 }
@@ -353,19 +370,19 @@
                 this.onProgress = false;
             },
 
-            calculateSalary(event){
+            calculateSalary(event) {
                 let basic_salary = this.employee.basic_salary;
-                
-                if(event.target.id == 'house_rent_percent'){
+
+                if (event.target.id == 'house_rent_percent') {
                     this.employee.house_rent = parseFloat((basic_salary * this.house_rent_percent) / 100).toFixed(2);
                 }
-                if(event.target.id == 'house_rent'){
+                if (event.target.id == 'house_rent') {
                     this.house_rent_percent = parseFloat((this.employee.house_rent * 100) / basic_salary).toFixed(2);
                 }
-                if(event.target.id == 'medical_fee_percent'){
+                if (event.target.id == 'medical_fee_percent') {
                     this.employee.medical_fee = parseFloat((basic_salary * this.medical_fee_percent) / 100).toFixed(2);
                 }
-                if(event.target.id == 'medical_fee'){
+                if (event.target.id == 'medical_fee') {
                     this.medical_fee_percent = parseFloat((this.employee.medical_fee * 100) / basic_salary).toFixed(2);
                 }
                 this.employee.gross_salary = parseFloat(+basic_salary + +this.employee.house_rent + +this.employee.medical_fee + +this.employee.other_fee).toFixed(2);

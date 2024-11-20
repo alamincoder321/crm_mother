@@ -7,6 +7,7 @@
         </div>
         <div class="col-10 pe-0">
             <h4 class="m-0">{{$company->title}}</h4>
+            <address class="m-0"><strong>Mobile: </strong>{{ $company->phone }}</address>
             <address class="m-0">{!! $company->address !!}</address>
         </div>
     </div>

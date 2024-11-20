@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationtController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\SalaryController;
 
 Route::fallback(function () {
     return view('error.404');
@@ -122,3 +123,7 @@ Route::post('/get-employee', [EmployeeController::class, 'index'])->name('employ
 Route::post('/employee', [EmployeeController::class, 'store'])->name('employee.store');
 Route::post('/update-employee', [EmployeeController::class, 'update'])->name('employee.update');
 Route::post('/delete-employee', [EmployeeController::class, 'destroy'])->name('employee.delete');
+
+//salary generate route
+Route::get('/salary-generate', [SalaryController::class, 'create'])->name('salary.create');
+Route::post('/get-salary', [SalaryController::class, 'index'])->name('salary.index');
