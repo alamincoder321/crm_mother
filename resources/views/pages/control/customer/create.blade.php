@@ -105,7 +105,7 @@
     </div>
 
     <div class="col-12 col-md-12 mt-1">
-        <vue-good-table :columns="columns" :rows="customers" :loading="loading" :fixed-header="false" :pagination-options="{
+        <vue-good-table :columns="columns" :rows="customers" :fixed-header="false" :pagination-options="{
                 enabled: true,
                 perPage: 100,
             }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
