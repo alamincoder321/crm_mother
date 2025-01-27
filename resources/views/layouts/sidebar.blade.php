@@ -161,15 +161,26 @@ $panel = session('panel');
         </li>
         <li class="nav-item">
             <a class="nav-link" href="">
-                <i class="bi bi-cash-coin"></i>
-                <span>Cash Transaction Entry</span>
+                <i class="bi bi-clipboard-minus"></i>
+                <span>Expense Entry</span>
             </a>
         </li>
-
         <li class="nav-item">
             <a class="nav-link" href="">
-                <i class="bi bi-list-ul"></i>
-                <span>Cash Transaction Record</span>
+                <i class="bi bi-duffle"></i>
+                <span>Income Entry</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-cash-stack"></i>
+                <span>Receive</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="bi bi-person-workspace"></i>
+                <span>Payment</span>
             </a>
         </li>
 
@@ -188,30 +199,16 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/accounthead">
                 <i class="bi bi-plus-circle"></i>
-                <span>Expense Entry</span>
+                <span>AccountHead Entry</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="bi bi-list-ul"></i>
-                <span>Expense Record</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/bank">
                 <i class="bi bi-plus-circle"></i>
-                <span>Account Head Entry</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="bi bi-plus-circle"></i>
-                <span>Bank Head Entry</span>
+                <span>Bank Entry</span>
             </a>
         </li>
 
@@ -228,13 +225,13 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/salary">
                 <i class="bi bi-receipt"></i>
                 <span>Salary Generate</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/salaryList">
                 <i class="bi bi-file-text"></i>
                 <span>Salary Record</span>
             </a>

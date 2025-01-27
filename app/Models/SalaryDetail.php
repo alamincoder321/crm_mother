@@ -14,16 +14,7 @@ class SalaryDetail extends Model
 
     protected $guarded = ['id'];
 
-    public function adUser()
-    {
-        return $this->belongsTo(User::class, 'created_by', 'id')->select('id', 'name', 'username')->withTrashed();
-    }
-    public function upUser()
-    {
-        return $this->belongsTo(User::class, 'updated_by', 'id')->select('id', 'name', 'username')->withTrashed();
-    }
-    public function deUser()
-    {
-        return $this->belongsTo(User::class, 'deleted_by', 'id')->select('id', 'name', 'username')->withTrashed();
+    public function employee(){
+        return $this->belongsTo(User::class, 'employee_id', 'id')->select('id', 'name', 'emp_code', 'department_id', 'designation_id', 'phone', 'email')->with('department', 'designation')->withTrashed();
     }
 }

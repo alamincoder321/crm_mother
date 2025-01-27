@@ -12,7 +12,7 @@
 </style>
 @endpush
 @section('content')
-<div id="employeeList">
+<div id="salaryList">
     <div class="row">
         <div class="col-12 col-md-12">
             <div class="card m-0">
@@ -25,7 +25,7 @@
                                 <option value="department">By Department</option>
                                 <option value="designation">By Designation</option>
                             </select>
-                        </div>                        
+                        </div>
                         <div class="form-group" :class="searchType == 'department' ? '' : 'd-none'" v-if="searchType == 'department'">
                             <label for="Department">Department</label>
                             <v-select :options="departments" v-model="selectedDepartment" label="name"></v-select>
@@ -35,12 +35,8 @@
                             <v-select :options="designations" v-model="selectedDesignations" label="name"></v-select>
                         </div>
                         <div class="form-group">
-                            <label for="status">Status</label>
-                            <select id="status" class="form-select" v-model="status">
-                                <option value="">All</option>
-                                <option value="p">Pending</option>
-                                <option value="a">Active</option>
-                            </select>
+                            <label for="status">Month</label>
+                            <input type="month" id="month" class="form-control" v-model="month" />
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary btn-sm">Show</button>
@@ -68,40 +64,48 @@
                             <thead>
                                 <tr>
                                     <th>Sl</th>
-                                    <th>Image</th>
                                     <th>Code</th>
                                     <th>Name</th>
                                     <th>Department</th>
                                     <th>Designation</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
-                                    <th>Address</th>
-                                    <th>Birth Date</th>
-                                    <th>Join Date</th>
-                                    <th>Gender</th>
                                     <th>Salary</th>
-                                    <th>Status</th>
+                                    <th>Overtime</th>
+                                    <th>Deduction</th>
+                                    <th>Total</th>
+                                    <th>Paid</th>
+                                    <th>Due</th>
+                                    <th>Note</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in employees">
-                                    <td v-html="index + 1"></td>
-                                    <td v-html="item.imgSrc"></td>
-                                    <td v-html="item.emp_code"></td>
-                                    <td v-html="item.name"></td>
-                                    <td v-html="item.department.name"></td>
-                                    <td v-html="item.designation.name"></td>
-                                    <td v-html="item.phone"></td>
-                                    <td v-html="item.email"></td>
-                                    <td v-html="item.address"></td>
-                                    <td v-html="item.birth_date"></td>
-                                    <td v-html="item.join_date"></td>
-                                    <td v-html="item.gender"></td>
-                                    <td v-html="item.salary"></td>
-                                    <td v-html="item.statusTxt"></td>
-                                </tr>
-                                <tr :class="employees.length == 0 ? '' : 'd-none'" v-if="employees.length == 0">
-                                    <td colspan="14" class="text-center">Not Found Data</td>
+                                <template v-for="(salary, key) in salaries">
+                                    <tr>
+                                        <td colspan="12" class="text-center">
+                                            <strong>
+                                                Salary Of Month @{{salary.month | dateFormat('MMMM-YYYY')}}
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(item, index) in salary.detail">
+                                        <td v-html="index + 1"></td>
+                                        <td v-html="item.employee?.emp_code"></td>
+                                        <td v-html="item.employee?.name"></td>
+                                        <td v-html="item.employee?.department?.name"></td>
+                                        <td v-html="item.employee?.designation?.name"></td>
+                                        <td v-html="item.gross_salary"></td>
+                                        <td v-html="item.ot_amount"></td>
+                                        <td v-html="item.deduction"></td>
+                                        <td v-html="item.total"></td>
+                                        <td v-html="item.paid"></td>
+                                        <td v-html="item.due"></td>
+                                        <td v-html="item.note"></td>
+                                    </tr>
+                                    <tr v-if="salary.detail.length == 0">
+                                        <td colspan="12" class="text-center">Not Found Data</td>
+                                    </tr>
+                                </template>
+                                <tr :class="salaries.length == 0 ? '' : 'd-none'" v-if="salaries.length == 0">
+                                    <td colspan="12" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -117,18 +121,22 @@
 @push('js')
 <script>
     new Vue({
-        el: '#employeeList',
+        el: '#salaryList',
         data: {
             searchType: '',
-            status: '',
-            employees: [],
+            month: moment().format('YYYY-MM'),
+            salaries: [],
             departments: [],
             selectedDepartment: null,
             designations: [],
             selectedDesignation: null,
             isLoading: null
         },
-
+        filters: {
+            dateFormat(dt, format) {
+                return dt == "" || dt == null ? "" : moment(dt).format(format);
+            }
+        },
         created() {
             this.getDepartment();
             this.getDesignation();
@@ -136,22 +144,22 @@
 
         methods: {
             getDepartment() {
-                axios.post('/get-department')
+                axios.post(`/get-department`)
                     .then(res => {
                         this.departments = res.data;
                     })
             },
             getDesignation() {
-                axios.post('/get-designation')
+                axios.post(`/get-designation`)
                     .then(res => {
                         this.designations = res.data;
                     })
             },
+
             onChangeSearchType() {
-                this.employees = [];
+                this.salaries = [];
                 this.selectedDepartment = null;
                 this.selectedDesignation = null;
-                this.status = "";
                 this.isLoading = null;
             },
 
@@ -159,23 +167,19 @@
                 let filter = {
                     departmentId: this.selectedDepartment ? this.selectedDepartment.id : '',
                     designationId: this.selectedDesignation ? this.selectedDesignation.id : '',
-                    status: this.status
+                    month: this.month
                 }
                 this.isLoading = false;
-                axios.post('/get-employee', filter)
+                axios.post(`/get-salary`, filter)
                     .then(res => {
-                        this.employees = res.data.map((item, index) => {
-                            item.statusTxt = item.status == 'a' ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-warning'>Deactive</span>";
-                            item.imgSrc = `<a href="${item.image ? '/'+item.image : '/noImage.jpg'}"><img src="${item.image ? '/'+item.image : '/noImage.jpg'}" style="width:45px;height:45px;" class="rounded"/></a>`;
-                            return item;
-                        });
+                        this.salaries = res.data;
                         this.isLoading = true;
                     })
             },
 
             async print() {
                 const oldTitle = window.document.title;
-                window.document.title = "Employee List"
+                window.document.title = "Salary List"
                 const printWindow = document.createElement('iframe');
                 document.body.appendChild(printWindow);
                 printWindow.srcdoc = `
@@ -192,7 +196,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12 text-center">
-                                <h5>Employee List</h5>
+                                <h4 class="m-0">Salary List</h4>
                             </div>
                         </div>
                         <div class="row">

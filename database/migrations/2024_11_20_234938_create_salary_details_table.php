@@ -17,9 +17,14 @@ class CreateSalaryDetailsTable extends Migration
             $table->id();
             $table->foreignId('salary_id')->nullable()->constrained('salary_masters', 'id');
             $table->foreignId('employee_id')->nullable()->constrained('users', 'id');
-            $table->decimal('salary')->default(0);
+            $table->decimal('basic_salary')->default(0);
+            $table->decimal('house_rent')->default(0);
+            $table->decimal('medical_fee')->default(0);
+            $table->decimal('other_fee')->default(0);
+            $table->decimal('gross_salary')->default(0);
             $table->decimal('ot_amount')->default(0);
             $table->decimal('deduction')->default(0);
+            $table->decimal('advance')->default(0);
             $table->decimal('total')->default(0);
             $table->decimal('paid')->default(0);
             $table->decimal('due')->default(0);

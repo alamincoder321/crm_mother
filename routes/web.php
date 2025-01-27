@@ -3,19 +3,21 @@
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\AccountHeadController;
 use App\Http\Controllers\DesignationtController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\SalaryController;
 
 Route::fallback(function () {
     return view('error.404');
@@ -125,5 +127,55 @@ Route::post('/update-employee', [EmployeeController::class, 'update'])->name('em
 Route::post('/delete-employee', [EmployeeController::class, 'destroy'])->name('employee.delete');
 
 //salary generate route
-Route::get('/salary-generate', [SalaryController::class, 'create'])->name('salary.create');
+Route::get('/salary', [SalaryController::class, 'create'])->name('salary.create');
+Route::get('/salaryList', [SalaryController::class, 'salaryList'])->name('salary.list');
+Route::post('/check-salary', [SalaryController::class, 'checkSalary'])->name('salary.check');
 Route::post('/get-salary', [SalaryController::class, 'index'])->name('salary.index');
+Route::post('/salary', [SalaryController::class, 'store'])->name('salary.store');
+Route::post('/update-salary', [SalaryController::class, 'update'])->name('salary.update');
+Route::post('/delete-salary', [SalaryController::class, 'destroy'])->name('salary.delete');
+
+
+// ============================= Account Panel Route ==============================
+// account head route
+Route::get('/accounthead', [AccountHeadController::class, 'create'])->name('accounthead.create');
+Route::post('/get-accounthead', [AccountHeadController::class, 'index'])->name('accounthead.index');
+Route::post('/accounthead', [AccountHeadController::class, 'store'])->name('accounthead.store');
+Route::post('/update-accounthead', [AccountHeadController::class, 'update'])->name('accounthead.update');
+Route::post('/delete-accounthead', [AccountHeadController::class, 'destroy'])->name('accounthead.delete');
+
+// bank route
+Route::get('/bank', [BankController::class, 'create'])->name('bank.create');
+Route::post('/get-bank', [BankController::class, 'index'])->name('bank.index');
+Route::post('/bank', [BankController::class, 'store'])->name('bank.store');
+Route::post('/update-bank', [BankController::class, 'update'])->name('bank.update');
+Route::post('/delete-bank', [BankController::class, 'destroy'])->name('bank.delete');
+
+// // expense route
+// Route::get('/expense', [TransactionController::class, 'expense'])->name('expense.create');
+// Route::get('/income', [TransactionController::class, 'income'])->name('income.create');
+// Route::post('/get-transaction', [TransactionController::class, 'index'])->name('transaction.index');
+// Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
+// Route::post('/update-transaction', [TransactionController::class, 'update'])->name('transaction.update');
+// Route::post('/delete-transaction', [TransactionController::class, 'destroy'])->name('transaction.delete');
+
+// // bankTransaction route
+// Route::get('/bankTransaction', [BankTransactionController::class, 'create'])->name('bankTransaction.create');
+// Route::post('/get-bankTransaction', [BankTransactionController::class, 'index'])->name('bankTransaction.index');
+// Route::post('/bankTransaction', [BankTransactionController::class, 'store'])->name('bankTransaction.store');
+// Route::post('/update-bankTransaction', [BankTransactionController::class, 'update'])->name('bankTransaction.update');
+// Route::post('/delete-bankTransaction', [BankTransactionController::class, 'destroy'])->name('bankTransaction.delete');
+
+// // receive route
+// Route::get('/receive', [ReceiveController::class, 'create'])->name('receive.create');
+// Route::post('/get-receive', [ReceiveController::class, 'index'])->name('receive.index');
+// Route::post('/receive', [ReceiveController::class, 'store'])->name('receive.store');
+// Route::post('/update-receive', [ReceiveController::class, 'update'])->name('receive.update');
+// Route::post('/delete-receive', [ReceiveController::class, 'destroy'])->name('receive.delete');
+
+// // payment route
+// Route::get('/payment', [PaymentController::class, 'create'])->name('payment.create');
+// Route::post('/get-payment', [PaymentController::class, 'index'])->name('payment.index');
+// Route::post('/payment', [PaymentController::class, 'store'])->name('payment.store');
+// Route::post('/update-payment', [PaymentController::class, 'update'])->name('payment.update');
+// Route::post('/delete-payment', [PaymentController::class, 'destroy'])->name('payment.delete');

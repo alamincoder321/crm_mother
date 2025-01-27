@@ -298,8 +298,8 @@ $panel = session('panel');
                 <a href="">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
-                            <i class="bi bi-cash-coin"></i>
-                            <span>Cash Transaction</span>
+                            <i class="bi bi-clipboard-minus"></i>
+                            <span>Expense Entry</span>
                         </div>
                     </div>
                 </a>
@@ -308,8 +308,28 @@ $panel = session('panel');
                 <a href="">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
-                            <i class="bi bi-list-ul"></i>
-                            <span>Cash Transaction Record</span>
+                            <i class="bi bi-duffle"></i>
+                            <span>Income Entry</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-cash-stack"></i>
+                            <span>Receive</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-person-workspace"></i>
+                            <span>Payment</span>
                         </div>
                     </div>
                 </a>
@@ -335,41 +355,21 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/accounthead">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-plus-circle"></i>
-                            <span>Expense Entry</span>
+                            <span>AccountHead Entry</span>
                         </div>
                     </div>
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-list-ul"></i>
-                            <span>Expense Record</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/bank">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-plus-circle"></i>
-                            <span>Account Head Entry</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                <a href="">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-plus-circle"></i>
-                            <span>Bank Head Entry</span>
+                            <span>Bank Entry</span>
                         </div>
                     </div>
                 </a>
@@ -388,7 +388,7 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/salary">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-receipt"></i>
@@ -398,7 +398,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/salaryList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-text"></i>
