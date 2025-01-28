@@ -33,7 +33,10 @@ class SupplierController extends Controller
         if (!empty($request->areaId)) {
             $suppliers = $suppliers->where('area_id', $request->areaId);
         }
-        $suppliers = $suppliers->latest()->get();
+        $suppliers = $suppliers->latest()->get()->map(function ($item) {
+            $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
+            return $item;
+        });
         return response()->json($suppliers);
     }
 

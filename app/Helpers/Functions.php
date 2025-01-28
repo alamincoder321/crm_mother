@@ -42,6 +42,48 @@ function imageUpload($request, $image, $directory, $code)
 }
 
 // code generate
+function invoiceGenerate($model, $prefix = '', $branch_id = null)
+{
+    $year = date('y');
+    $invoice = $year . "00001";
+    $modelName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $model)) . 's';
+    $clause = "";
+    if ($branch_id != null) {
+        $clause .= "and branch_id = '$branch_id'";
+    }
+    $model = DB::select("select * from `$modelName` where invoice like '$prefix$year%' $clause");
+
+    $num_rows = count($model);
+    if ($num_rows != 0) {
+        $newCode = $num_rows + 1;
+        $zeros = ['0', '00', '000', '0000'];
+        $invoice = $year . (strlen($newCode) > count($zeros) ? $newCode : $zeros[count($zeros) - strlen($newCode)] . $newCode);
+    }
+    return $prefix . $invoice;
+}
+// code generate
+function transactionInvoice($model, $prefix = '', $branch_id = null, $type = 'expense')
+{
+    $year = date('y');
+    $invoice = $year . "0001";
+
+    $modelName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $model)) . 's';
+    $clause = "";
+    if ($branch_id != null) {
+        $clause .= "and branch_id = '$branch_id'";
+    }
+    $model = DB::select("select * from `$modelName` where type = '$type' and invoice like '$prefix$year%' $clause");
+
+    $num_rows = count($model);
+    if ($num_rows != 0) {
+        $newCode = $num_rows + 1;
+        $zeros = ['0', '00', '000'];
+        $invoice = $year . (strlen($newCode) > count($zeros) ? $newCode : $zeros[count($zeros) - strlen($newCode)] . $newCode);
+    }
+    return $prefix . $invoice;
+}
+
+// code generate
 function generateCode($model, $prefix = '', $branch_id = null)
 {
     $code = "00001";

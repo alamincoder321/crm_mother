@@ -160,32 +160,32 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/expense">
                 <i class="bi bi-clipboard-minus"></i>
                 <span>Expense Entry</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/income">
                 <i class="bi bi-duffle"></i>
                 <span>Income Entry</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/receive">
                 <i class="bi bi-cash-stack"></i>
                 <span>Receive</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/payment">
                 <i class="bi bi-person-workspace"></i>
                 <span>Payment</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/bankTransaction">
                 <i class="bi bi-bank"></i>
                 <span>Bank Transaction</span>
             </a>

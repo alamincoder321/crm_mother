@@ -36,7 +36,10 @@ class CustomerController extends Controller
         if (!empty($request->areaId)) {
             $customers = $customers->where('area_id', $request->areaId);
         }
-        $customers = $customers->latest()->get();
+        $customers = $customers->latest()->get()->map(function ($item) {
+            $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
+            return $item;
+        });
         return response()->json($customers);
     }
 
