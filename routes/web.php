@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\BankController;
@@ -22,6 +21,7 @@ use App\Http\Controllers\AccountHeadController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DesignationtController;
 use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\PurchaseController;
 
 Route::fallback(function () {
     return view('error.404');
@@ -183,3 +183,11 @@ Route::post('/get-payment', [PaymentController::class, 'index'])->name('payment.
 Route::post('/payment', [PaymentController::class, 'store'])->name('payment.store');
 Route::post('/update-payment', [PaymentController::class, 'update'])->name('payment.update');
 Route::post('/delete-payment', [PaymentController::class, 'destroy'])->name('payment.delete');
+
+// ============================= Purchase Panel Route ==============================
+// purchase route
+Route::get('/purchase', [PurchaseController::class, 'create'])->name('purchase.create');
+Route::post('/get-purchase', [PurchaseController::class, 'index'])->name('purchase.index');
+Route::post('/purchase', [PurchaseController::class, 'store'])->name('purchase.store');
+Route::post('/update-purchase', [PurchaseController::class, 'update'])->name('purchase.update');
+Route::post('/delete-purchase', [PurchaseController::class, 'destroy'])->name('purchase.delete');
