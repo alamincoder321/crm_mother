@@ -42,7 +42,10 @@ class EmployeeController extends Controller
         if (!empty($request->status)) {
             $employees = $employees->where('status', $request->status);
         }
-        $employees = $employees->latest()->get();
+        $employees = $employees->latest()->get()->map(function ($item){
+            $item->display_name = $item->name . ' -' . $item->phone . ' - ' . $item->emp_code;
+            return $item;
+        });
         return response()->json($employees);
     }
 

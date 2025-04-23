@@ -125,7 +125,7 @@ Route::post('/delete-designation', [DesignationtController::class, 'destroy'])->
 // employee route
 Route::get('/employee', [EmployeeController::class, 'create'])->name('employee.create');
 Route::get('/employeeList', [EmployeeController::class, 'employeeList'])->name('employee.list');
-Route::post('/get-employee', [EmployeeController::class, 'index'])->name('employee.index');
+Route::match(['get', 'post'], '/get-employee', [EmployeeController::class, 'index'])->name('employee.index');
 Route::post('/employee', [EmployeeController::class, 'store'])->name('employee.store');
 Route::post('/update-employee', [EmployeeController::class, 'update'])->name('employee.update');
 Route::post('/delete-employee', [EmployeeController::class, 'destroy'])->name('employee.delete');

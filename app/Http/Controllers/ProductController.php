@@ -36,8 +36,24 @@ class ProductController extends Controller
         if (!empty($request->brandId)) {
             $products = $products->where('brand_id', $request->brandId);
         }
-        
-        $products = $products->latest()->get();
+
+        if (!empty($request->search)) {
+            $products = $products->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('code', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('category', function ($q) use ($request) {
+                        $q->where('name', 'like', '%' . $request->search . '%');
+                    });
+            });
+        }
+        if (!empty($request->forSearch)) {
+            $products = $products->limit(50);
+        }
+
+        $products = $products->latest()->get()->map(function ($item) {
+            $item->display_name = $item->name . ' - ' . $item->category->name . ' - ' . $item->code;
+            return $item;
+        });
         return response()->json($products);
     }
 

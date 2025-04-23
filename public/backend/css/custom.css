@@ -32,7 +32,7 @@
     font-size: 13px;
     font-weight: 400;
     line-height: 1;
-    padding: .25rem .5rem;
+    padding: .20rem .5rem;
     box-shadow: none !important;
 }
 
@@ -226,6 +226,11 @@
 
 .v-select .vs__selected-options {
     padding: 0 !important;
+}
+
+.v-select .vs__selected-options {
+    overflow: hidden;
+    margin-top: 2px;
 }
 
 

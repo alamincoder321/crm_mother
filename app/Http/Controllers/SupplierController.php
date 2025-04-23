@@ -33,7 +33,18 @@ class SupplierController extends Controller
         if (!empty($request->areaId)) {
             $suppliers = $suppliers->where('area_id', $request->areaId);
         }
+        if (!empty($request->search)) {
+            $suppliers = $suppliers->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('phone', 'like', '%' . $request->search . '%')
+                    ->orWhere('code', 'like', '%' . $request->search . '%');
+            });
+        }
+        if(!empty($request->forSearch)){
+            $suppliers = $suppliers->limit(50);
+        }
         $suppliers = $suppliers->latest()->get()->map(function ($item) {
+            $item->type = 'regular';
             $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
             return $item;
         });

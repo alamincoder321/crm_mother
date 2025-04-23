@@ -36,6 +36,16 @@ class CustomerController extends Controller
         if (!empty($request->areaId)) {
             $customers = $customers->where('area_id', $request->areaId);
         }
+        if (!empty($request->search)) {
+            $customers = $customers->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('phone', 'like', '%' . $request->search . '%')
+                    ->orWhere('code', 'like', '%' . $request->search . '%');
+            });
+        }
+        if(!empty($request->forSearch)){
+            $customers = $customers->limit(50);
+        }
         $customers = $customers->latest()->get()->map(function ($item) {
             $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
             return $item;
