@@ -205,12 +205,13 @@ function dateBangla($timestamp = null)
         'আশ্বিন',
         'কার্তিক',
         'অগ্রহায়ণ',
-        'পৌষ',
+        'পৌষ',
         'মাঘ',
         'ফাল্গুন',
         'চৈত্র'
     ];
 
+    // Bengali New Year start dates
     $bengaliNewYearStart = [
         1427 => mktime(0, 0, 0, 4, 14, 2020),
         1428 => mktime(0, 0, 0, 4, 14, 2021),
@@ -233,6 +234,7 @@ function dateBangla($timestamp = null)
     $daysInBanglaMonths = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30, 30];
     $banglaMonth = 0;
     $banglaDay = $dayOfYear;
+
     foreach ($daysInBanglaMonths as $daysInMonth) {
         if ($banglaDay < $daysInMonth) {
             break;
@@ -240,11 +242,15 @@ function dateBangla($timestamp = null)
         $banglaDay -= $daysInMonth;
         $banglaMonth++;
     }
+
+    if ($banglaMonth >= count($banglaMonths)) {
+        $banglaMonth = count($banglaMonths) - 1;
+    }
+
     $banglaMonthName = $banglaMonths[$banglaMonth];
     $banglaDay += 1;
 
-
-    return getBanglaDay(date("l")) . ', ' . bangla_number($banglaDay) . ' ' . $banglaMonthName . ' ' . bangla_number($banglaYear);
+    return getBanglaDay(date("l", $timestamp)) . ', ' . bangla_number($banglaDay) . ' ' . $banglaMonthName . ' ' . bangla_number($banglaYear);
 }
 
 function getBanglaDay($englishDay)

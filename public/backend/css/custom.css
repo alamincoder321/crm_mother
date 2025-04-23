@@ -257,3 +257,10 @@
         transform: rotate(360deg);
     }
 }
+
+input[readonly] {
+    background-color: #fafafa;
+}
+input[readonly]:focus {
+    background-color:#fafafa;
+}
