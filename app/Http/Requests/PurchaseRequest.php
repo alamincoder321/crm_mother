@@ -24,21 +24,10 @@ class PurchaseRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'invoice' => 'required',
-            'type' => 'required',
-            'date' => 'required',
-            'amount' => 'required',
+            'purchase' => 'required|array',
+            'purchase.invoice' => 'required',
+            'purchase.date' => 'required'
         ];
-
-        if ($this->type == 'customer') {
-            $rules['customer_id'] = 'required';
-        }
-        if ($this->type == 'supplier') {
-            $rules['supplier_id'] = 'required';
-        }
-        if ($this->payment_method == 'bank') {
-            $rules['bank_id'] = 'required';
-        }
 
         return $rules;
     }

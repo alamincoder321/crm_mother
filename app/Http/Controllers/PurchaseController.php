@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Purchase;
 use Illuminate\Http\Request;
+use App\Models\PurchaseDetail;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PurchaseRequest;
 
 class PurchaseController extends Controller
@@ -47,34 +49,75 @@ class PurchaseController extends Controller
         return response()->json($transactions);
     }
 
-    public function create()
+    public function create($id = "")
     {
-        return view('pages.purchase.create');
+        $data['id'] = $id;
+        $data['invoice'] = invoiceGenerate('Purchase', '', $this->branchId);
+        return view('pages.purchase.create', $data);
     }
 
 
-    public function store(PurchaseRequest $request)
+    public function store(Request $request)
     {
-        if (!$request->validated()) return send_error("Validation Error", $request->validated(), 422);
+        // if (!$request->validated()) return send_error("Validation Error", $request->validated(), 422);
         try {
-            $invoice = Purchase::where('invoice', $request->invoice)->first();
+            DB::beginTransaction();
+            $purchase = (object) json_decode($request->purchase, true);
+            $supplier = (object) json_decode($request->supplier, true);
+
+            $invoice = Purchase::where('invoice', $purchase->invoice)->first();
             if (empty($invoice)) {
-                $invoice = invoiceGenerate('Purchase', 'P', $this->branchId);
+                $invoice = invoiceGenerate('Purchase', '', $this->branchId);
             }
+            if(!empty($supplier) && $supplier->type == 'New'){
+                $supplier = new Supplier();
+            }
+            $dataKey = $purchase;
+            unset($dataKey->id);
+            unset($dataKey->invoice);
+            unset($dataKey->employee_id);
+            unset($dataKey->supplier_id);
             $data = new Purchase();
             $data->invoice = $invoice;
-            $dataKey = $request->except('id');
+            $data->employee_id = $purchase->employee_id ?? NULL;
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
             }
             $data->created_by = $this->userId;
             $data->ipAddress = request()->ip();
             $data->branch_id = $this->branchId;
+            if (!empty($supplier) && $supplier->type == 'general') {
+                $data->supplier_name = $supplier->name;
+                $data->supplier_phone = $supplier->phone;
+                $data->supplier_address = $supplier->address;
+            } else {
+                $data->supplier_type = $supplier->type;
+                $data->supplier_id = $supplier->id;
+            }
             $data->save();
 
+            $carts = json_decode($request->carts, true);
+            foreach ($carts as $key => $cart) {
+                $detail = new PurchaseDetail();
+                $detail->purchase_id = $data->id;
+                $detail->product_id = $cart['id'];
+                $detail->purchase_rate = $cart['purchase_rate'];
+                $detail->quantity = $cart['quantity'];
+                $detail->sale_rate = $cart['sale_rate'];
+                $detail->discount = $cart['discount'] ?? 0;
+                $detail->vat = $cart['vat'] ?? 0;
+                $detail->total = $cart['total'];
+                $detail->created_by = $this->userId;
+                $detail->ipAddress = request()->ip();
+                $detail->branch_id = $this->branchId;
+                $detail->save();
+            }
+
+            DB::commit();
             $msg = "Purchase has created successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'invoice' => invoiceGenerate('Purchase', 'P', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => $msg, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
         }
     }
@@ -98,7 +141,7 @@ class PurchaseController extends Controller
             $data->update();
 
             $msg = "Purchase has update successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'invoice' => invoiceGenerate('Purchase', 'P', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => $msg, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }

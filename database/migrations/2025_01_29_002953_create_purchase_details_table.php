@@ -15,7 +15,23 @@ class CreatePurchaseDetailsTable extends Migration
     {
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('purchase_id')->constrained('purchases', 'id');
+            $table->foreignId('product_id')->constrained('products', 'id');
+            $table->double('quantity')->default(0);
+            $table->decimal('purchase_rate')->default(0);
+            $table->decimal('sale_rate')->default(0);
+            $table->decimal('discount')->default(0);
+            $table->decimal('vat')->default(0);
+            $table->decimal('total')->default(0);
+            $table->char('status', 1)->default('a');
+            $table->foreignId('created_by')->nullable()->constrained('users', 'id');
+            $table->dateTime('created_at')->useCurrent();
+            $table->foreignId('updated_by')->nullable()->constrained('users', 'id');
+            $table->dateTime('updated_at')->nullable();
+            $table->foreignId('deleted_by')->nullable()->constrained('users', 'id');
+            $table->softDeletes();
+            $table->ipAddress('ipAddress');
+            $table->foreignId('branch_id')->constrained('branches', 'id');
         });
     }
 

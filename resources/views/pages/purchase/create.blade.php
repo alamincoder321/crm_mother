@@ -11,7 +11,8 @@
         text-align: center !important;
     }
 
-    table tr td, table tr th{
+    table tr td,
+    table tr th {
         vertical-align: middle !important;
     }
 
@@ -165,84 +166,86 @@
         </div>
     </div>
     <div class="col-12 col-md-3 mt-2 ps-md-1">
-        <div class="card mb-0">
-            <div class="card-header py-2">
-                <h3 class="m-0 card-title p-0">Payment Info</h3>
+        <form @submit.prevent="saveData($event)">
+            <div class="card mb-0">
+                <div class="card-header py-2">
+                    <h3 class="m-0 card-title p-0">Payment Info</h3>
+                </div>
+                <div class="card-body p-3 pt-md-2 pb-md-1">
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label mb-0">SubTotal</label>
+                        <div class="col-8 col-md-12">
+                            <input type="number" v-model="purchase.subtotal" min="0" step="any" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Discount</label>
+                        <div class="col-4 col-md-6">
+                            <div class="input-group">
+                                <input type="number" v-model="discountPercent" id="discountPercent" @input="calculateTotal" min="0" step="any" class="form-control" />
+                                <button class="btn btn-sm btn-outline-secondary">%</button>
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-6">
+                            <div class="input-group">
+                                <input type="number" v-model="purchase.discount" id="discount" @input="calculateTotal" min="0" step="any" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Vat</label>
+                        <div class="col-4 col-md-6">
+                            <div class="input-group">
+                                <input type="number" v-model="vatPercent" id="vatPercent" @input="calculateTotal" min="0" step="any" class="form-control" />
+                                <button class="btn btn-sm btn-outline-secondary">%</button>
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-6">
+                            <div class="input-group">
+                                <input type="number" v-model="purchase.vat" id="vat" @input="calculateTotal" min="0" step="any" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label pe-0 mb-0">Transport Cost</label>
+                        <div class="col-8 col-md-12">
+                            <input type="number" v-model="purchase.transport_cost" @input="calculateTotal" min="0" step="any" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Total</label>
+                        <div class="col-8 col-md-12">
+                            <input type="number" v-model="purchase.total" min="0" step="any" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Paid</label>
+                        <div class="col-8 col-md-12">
+                            <input type="number" v-model="purchase.paid" id="paid" @input="calculateTotal" min="0" step="any" class="form-control" :disabled="selectedSupplier.type == 'general'" />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
+                        <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Due</label>
+                        <div class="col-4 col-md-6">
+                            <input type="number" v-model="purchase.due" min="0" step="any" class="form-control" readonly />
+                        </div>
+                        <div class="col-4 col-md-6">
+                            <input type="number" v-model="purchase.previous_due" min="0" step="any" class="form-control text-danger" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer py-2">
+                    <div class="form-group row mb-2">
+                        <div class="col-6 col-md-6">
+                            <button type="submit" :disabled="onProgress" class="btn btn-success w-100">Save</button>
+                        </div>
+                        <div class="col-6 col-md-6">
+                            <button type="button" class="btn btn-danger w-100">Reset</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-3 pt-md-2 pb-md-1">
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label mb-0">SubTotal</label>
-                    <div class="col-8 col-md-12">
-                        <input type="number" v-model="purchase.subtotal" min="0" step="any" class="form-control" readonly />
-                    </div>
-                </div>
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Discount</label>
-                    <div class="col-4 col-md-6">
-                        <div class="input-group">
-                            <input type="number" v-model="discountPercent" id="discountPercent" @input="calculateTotal" min="0" step="any" class="form-control" />
-                            <button class="btn btn-sm btn-outline-secondary">%</button>
-                        </div>
-                    </div>
-                    <div class="col-4 col-md-6">
-                        <div class="input-group">
-                            <input type="number" v-model="purchase.discount" id="discount" @input="calculateTotal" min="0" step="any" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Vat</label>
-                    <div class="col-4 col-md-6">
-                        <div class="input-group">
-                            <input type="number" v-model="vatPercent" id="vatPercent" @input="calculateTotal" min="0" step="any" class="form-control" />
-                            <button class="btn btn-sm btn-outline-secondary">%</button>
-                        </div>
-                    </div>
-                    <div class="col-4 col-md-6">
-                        <div class="input-group">
-                            <input type="number" v-model="purchase.vat" id="vat" @input="calculateTotal" min="0" step="any" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label pe-0 mb-0">Transport Cost</label>
-                    <div class="col-8 col-md-12">
-                        <input type="number" v-model="purchase.transport_cost" @input="calculateTotal" min="0" step="any" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Total</label>
-                    <div class="col-8 col-md-12">
-                        <input type="number" v-model="purchase.total" min="0" step="any" class="form-control" readonly />
-                    </div>
-                </div>
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Paid</label>
-                    <div class="col-8 col-md-12">
-                        <input type="number" v-model="purchase.paid" id="paid" @input="calculateTotal" min="0" step="any" class="form-control" :disabled="selectedSupplier.type == 'general'"/>
-                    </div>
-                </div>
-                <div class="form-group row mb-1">
-                    <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Due</label>
-                    <div class="col-4 col-md-6">
-                        <input type="number" v-model="purchase.due" min="0" step="any" class="form-control" readonly />
-                    </div>
-                    <div class="col-4 col-md-6">
-                        <input type="number" v-model="purchase.previous_due" min="0" step="any" class="form-control text-danger" readonly />
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer py-2">
-                <div class="form-group row mb-2">
-                    <div class="col-6 col-md-6">
-                        <button type="button" class="btn btn-danger w-100">Reset</button>
-                    </div>
-                    <div class="col-6 col-md-6">
-                        <button type="button" class="btn btn-success w-100">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 @endsection
@@ -254,8 +257,8 @@
         data() {
             return {
                 purchase: {
-                    id: '',
-                    invoice: "",
+                    id: "{{$id}}",
+                    invoice: "{{$invoice}}",
                     date: moment().format('YYYY-MM-DD'),
                     employee_id: "",
                     subtotal: 0,
@@ -274,6 +277,8 @@
                     id: '',
                     display_name: 'Walk In Supplier',
                     name: 'Walk In Supplier',
+                    phone: '',
+                    address: '',
                     type: 'general'
                 },
                 products: [],
@@ -311,10 +316,15 @@
                             id: '',
                             display_name: 'Walk In Supplier',
                             name: 'Walk In Supplier',
+                            phone: '',
+                            address: '',
                             type: 'general'
                         }, {
                             id: '',
                             display_name: 'New Supplier',
+                            name: '',
+                            phone: '',
+                            address: '',
                             type: 'new'
                         })
                     })
@@ -342,6 +352,8 @@
                         id: '',
                         display_name: 'Walk In Supplier',
                         name: 'Walk In Supplier',
+                        phone: '',
+                        address: '',
                         type: 'general'
                     }
                     return;
@@ -460,19 +472,27 @@
             },
 
             saveData(event) {
+                this.purchase.employee_id = this.selectedEmployee ? this.selectedEmployee.id : "";
+                this.purchase.supplier_id = this.selectedSupplier ? this.selectedSupplier.id : "";
                 let formdata = new FormData(event.target);
-                formdata.append('id', this.department.id);
-                let url = this.department.id != '' ? '/update-department' : '/department'
+                formdata.append('purchase', JSON.stringify(this.purchase));
+                formdata.append('supplier', JSON.stringify(this.selectedSupplier));
+                formdata.append('carts', JSON.stringify(this.carts));
+                let url = this.purchase.id != '' ? '/update-purchase' : '/purchase'
                 this.onProgress = true;
                 axios.post(url, formdata)
                     .then(res => {
                         toastr.success(res.data.message);
                         this.clearData();
-                        this.getDepartment();
+                        this.purchase.invoice = res.data.invoice;
+                        this.onProgress = false;
+
                     })
                     .catch(err => {
                         this.onProgress = false
                         var r = JSON.parse(err.request.response);
+                        console.log(r);
+
                         if (err.request.status == '422' && r.errors != undefined && typeof r.errors == 'object') {
                             $.each(r.errors, (index, value) => {
                                 $.each(value, (ind, val) => {
@@ -488,37 +508,37 @@
                     })
 
             },
-
-            editData(row) {
-                let keys = Object.keys(this.department);
-                keys.forEach(item => {
-                    this.department[item] = row[item];
-                })
-            },
-
-            deleteData(rowId) {
-                if (!confirm('Are you sure ?')) {
-                    return;
-                }
-                axios.post('/delete-department', {
-                        id: rowId
-                    })
-                    .then(res => {
-                        if (res.data.status) {
-                            toastr.success(res.data.message);
-                            this.getDepartment();
-                        }
-                    })
-            },
-
             clearData() {
-                this.department = {
+                this.purchase = {
+                    id: "{{$id}}",
+                    invoice: "{{$invoice}}",
+                    date: moment().format('YYYY-MM-DD'),
+                    employee_id: "",
+                    subtotal: 0,
+                    discount: 0,
+                    vat: 0,
+                    transport_cost: 0,
+                    total: 0,
+                    paid: 0,
+                    due: 0,
+                    previous_due: 0,
+                };
+                this.discountPercent = 0;
+                this.vatPercent = 0;
+                this.selectedSupplier = {
                     id: '',
-                    name: '',
-                }
-                this.onProgress = false;
+                    display_name: 'Walk In Supplier',
+                    name: 'Walk In Supplier',
+                    phone: '',
+                    address: '',
+                    type: 'general'
+                };
+                this.selectedProduct = {
+                    id: '',
+                    display_name: ''
+                };
+                this.carts = [];
             },
-
         },
     })
 </script>
