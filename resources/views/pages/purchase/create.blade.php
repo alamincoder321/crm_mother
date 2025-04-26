@@ -158,7 +158,9 @@
                             <td class="text-center" v-text="cart.unit_name"></td>
                             <td class="text-center" v-text="cart.purchase_rate"></td>
                             <td class="text-center" v-text="cart.total"></td>
-                            <td>Action</td>
+                            <td class="text-center">
+                                <i @click="removeCart(index)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -293,10 +295,13 @@
             }
         },
 
-        created() {
+        async created() {
             this.getEmployee();
             this.getSupplier();
             this.getProduct();
+            if (this.purchase.id != '') {
+                await this.getPurchase();
+            }
         },
 
         methods: {
@@ -419,7 +424,7 @@
                         unit_name: this.selectedProduct.unit?.name,
                         purchase_rate: this.selectedProduct.purchase_rate,
                         quantity: this.selectedProduct.quantity,
-                        total: parseFloat(this.selectedProduct.purchase_rate * this.selectedProduct.quantity).toFixed(2),
+                        total: this.selectedProduct.total,
                         sale_rate: this.selectedProduct.sale_rate
                     })
                 }
@@ -436,6 +441,11 @@
                     return item;
                 })
                 await this.calculateTotal();
+            },
+
+            removeCart(sl) {
+                this.carts.splice(sl, 1);
+                this.calculateTotal();
             },
 
             clearProduct() {
@@ -473,11 +483,11 @@
 
             saveData(event) {
                 this.purchase.employee_id = this.selectedEmployee ? this.selectedEmployee.id : "";
-                this.purchase.supplier_id = this.selectedSupplier ? this.selectedSupplier.id : "";
-                let formdata = new FormData(event.target);
-                formdata.append('purchase', JSON.stringify(this.purchase));
-                formdata.append('supplier', JSON.stringify(this.selectedSupplier));
-                formdata.append('carts', JSON.stringify(this.carts));
+                let formdata = {
+                    purchase: this.purchase,
+                    supplier: this.selectedSupplier,
+                    carts: this.carts
+                }
                 let url = this.purchase.id != '' ? '/update-purchase' : '/purchase'
                 this.onProgress = true;
                 axios.post(url, formdata)
@@ -538,7 +548,48 @@
                     display_name: ''
                 };
                 this.carts = [];
+                this.getSupplier();
             },
+
+            async getPurchase() {
+                await axios.post('/get-purchase', {
+                    purchaseId: this.purchase.id
+                }).then(res => {
+                    let purchase = res.data[0];
+                    let purchaseKeys = Object.keys(this.purchase);
+                    purchaseKeys.forEach(key => {
+                        this.purchase[key] = purchase[key];
+                    })
+
+                    purchase.details.map(item => {
+                        let detail = {
+                            id: item.product_id,
+                            code: item.code,
+                            category_name: item.category_name,
+                            name: item.name,
+                            unit_name: item.unit_name,
+                            purchase_rate: item.purchase_rate,
+                            quantity: item.quantity,
+                            total: item.total,
+                            sale_rate: item.sale_rate
+                        };
+                        this.carts.push(detail);
+                    })
+
+                    this.selectedSupplier = {
+                        id: purchase.supplier_id ?? '',
+                        name: purchase.supplier_name,
+                        phone: purchase.supplier_phone,
+                        address: purchase.supplier_address,
+                        display_name: purchase.supplier_type == 'general' ? 'Walk In Supplier' : `${purchase.supplier_name} - ${purchase.supplier_phone} - ${purchase.supplier_address}`,
+                        type: purchase.supplier_type
+                    }
+
+                    setTimeout(() => {
+                        this.selectedEmployee = this.employees.find(item => item.id == purchase.employee_id);
+                    }, 1000);
+                })
+            }
         },
     })
 </script>

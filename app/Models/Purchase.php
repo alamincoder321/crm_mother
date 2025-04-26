@@ -26,4 +26,9 @@ class Purchase extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by', 'id')->select('id', 'name', 'username')->withTrashed();
     }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->select('id', 'code', 'name', 'owner', 'phone', 'address')->withTranshed();
+    }
 }
