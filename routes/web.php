@@ -187,6 +187,7 @@ Route::post('/delete-payment', [PaymentController::class, 'destroy'])->name('pay
 // ============================= Purchase Panel Route ==============================
 // purchase route
 Route::get('/purchase/{id?}', [PurchaseController::class, 'create'])->name('purchase.create');
+Route::get('/purchase-record', [PurchaseController::class, 'purchaseRecord'])->name('purchase.record');
 Route::post('/get-purchase', [PurchaseController::class, 'index'])->name('purchase.index');
 Route::post('/purchase', [PurchaseController::class, 'store'])->name('purchase.store');
 Route::post('/update-purchase', [PurchaseController::class, 'update'])->name('purchase.update');

@@ -129,7 +129,7 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/purchase-record">
                 <i class="bi bi-file-text"></i>
                 <span>Purchase Record</span>
             </a>

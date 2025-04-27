@@ -27,7 +27,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $users = User::where('id', '!=', 1)->where('branch_id', $this->branchId)->latest()->get();
+        $users = User::where('branch_id', $this->branchId)->latest()->get();
         return response()->json($users);
     }
 

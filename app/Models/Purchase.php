@@ -31,4 +31,8 @@ class Purchase extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->select('id', 'code', 'name', 'owner', 'phone', 'address')->withTranshed();
     }
+    public function employee()
+    {
+        return $this->belongsTo(User::class, 'employee_id', 'id')->select('id', 'emp_code', 'name')->withTranshed();
+    }
 }

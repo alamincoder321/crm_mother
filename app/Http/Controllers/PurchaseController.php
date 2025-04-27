@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -9,7 +10,6 @@ use App\Models\PurchaseDetail;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PurchaseRequest;
-use Illuminate\Support\Facades\Validator;
 
 class PurchaseController extends Controller
 {
@@ -35,6 +35,9 @@ class PurchaseController extends Controller
         if (!empty($request->supplierId)) {
             $purchases->where('supplier_id', $request->supplierId);
         }
+        if (!empty($request->userId)) {
+            $purchases->where('created_by', $request->userId);
+        }
         if (!empty($request->dateFrom) && !empty($request->dateTo)) {
             $purchases->whereBetween('date', [$request->dateFrom, $request->dateTo]);
         }
@@ -53,6 +56,9 @@ class PurchaseController extends Controller
             $purchase->supplier_name = $supplier->name ?? $purchase->supplier_name;
             $purchase->supplier_phone = $supplier->phone ?? $purchase->supplier_phone;
             $purchase->supplier_address = $supplier->address ?? $purchase->supplier_address;
+
+            $employee = User::where('id', $purchase->employee_id)->where('branch_id', $this->branchId)->withTrashed()->first();
+            $purchase->employee_name = $employee->name ?? "NA";
             return $purchase;
         }, $purchases);
         return response()->json($purchases);
@@ -100,7 +106,6 @@ class PurchaseController extends Controller
             $dataKey = $purchase;
             unset($dataKey->id);
             unset($dataKey->invoice);
-            unset($dataKey->employee_id);
             $data = new Purchase();
             $data->invoice = $invoice;
             $data->employee_id = $purchase->employee_id ?? NULL;
@@ -173,10 +178,7 @@ class PurchaseController extends Controller
                 }
             }
             $dataKey = $purchase;
-            unset($dataKey->id);
             unset($dataKey->invoice);
-            unset($dataKey->employee_id);
-            unset($dataKey->supplier_id);
             $data = Purchase::find($purchase->id);
             $data->employee_id = $purchase->employee_id ?? NULL;
             foreach ($dataKey as $key => $value) {
@@ -194,14 +196,15 @@ class PurchaseController extends Controller
                 $data->supplier_type = 'reqular';
                 $data->supplier_id = $supplierId;
             }
-            $data->save();
+            $data->update();
+
 
             // old purchase_detail delete
-
+            PurchaseDetail::where('purchase_id', $purchase->id)->forceDelete();
 
             foreach ($request->carts as $key => $cart) {
                 $detail = new PurchaseDetail();
-                $detail->purchase_id = $data->id;
+                $detail->purchase_id = $purchase->id;
                 $detail->product_id = $cart['id'];
                 $detail->purchase_rate = $cart['purchase_rate'];
                 $detail->quantity = $cart['quantity'];
@@ -241,5 +244,10 @@ class PurchaseController extends Controller
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }
+    }
+
+    public function purchaseRecord()
+    {
+        return view("pages.purchase.index");
     }
 }
