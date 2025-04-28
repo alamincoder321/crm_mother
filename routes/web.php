@@ -22,6 +22,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DesignationtController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PurchaseReturnController;
 
 Route::fallback(function () {
     return view('error.404');
@@ -192,3 +193,8 @@ Route::post('/get-purchase', [PurchaseController::class, 'index'])->name('purcha
 Route::post('/purchase', [PurchaseController::class, 'store'])->name('purchase.store');
 Route::post('/update-purchase', [PurchaseController::class, 'update'])->name('purchase.update');
 Route::post('/delete-purchase', [PurchaseController::class, 'destroy'])->name('purchase.delete');
+
+// purchase return route
+Route::get('/purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.create');
+Route::match(['get', 'post'], '/get-purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.index');
+Route::post('/purchase-return', [PurchaseReturnController::class, 'store'])->name('purchase.return.store');

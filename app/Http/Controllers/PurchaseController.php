@@ -41,6 +41,15 @@ class PurchaseController extends Controller
         if (!empty($request->dateFrom) && !empty($request->dateTo)) {
             $purchases->whereBetween('date', [$request->dateFrom, $request->dateTo]);
         }
+        if (!empty($request->search)) {
+            $purchases = $purchases->where(function ($query) use ($request) {
+                $query->where('invoice', 'like', '%' . $request->search . '%')
+                    ->orWhere('supplier_name', 'like', '%' . $request->search . '%');
+            });
+        }
+        if(!empty($request->forSearch)){
+            $purchases = $purchases->limit(50);
+        }
         $purchases = $purchases->latest()->get()->map(function ($purchase) {
             $purchase->details = DB::table('purchase_details as pd')
                 ->select('p.name', 'p.code', 'u.name as unit_name', 'c.name as category_name', 'pd.*')
@@ -74,7 +83,6 @@ class PurchaseController extends Controller
 
     public function store(PurchaseRequest $request)
     {
-        if (!$request->validated()) return send_error("Validation Error", $request->validated(), 422);
         try {
             DB::beginTransaction();
             $purchase = (object) $request->purchase;
@@ -120,7 +128,7 @@ class PurchaseController extends Controller
                 $data->supplier_phone = $supplier->phone;
                 $data->supplier_address = $supplier->address;
             } else {
-                $data->supplier_type = 'reqular';
+                $data->supplier_type = 'regular';
                 $data->supplier_id = $supplierId;
             }
             $data->save();
@@ -143,7 +151,7 @@ class PurchaseController extends Controller
 
             DB::commit();
             $msg = "Purchase has created successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => $msg, 'purchaseId' => $data->id, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
@@ -152,7 +160,6 @@ class PurchaseController extends Controller
 
     public function update(PurchaseRequest $request)
     {
-        if (!$request->validated()) return send_error("Validation Error", $request->validated(), 422);
         try {
             DB::beginTransaction();
             $purchase = (object) $request->purchase;
@@ -193,7 +200,7 @@ class PurchaseController extends Controller
                 $data->supplier_phone = $supplier->phone;
                 $data->supplier_address = $supplier->address;
             } else {
-                $data->supplier_type = 'reqular';
+                $data->supplier_type = 'regular';
                 $data->supplier_id = $supplierId;
             }
             $data->update();
@@ -221,7 +228,7 @@ class PurchaseController extends Controller
 
             DB::commit();
             $msg = "Purchase has updated successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => $msg, 'purchaseId' => $purchase->id, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
@@ -237,9 +244,16 @@ class PurchaseController extends Controller
             $data->ipAddress = request()->ip();
             $data->update();
 
+            PurchaseDetail::where('purchase_id', $request->id)->update([
+                'deleted_by' => $this->userId,
+                'status' => 'd',
+                'ipAddress' => request()->ip(),
+                'deleted_at' => Carbon::now()
+            ]);
+
             $data->delete();
 
-            $msg = "Supplier Purchase has deleted successfully";
+            $msg = "Purchase has deleted successfully";
             return response()->json(['status' => true, 'message' => $msg]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());

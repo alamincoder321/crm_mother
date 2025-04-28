@@ -135,7 +135,7 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/purchase-return">
                 <i class="bi bi-arrow-return-left"></i>
                 <span>Return Entry</span>
             </a>

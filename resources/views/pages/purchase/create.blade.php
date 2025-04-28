@@ -134,7 +134,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-12 mt-1" style="overflow-x: auto;">
-                <table class="table purTable">
+                <table class="table table-hover purTable">
                     <thead>
                         <tr>
                             <th>Sl</th>
@@ -147,7 +147,7 @@
                             <th style="width: 3%;">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="carts.length > 0" :class="carts.length > 0 ? '' : 'd-none'">
                         <tr v-for="(cart, index) in carts" :key="index">
                             <td class="text-center" v-text="index + 1"></td>
                             <td v-text="`${cart.name} - ${cart.code}`"></td>
@@ -162,6 +162,18 @@
                                 <i @click="removeCart(index)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
                             </td>
                         </tr>
+                        <tr>
+                            <td colspan="8" style="padding: 5px !important;"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 6px !important;" colspan="2"><strong>Note:</strong></td>
+                            <td style="padding: 5px 6px !important;" colspan="6">
+                                <textarea class="form-control" v-model="purchase.note" placeholder="Enter note here"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-if="carts.length == 0" :class="carts.length == 0 ? '' : 'd-none'">
+                        <td colspan="8" class="text-center">Cart is Empty</td>
                     </tbody>
                 </table>
             </div>
@@ -271,6 +283,7 @@
                     paid: 0,
                     due: 0,
                     previous_due: 0,
+                    note: ''
                 },
                 discountPercent: 0,
                 vatPercent: 0,
@@ -491,12 +504,14 @@
                 let url = this.purchase.id != '' ? '/update-purchase' : '/purchase'
                 this.onProgress = true;
                 axios.post(url, formdata)
-                    .then(res => {
+                    .then(async res => {
                         toastr.success(res.data.message);
                         this.clearData();
+                        history.pushState(null, '', '/purchase');
                         this.purchase.invoice = res.data.invoice;
-                        this.onProgress = false;
-
+                        if (confirm('Do you want to go to the invoice page?')) {
+                            window.open(`/purchase-invoice/${res.data.purchaseId}`, '_blank');
+                        }
                     })
                     .catch(err => {
                         this.onProgress = false
@@ -520,7 +535,7 @@
             },
             clearData() {
                 this.purchase = {
-                    id: "{{$id}}",
+                    id: "",
                     invoice: "{{$invoice}}",
                     date: moment().format('YYYY-MM-DD'),
                     employee_id: "",
@@ -533,6 +548,7 @@
                     due: 0,
                     previous_due: 0,
                 };
+                this.onProgress = false;
                 this.discountPercent = 0;
                 this.vatPercent = 0;
                 this.selectedSupplier = {
@@ -543,10 +559,7 @@
                     address: '',
                     type: 'general'
                 };
-                this.selectedProduct = {
-                    id: '',
-                    display_name: ''
-                };
+                this.selectedEmployee = null;
                 this.carts = [];
                 this.getSupplier();
             },
