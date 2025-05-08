@@ -47,36 +47,35 @@
         <div class="col-12 col-md-12">
             <div class="card m-0">
                 <div class="card-body pt-1 pb-3 px-2">
-                    <div class="text-end">
-                        <a href="" @click.prevent="print" title="Print"><i class="bi bi-printer"></i></a>
-                    </div>
                     <div id="reportContent" style="overflow-x: auto;">
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th>Sl</th>
-                                    <th>Code</th>
-                                    <th>Name</th>
-                                    <th>Brand</th>
-                                    <th>Category</th>
-                                    <th :class="priceType == '' || priceType == 'purchase' ? '' : 'd-none'">Purchase_Rate</th>
-                                    <th :class="priceType == '' || priceType == 'sale' ? '' : 'd-none'">Sale_Rate</th>
-                                    <th>Unit</th>
+                                    <th>ProductName</th>
+                                    <th>Purchased Qty</th>
+                                    <th>Already Return Qty</th>
+                                    <th>Return Qty</th>
+                                    <th>Return Rate</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in products">
-                                    <td v-html="index + 1"></td>
-                                    <td v-html="item.code"></td>
-                                    <td v-html="item.name"></td>
-                                    <td v-html="item.brand?.name"></td>
-                                    <td v-html="item.category?.name"></td>
-                                    <td v-html="item.purchase_rate" :class="priceType == '' || priceType == 'purchase' ? '' : 'd-none'" class="text-end"></td>
-                                    <td v-html="item.sale_rate" :class="priceType == '' || priceType == 'sale' ? '' : 'd-none'" class="text-end"></td>
-                                    <td v-html="item.unit?.name" class="text-center"></td>
+                                <tr v-for="(item, index) in purchases.details">
+                                    <td class="text-center" v-text="index + 1"></td>
+                                    <td class="text-left" v-text="`${item.name} - ${item.code}`"></td>
+                                    <td class="text-center" v-text="item.quantity"></td>
+                                    <td class="text-center" v-text="'already taken'"></td>
+                                    <td class="text-center">
+                                        <input type="number" class="text-center" min="0" step="any" v-model="item.return_quantity"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="number" class="text-center" min="0" step="any" v-model="item.purchase_rate"/>
+                                    </td>
+                                    <td class="text-rnf" v-text="item.returnTotal"></td>
                                 </tr>
-                                <tr :class="products.length == 0 ? '' : 'd-none'" v-if="products.length == 0">
-                                    <td :colspan="priceType == '' ? 8 : 7" class="text-center">Not Found Data</td>
+                                <tr :class="purchases.details.length == 0 ? '' : 'd-none'" v-if="purchases.details.length == 0">
+                                    <td :colspan="5" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -142,20 +141,19 @@
                 }
             },
 
+            onChangeSupplier(){
+                if(this.selectedSupplier != null){
+                    this.getPurchase();
+                }
+            },
+
             getPurchase() {
                 axios.post('/get-purchase', {
-                        forSearch: 'yes'
+                        forSearch: 'yes',
+                        supplierId: this.selectedSupplier ? this.selectedSupplier.id : ""
                     })
                     .then(res => {
-                        this.suppliers = res.data;
-                        this.suppliers.unshift({
-                            id: '',
-                            display_name: 'Walk In Supplier',
-                            name: 'Walk In Supplier',
-                            phone: '',
-                            address: '',
-                            type: 'general'
-                        })
+                        this.invoices = res.data;                        
                     })
             },
 
@@ -166,12 +164,12 @@
                             search: val,
                         })
                         .then(res => {
-                            this.suppliers = res.data;
+                            this.purchases = res.data;
                             loading(false)
                         })
                 } else {
                     loading(false)
-                    await this.getSupplier();
+                    await this.getPurchase();
                 }
             },
 
@@ -183,7 +181,7 @@
                 this.isLoading = false;
                 axios.post('/get-purchase', filter)
                     .then(res => {
-                        this.purchases = res.data
+                        this.purchases = res.data[0]
                         this.isLoading = true;
                     })
             }

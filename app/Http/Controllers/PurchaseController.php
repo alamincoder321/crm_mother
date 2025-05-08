@@ -68,6 +68,8 @@ class PurchaseController extends Controller
 
             $employee = User::where('id', $purchase->employee_id)->where('branch_id', $this->branchId)->withTrashed()->first();
             $purchase->employee_name = $employee->name ?? "NA";
+
+            $purchase->display_name = $purchase->invoice. ' - '. $purchase->supplier_name;
             return $purchase;
         }, $purchases);
         return response()->json($purchases);
