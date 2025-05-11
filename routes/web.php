@@ -23,6 +23,7 @@ use App\Http\Controllers\DesignationtController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseReturnController;
+use App\Http\Controllers\SaleController;
 
 Route::fallback(function () {
     return view('error.404');
@@ -151,7 +152,7 @@ Route::post('/delete-accounthead', [AccountHeadController::class, 'destroy'])->n
 
 // bank route
 Route::get('/bank', [BankController::class, 'create'])->name('bank.create');
-Route::post('/get-bank', [BankController::class, 'index'])->name('bank.index');
+Route::match(['get', 'post'], '/get-bank', [BankController::class, 'index'])->name('bank.index');
 Route::post('/bank', [BankController::class, 'store'])->name('bank.store');
 Route::post('/update-bank', [BankController::class, 'update'])->name('bank.update');
 Route::post('/delete-bank', [BankController::class, 'destroy'])->name('bank.delete');
@@ -198,3 +199,13 @@ Route::post('/delete-purchase', [PurchaseController::class, 'destroy'])->name('p
 Route::get('/purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.create');
 Route::match(['get', 'post'], '/get-purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.index');
 Route::post('/purchase-return', [PurchaseReturnController::class, 'store'])->name('purchase.return.store');
+
+
+// ============================= Sale Panel Route ==============================
+// sale route
+Route::get('/sale/{id?}', [SaleController::class, 'create'])->name('sale.create');
+Route::get('/sale-record', [SaleController::class, 'saleRecord'])->name('sale.record');
+Route::post('/get-sale', [SaleController::class, 'index'])->name('sale.index');
+Route::post('/sale', [SaleController::class, 'store'])->name('sale.store');
+Route::post('/update-sale', [SaleController::class, 'update'])->name('sale.update');
+Route::post('/delete-sale', [SaleController::class, 'destroy'])->name('sale.delete');

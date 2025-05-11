@@ -74,13 +74,13 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/sale">
                 <i class="bi bi-cart-dash"></i>
                 <span>Sale Entry</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/sale-record">
                 <i class="bi bi-file-text"></i>
                 <span>Sale Record</span>
             </a>

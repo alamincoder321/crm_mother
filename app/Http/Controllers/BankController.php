@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 class BankController extends Controller
@@ -42,21 +41,17 @@ class BankController extends Controller
 
     public function store(Request $request)
     {
-        $branchId = $this->branchId;
         $validator = Validator::make($request->all(), [
-            'name'     => [
-                'required',
-                Rule::unique('banks')
-                    ->where(function ($query) use ($branchId) {
-                        $query->where('branch_id', $branchId);
-                    })
-                    ->whereNull('deleted_at'),
-            ],
+            'name' => 'required',
             'number' => 'required',
             'type' => 'required',
             'balance' => 'required'
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
+        $check = Bank::where('bank_name', $request->bank_name)->where('number', $request->number)->where('branch_id', $this->branchId)->first();
+        if (!empty($check)) {
+            return send_error("Bank already exists", null, 422);
+        }
         try {
             $check = Bank::where('name', $request->name)->withTrashed()->first();
             if (!empty($check) && $check->deleted_at != NULL) {
@@ -84,22 +79,17 @@ class BankController extends Controller
 
     public function update(Request $request)
     {
-        $branchId = $this->branchId;
         $validator = Validator::make($request->all(), [
-            'name'     => [
-                'required',
-                Rule::unique('banks')
-                    ->ignore($request->id)
-                    ->where(function ($query) use ($branchId) {
-                        $query->where('branch_id', $branchId);
-                    })
-                    ->whereNull('deleted_at'),
-            ],
+            'name' => 'required',
             'number' => 'required',
             'type' => 'required',
             'balance' => 'required'
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
+        $check = Bank::where('id', '!=', $request->id)->where('bank_name', $request->bank_name)->where('number', $request->number)->where('branch_id', $this->branchId)->first();
+        if (!empty($check)) {
+            return send_error("Bank already exists", null, 422);
+        }
         try {
             $data = Bank::find($request->id);
             $dataKey = $request->except('id');

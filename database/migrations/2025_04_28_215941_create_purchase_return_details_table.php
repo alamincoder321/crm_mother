@@ -17,7 +17,7 @@ class CreatePurchaseReturnDetailsTable extends Migration
             $table->id();
             $table->foreignId('purchase_return_id')->nullable()->constrained('purchase_returns', 'id');
             $table->foreignId('purchase_detail_id')->nullable()->constrained('purchase_details', 'id');
-            $table->foreignId('product_id')->nullable()->constrained('product_id', 'id');
+            $table->foreignId('product_id')->nullable()->constrained('products', 'id');
             $table->float('quantity')->default(0);
             $table->decimal('purchase_rate')->default(0);
             $table->decimal('discount')->default(0);

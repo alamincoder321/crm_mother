@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchaseDetailsTable extends Migration
+class CreateSaleBanksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,12 @@ class CreatePurchaseDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_details', function (Blueprint $table) {
+        Schema::create('sale_banks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_id')->constrained('purchases', 'id');
-            $table->foreignId('product_id')->constrained('products', 'id');
-            $table->double('quantity')->default(0);
-            $table->decimal('purchase_rate')->default(0);
-            $table->decimal('sale_rate')->default(0);
-            $table->decimal('discount')->default(0);
-            $table->decimal('vat')->default(0);
-            $table->decimal('total')->default(0);
-            $table->string('note')->nullable();
+            $table->foreignId('sale_id')->constrained('sales', 'id');
+            $table->foreignId('bank_id')->constrained('banks', 'id');
+            $table->string('last_digit', 30)->nullable();
+            $table->decimal('amount')->default(0);
             $table->char('status', 1)->default('a');
             $table->foreignId('created_by')->nullable()->constrained('users', 'id');
             $table->dateTime('created_at')->useCurrent();
@@ -43,6 +38,6 @@ class CreatePurchaseDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_details');
+        Schema::dropIfExists('sale_banks');
     }
 }
