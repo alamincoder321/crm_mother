@@ -54,6 +54,7 @@
                                     <th>Sl</th>
                                     <th>ProductName</th>
                                     <th>Purchased Qty</th>
+                                    <th>Purchased Total</th>
                                     <th>Already Return Qty</th>
                                     <th>Return Qty</th>
                                     <th>Return Rate</th>
@@ -65,12 +66,13 @@
                                     <td class="text-center" v-text="index + 1"></td>
                                     <td class="text-left" v-text="`${item.name} - ${item.code}`"></td>
                                     <td class="text-center" v-text="item.quantity"></td>
+                                    <td class="text-center" v-text="item.total"></td>
                                     <td class="text-center" v-text="'already taken'"></td>
                                     <td class="text-center">
-                                        <input type="number" class="text-center" min="0" step="any" v-model="item.return_quantity"/>
+                                        <input type="number" class="text-center" min="0" step="any" v-model="item.return_quantity" @input="qtyRateChange(index)"/>
                                     </td>
                                     <td class="text-center">
-                                        <input type="number" class="text-center" min="0" step="any" v-model="item.purchase_rate"/>
+                                        <input type="number" class="text-center" min="0" step="any" v-model="item.purchase_rate" @input="qtyRateChange(index)"/>
                                     </td>
                                     <td class="text-rnf" v-text="item.returnTotal"></td>
                                 </tr>
@@ -171,6 +173,18 @@
                     loading(false)
                     await this.getPurchase();
                 }
+            },
+
+            async qtyRateChange(ind){
+                let item = this.purchases.details[ind];
+                // axios.post('/get-stock');
+                if(item.return_quantity > item.quantity){
+                    item.return_quantity = item.quantity;
+                }
+                if(item.purchase_rate < 0){
+                    item.purchase_rate = 0;
+                }
+                item.returnTotal = (item.return_quantity * item.purchase_rate).toFixed(2);
             },
 
             showList() {
