@@ -1,7 +1,7 @@
 @extends('master')
 
-@section('title', 'Purchase Record')
-@section('breadcrumb', 'Purchase Record')
+@section('title', 'Sale Record')
+@section('breadcrumb', 'Sale Record')
 @push('style')
 <style>
     .table>thead>tr>th {
@@ -17,7 +17,7 @@
 </style>
 @endpush
 @section('content')
-<div id="productList">
+<div id="saleList">
     <div class="row">
         <div class="col-12 col-md-12">
             <div class="card m-0">
@@ -27,14 +27,14 @@
                             <label for="searchType">SearchType</label>
                             <select id="searchType" class="form-select" v-model="searchType" @change="onChangeSearchType">
                                 <option value="">All</option>
-                                <option value="supplier">By Supplier</option>
+                                <option value="customer">By Customer</option>
                                 <option value="user">By User</option>
                             </select>
                         </div>
 
-                        <div class="form-group" :class="searchType == 'supplier' ? '' : 'd-none'" v-if="searchType == 'supplier'">
-                            <label for="supplier">Supplier</label>
-                            <v-select :options="suppliers" v-model="selectedSupplier" label="display_name"></v-select>
+                        <div class="form-group" :class="searchType == 'customer' ? '' : 'd-none'" v-if="searchType == 'customer'">
+                            <label for="customer">Customer</label>
+                            <v-select :options="customers" v-model="selectedCustomer" label="display_name"></v-select>
                         </div>
                         <div class="form-group" :class="searchType == 'user' ? '' : 'd-none'" v-if="searchType == 'user'">
                             <label for="user">User</label>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-group">
                             <label for="recordType">Type</label>
-                            <select id="recordType" class="form-select" v-model="recordType" @change="purchases = []">
+                            <select id="recordType" class="form-select" v-model="recordType" @change="sales = []">
                                 <option value="without">Without Detail</option>
                                 <option value="with">With Detail</option>
                             </select>
@@ -83,13 +83,15 @@
                                     <th>Sl</th>
                                     <th>Invoice</th>
                                     <th>Date</th>
-                                    <th>Supplier</th>
+                                    <th>Customer</th>
                                     <th>Employee</th>
                                     <th>SubTotal</th>
                                     <th>Discount</th>
                                     <th>Vat</th>
                                     <th>Trans. Cost</th>
                                     <th>Total</th>
+                                    <th>CashPaid</th>
+                                    <th>BankPaid</th>
                                     <th>Paid</th>
                                     <th>Due</th>
                                     <th>Note</th>
@@ -97,39 +99,43 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in purchases" :class="purchases.length > 0 ? '' : 'd-none'" v-if="purchases.length > 0">
+                                <tr v-for="(item, index) in sales" :class="sales.length > 0 ? '' : 'd-none'" v-if="sales.length > 0">
                                     <td v-html="index + 1"></td>
                                     <td v-html="item.invoice" class="text-center"></td>
                                     <td v-html="item.date" class="text-center"></td>
-                                    <td v-html="item.supplier_name" class="text-center"></td>
+                                    <td v-html="item.customer_name" class="text-center"></td>
                                     <td v-html="item.employee_name" class="text-center"></td>
                                     <td v-html="item.subtotal" class="text-end"></td>
                                     <td v-html="item.discount" class="text-end"></td>
                                     <td v-html="item.vat" class="text-end"></td>
                                     <td v-html="item.transport_cost" class="text-end"></td>
                                     <td v-html="item.total" class="text-end"></td>
+                                    <td v-html="item.cashPaid" class="text-end"></td>
+                                    <td v-html="item.bankPaid" class="text-end"></td>
                                     <td v-html="item.paid" class="text-end"></td>
                                     <td v-html="item.due" class="text-end"></td>
                                     <td v-html="item.note" class="text-center"></td>
                                     <td class="text-center">
                                         <i class="bi bi-file-earmark-medical-fill text-secondary" style="cursor: pointer;font-size:14px"></i>
-                                        <i @click="openPurchase(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
+                                        <i @click="openSale(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
                                         <i @click="deleteData(item.id)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
                                     </td>
                                 </tr>
-                                <tr :class="purchases.length > 0 ? '' : 'd-none'" v-show="purchases.length > 0">
+                                <tr :class="sales.length > 0 ? '' : 'd-none'" v-show="sales.length > 0">
                                     <th v-html="`Total`" colspan="5" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.subtotal)}, 0).toFixed(2)" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.discount)}, 0).toFixed(2)" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.vat)}, 0).toFixed(2)" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.transport_cost)}, 0).toFixed(2)" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.total)}, 0).toFixed(2)" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.paid)}, 0).toFixed(2)" class="text-end"></th>
-                                    <th v-html="purchases.reduce((pr, cu) => {return pr + parseFloat(cu.due)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.subtotal)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.discount)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.vat)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.transport_cost)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.total)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.cashPaid)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.bankPaid)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.paid)}, 0).toFixed(2)" class="text-end"></th>
+                                    <th v-html="sales.reduce((pr, cu) => {return pr + parseFloat(cu.due)}, 0).toFixed(2)" class="text-end"></th>
                                     <th></th>
                                     <th></th>
                                 </tr>
-                                <tr :class="purchases.length == 0 ? '' : 'd-none'" v-if="purchases.length == 0">
+                                <tr :class="sales.length == 0 ? '' : 'd-none'" v-if="sales.length == 0">
                                     <td colspan="13" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
@@ -140,7 +146,7 @@
                                     <th>Sl</th>
                                     <th>Invoice</th>
                                     <th>Date</th>
-                                    <th>Supplier</th>
+                                    <th>Customer</th>
                                     <th>Employee</th>
                                     <th>Product</th>
                                     <th>Quantity</th>
@@ -150,12 +156,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <template v-for="(item, index) in purchases">
-                                    <tr :class="purchases.length > 0 ? '' : 'd-none'" v-show="purchases.length > 0">
+                                <template v-for="(item, index) in sales">
+                                    <tr :class="sales.length > 0 ? '' : 'd-none'" v-show="sales.length > 0">
                                         <td v-html="index + 1"></td>
                                         <td v-html="item.invoice" class="text-center"></td>
                                         <td v-html="item.date" class="text-center"></td>
-                                        <td v-html="item.supplier_name" class="text-center"></td>
+                                        <td v-html="item.customer_name" class="text-center"></td>
                                         <td v-html="item.employee_name" class="text-center"></td>
                                         <td v-html="item.details[0].name" class="text-center"></td>
                                         <td v-html="item.details[0].quantity" class="text-center"></td>
@@ -163,7 +169,7 @@
                                         <td v-html="item.details[0].total" class="text-end"></td>
                                         <td class="text-center">
                                             <i class="bi bi-file-earmark-medical-fill text-secondary" style="cursor: pointer;font-size:14px"></i>
-                                            <i @click="openPurchase(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
+                                            <i @click="openSale(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
                                             <i @click="deleteData(item.id)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
                                         </td>
                                     </tr>
@@ -187,7 +193,7 @@
                                         <td></td>
                                     </tr>
                                 </template>
-                                <tr :class="purchases.length == 0 ? '' : 'd-none'" v-if="purchases.length == 0">
+                                <tr :class="sales.length == 0 ? '' : 'd-none'" v-if="sales.length == 0">
                                     <td colspan="13" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
@@ -204,24 +210,24 @@
 @push('js')
 <script>
     new Vue({
-        el: '#productList',
+        el: '#saleList',
         data: {
             searchType: '',
             recordType: 'without',
             dateFrom: moment().format('YYYY-MM-DD'),
             dateTo: moment().format('YYYY-MM-DD'),
-            purchases: [],
-            suppliers: [],
-            selectedSupplier: null,
+            sales: [],
+            customers: [],
+            selectedCustomer: null,
             users: [],
             selectedUser: null,
             isLoading: null
         },
 
         methods: {
-            openPurchase(id) {
+            openSale(id) {
                 if (typeof window !== 'undefined') {
-                    window.open('/purchase/' + id, '_blank');
+                    window.open('/sale/' + id, '_blank');
                 }
             },
             getUser() {
@@ -230,23 +236,23 @@
                         this.users = res.data;
                     })
             },
-            getSupplier() {
-                axios.post('/get-supplier')
+            getCustomer() {
+                axios.post('/get-customer')
                     .then(res => {
-                        this.suppliers = res.data;
+                        this.customers = res.data;
                     })
             },
 
             onChangeSearchType() {
-                this.purchases = [];
-                this.suppliers = [];
-                this.selectedSupplier = null;
+                this.sales = [];
+                this.customers = [];
+                this.selectedCustomer = null;
                 this.users = [];
                 this.selectedUser = null;
                 this.recordType = "without";
                 this.isLoading = null;
-                if (this.searchType == 'supplier') {
-                    this.getSupplier();
+                if (this.searchType == 'customer') {
+                    this.getCustomer();
                 }else if (this.searchType == 'user') {
                     this.getUser();
                 }
@@ -255,14 +261,14 @@
             showReport() {
                 let filter = {
                     userId: this.selectedUser ? this.selectedUser.id : '',
-                    supplierId: this.selectedSupplier ? this.selectedSupplier.id : '',
+                    customerId: this.selectedCustomer ? this.selectedCustomer.id : '',
                     dateFrom: this.dateFrom,
                     dateTo: this.dateTo
                 }
                 this.isLoading = false;
-                axios.post('/get-purchase', filter)
+                axios.post('/get-sale', filter)
                     .then(res => {
-                        this.purchases = res.data
+                        this.sales = res.data
                         this.isLoading = true;
                     })
             },
@@ -271,7 +277,7 @@
                 if (!confirm('Are you sure ?')) {
                     return;
                 }
-                axios.post('/delete-purchase', {
+                axios.post('/delete-sale', {
                         id: rowId
                     })
                     .then(res => {
@@ -284,7 +290,7 @@
 
             async print() {
                 const oldTitle = window.document.title;
-                window.document.title = "Purchase Record"
+                window.document.title = "Sale Record"
                 const printWindow = document.createElement('iframe');
                 document.body.appendChild(printWindow);
                 printWindow.srcdoc = `
@@ -301,7 +307,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12 text-center">
-                                <h5>Purchase Record</h5>
+                                <h5>Sale Record</h5>
                             </div>
                         </div>
                         <div class="row">

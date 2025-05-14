@@ -257,6 +257,12 @@
                         </div>
                     </div>
                     <div class="form-group row mb-1">
+                        <label for="total" class="col-4 col-md-12 form-label mb-0">Change Amount</label>
+                        <div class="col-8 col-md-12">
+                            <input type="number" v-model="sale.returnAmount" min="0" step="any" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-1">
                         <label for="subtotal" class="col-4 col-md-12 form-label mb-0">Due</label>
                         <div class="col-4 col-md-6">
                             <input type="number" v-model="sale.due" min="0" step="any" class="form-control" readonly />
@@ -672,7 +678,8 @@
                 let formdata = {
                     sale: this.sale,
                     customer: this.selectedCustomer,
-                    carts: this.carts
+                    carts: this.carts,
+                    bankCart: this.bankCart,
                 }
                 let url = this.sale.id != '' ? '/update-sale' : '/sale'
                 this.onProgress = true;
@@ -754,12 +761,22 @@
                             category_name: item.category_name,
                             name: item.name,
                             unit_name: item.unit_name,
+                            purchase_rate: item.purchase_rate,
                             sale_rate: item.sale_rate,
                             quantity: item.quantity,
-                            total: item.total,
-                            sale_rate: item.sale_rate
+                            total: item.total
                         };
                         this.carts.push(detail);
+                    })
+                    sale.bank_details.map(item => {
+                        let detail = {
+                            id: item.bank_id,
+                            bank_name: item.bank_name,
+                            number: item.number,
+                            last_digit: item.last_digit,
+                            amount: item.amount
+                        };
+                        this.bankCart.push(detail);
                     })
 
                     this.selectedCustomer = {

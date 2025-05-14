@@ -102,10 +102,10 @@ class PurchaseController extends Controller
                 } else {
                     $supp = new Supplier();
                     $supp->code = generateCode('Supplier', 'S', $this->branchId);
-                    $supp->name = $request->supplier['name'];
-                    $supp->owner = $request->supplier['name'];
-                    $supp->phone = $request->supplier['phone'];
-                    $supp->address = $request->supplier['address'];
+                    $supp->name = $supplier->name;
+                    $supp->owner = $supplier->name;
+                    $supp->phone = $supplier->phone;
+                    $supp->address = $supplier->address;
                     $supp->created_by = $this->userId;
                     $supp->ipAddress = request()->ip();
                     $supp->branch_id = $this->branchId;
@@ -175,10 +175,10 @@ class PurchaseController extends Controller
                 } else {
                     $supp = new Supplier();
                     $supp->code = generateCode('Supplier', 'S', $this->branchId);
-                    $supp->name = $request->supplier['name'];
-                    $supp->owner = $request->supplier['name'];
-                    $supp->phone = $request->supplier['phone'];
-                    $supp->address = $request->supplier['address'];
+                    $supp->name = $supplier->name;
+                    $supp->owner = $supplier->name;
+                    $supp->phone = $supplier->phone;
+                    $supp->address = $supplier->address;
                     $supp->created_by = $this->userId;
                     $supp->ipAddress = request()->ip();
                     $supp->branch_id = $this->branchId;
@@ -210,7 +210,6 @@ class PurchaseController extends Controller
 
             // old purchase_detail delete
             PurchaseDetail::where('purchase_id', $purchase->id)->forceDelete();
-
             foreach ($request->carts as $key => $cart) {
                 $detail = new PurchaseDetail();
                 $detail->purchase_id = $purchase->id;

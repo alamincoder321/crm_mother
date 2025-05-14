@@ -293,8 +293,9 @@
                 axios.post(url, formdata)
                     .then(res => {
                         toastr.success(res.data.message);
-                        this.clearData();
                         this.getProduct();
+                        this.clearData();
+                        this.product.code = res.data.code;
                     })
                     .catch(err => {
                         this.onProgress = false

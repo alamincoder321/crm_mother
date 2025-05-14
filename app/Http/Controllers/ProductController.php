@@ -106,7 +106,7 @@ class ProductController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Product has created successfully"]);
+            return response()->json(['status' => true, 'message' => "Product has created successfully", 'code' => generateCode('Product', 'P', $this->branchId)]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -150,7 +150,7 @@ class ProductController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Product has updated successfully"]);
+            return response()->json(['status' => true, 'message' => "Product has updated successfully", 'code' => generateCode('Product', 'P', $this->branchId)]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
