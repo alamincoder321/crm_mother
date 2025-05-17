@@ -251,7 +251,7 @@
                 <div class="card-footer py-2">
                     <div class="form-group row mb-2">
                         <div class="col-6 col-md-6">
-                            <button type="submit" :disabled="onProgress" class="btn btn-success w-100">Save</button>
+                            <button type="submit" :disabled="onProgress" class="btn btn-success w-100" v-text="purchase.id != '' ? 'Update' : 'Save'"></button>
                         </div>
                         <div class="col-6 col-md-6">
                             <button type="button" class="btn btn-danger w-100">Reset</button>

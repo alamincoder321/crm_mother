@@ -31,7 +31,7 @@ class CustomerController extends Controller
             $customers = $customers->where('id', $request->customerId);
         }
         if (!empty($request->customer_type)) {
-            $customers = $customers->where('customer_type', $request->customer_type);
+            $customers = $customers->where('type', $request->customer_type);
         }
         if (!empty($request->areaId)) {
             $customers = $customers->where('area_id', $request->areaId);

@@ -19,7 +19,7 @@ class CreateCustomersTable extends Migration
             $table->string('name');
             $table->string('owner')->nullable();
             $table->string('phone', 15)->index();
-            $table->enum('customer_type', ['retail', 'wholesale'])->default('retail')->index();
+            $table->enum('type', ['retail', 'wholesale'])->default('retail')->index();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
             $table->foreignId('area_id')->nullable()->constrained('areas', 'id');

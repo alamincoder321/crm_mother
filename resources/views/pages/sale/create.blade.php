@@ -30,6 +30,25 @@
     .bankBtn:focus {
         background: #db9696 !important;
     }
+
+    .sale-type-box.active {
+        background: #228dc1 !important;
+        color: #fff !important;
+        border-color: #228dc1 !important;
+    }
+
+    .sale_type_label {
+        cursor: pointer;
+        font-size: 13px;
+        width: 80px;
+        text-align: center;
+        border-radius: 6px;
+        border: 1px solid #228dc1;
+        background: #fff;
+        color: #228dc1;
+        font-weight: 500;
+        transition: all .2s;
+    }
 </style>
 @endpush
 @section('content')
@@ -65,7 +84,22 @@
                     <div class="card-header py-2">
                         <h3 class="m-0 card-title p-0">Customer Info</h3>
                     </div>
-                    <div class="card-body p-3 py-2">
+                    <div class="card-body p-3 pb-2 pt-1">
+                        <div class="form-group row mb-1">
+                            <div class="d-flex gap-2">
+                                <div class="col-4 col-md-4"></div>
+                                <div class="col-8 col-md-8">
+                                    <input type="radio" @change="onChangeSaleType" id="retail" name="sale_type" value="retail" v-model="sale.sale_type" class="d-none" />
+                                    <label for="retail" class="sale_type_label" :class="['sale-type-box', sale.sale_type === 'retail' ? 'active' : '']">
+                                        Retail
+                                    </label>
+                                    <input type="radio" @change="onChangeSaleType" id="wholesale" name="sale_type" value="wholesale" v-model="sale.sale_type" class="d-none" />
+                                    <label for="wholesale" class="sale_type_label" :class="['sale-type-box', sale.sale_type === 'wholesale' ? 'active' : '']">
+                                        Wholesale
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Customer:</label>
                             <div class="col-8 col-md-8">
@@ -87,7 +121,7 @@
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Address:</label>
                             <div class="col-8 col-md-8">
-                                <textarea type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.address"></textarea>
+                                <input type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.address" >
                             </div>
                         </div>
                     </div>
@@ -106,7 +140,7 @@
                                     <v-select :options="products" id="product" v-model="selectedProduct" label="display_name" @input="onChangeProduct" @search="onSearchProduct"></v-select>
                                 </div>
                             </div>
-                            <div class="form-group row mb-1">
+                            <!-- <div class="form-group row mb-1">
                                 <label for="" class="col-4 col-md-3 form-label">Rate:</label>
                                 <div class="col-8 col-md-4">
                                     <input type="number" min="0" step="any" class="form-control" v-model="selectedProduct.sale_rate" @input="productTotal" />
@@ -115,17 +149,23 @@
                                 <div class="col-8 col-md-3 ps-md-0">
                                     <input type="number" min="0" step="any" ref="quantity" class="form-control" v-model="selectedProduct.quantity" @input="productTotal" />
                                 </div>
+                            </div> -->
+                            <div class="form-group row mb-1">
+                                <label for="" class="col-4 col-md-3 form-label">Rate:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="number" min="0" step="any" class="form-control" v-model="selectedProduct.sale_rate" @input="productTotal" />
+                                </div>
+                            </div>
+                            <div class="form-group row mb-1">
+                                <label for="" class="col-4 col-md-3 form-label">Qty:</label>
+                                <div class="col-8 col-md-9">
+                                    <input type="number" min="0" step="any" ref="quantity" class="form-control" v-model="selectedProduct.quantity" @input="productTotal" />
+                                </div>
                             </div>
                             <div class="form-group row mb-1">
                                 <label for="" class="col-4 col-md-3 form-label">Total:</label>
                                 <div class="col-8 col-md-9">
                                     <input type="number" min="0" step="any" class="form-control" v-model="selectedProduct.total" readonly />
-                                </div>
-                            </div>
-                            <div class="form-group row mb-1">
-                                <label for="" class="col-4 col-md-3 form-label">Sale Rate:</label>
-                                <div class="col-8 col-md-9">
-                                    <input type="number" min="0" step="any" class="form-control" v-model="selectedProduct.sale_rate" />
                                 </div>
                             </div>
                             <div class="form-group row" style="display: flex; align-items: center;">
@@ -275,7 +315,7 @@
                 <div class="card-footer py-2">
                     <div class="form-group row mb-2">
                         <div class="col-6 col-md-6">
-                            <button type="submit" :disabled="onProgress" class="btn btn-success w-100">Save</button>
+                            <button type="submit" :disabled="onProgress" class="btn btn-success w-100" v-text="sale.id != '' ? 'Update' : 'Save'"></button>
                         </div>
                         <div class="col-6 col-md-6">
                             <button type="button" class="btn btn-danger w-100">Reset</button>
@@ -348,6 +388,7 @@
                     id: "{{$id}}",
                     invoice: "{{$invoice}}",
                     date: moment().format('YYYY-MM-DD'),
+                    sale_type: 'retail',
                     employee_id: "",
                     subtotal: 0,
                     discount: 0,
@@ -376,14 +417,14 @@
                 products: [],
                 selectedProduct: {
                     id: '',
-                    display_name: ''
+                    display_name: 'select product'
                 },
                 employees: [],
                 selectedEmployee: null,
                 banks: [],
                 selectedBank: {
                     id: '',
-                    display_name: '',
+                    display_name: 'select product',
                     last_digit: '',
                     amount: ''
                 },
@@ -423,7 +464,8 @@
             },
             getCustomer() {
                 axios.post('/get-customer', {
-                        forSearch: 'yes'
+                        forSearch: 'yes',
+                        customer_type: this.sale.sale_type
                     })
                     .then(res => {
                         this.customers = res.data;
@@ -450,6 +492,7 @@
                     loading(true);
                     await axios.post("/get-customer", {
                             search: val,
+                            customer_type: this.sale.sale_type
                         })
                         .then(res => {
                             this.customers = res.data;
@@ -476,12 +519,32 @@
 
             },
 
+            onChangeSaleType() {
+                this.selectedCustomer = {
+                    id: '',
+                    display_name: 'Walk In Customer',
+                    name: 'Walk In Customer',
+                    phone: '',
+                    address: '',
+                    type: 'general'
+                }
+                this.selectedProduct = {
+                    id: '',
+                    display_name: 'select product'
+                }
+                this.getCustomer();
+                this.getProduct();
+            },
+
             getProduct() {
                 axios.post('/get-product', {
                         forSearch: 'yes'
                     })
                     .then(res => {
-                        this.products = res.data;
+                        this.products = res.data.map(item => {
+                            item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
+                            return item;
+                        });
                     })
             },
             async onSearchProduct(val, loading) {
@@ -492,7 +555,10 @@
                             is_service: 'false'
                         })
                         .then(res => {
-                            this.products = res.data;
+                            this.products = res.data.map(item => {
+                                item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
+                                return item;
+                            });
                             loading(false)
                         })
                 } else {
@@ -505,11 +571,13 @@
                 if (this.selectedProduct == null) {
                     this.selectedProduct = {
                         id: '',
-                        display_name: ''
+                        display_name: 'select product'
                     }
                     return;
                 }
-                this.$refs.quantity.focus();
+                if(this.selectedProduct.id != ''){
+                    this.$refs.quantity.focus();
+                }
             },
 
             productTotal() {
@@ -561,7 +629,7 @@
             clearProduct() {
                 this.selectedProduct = {
                     id: '',
-                    display_name: ''
+                    display_name: 'select product'
                 }
             },
 
@@ -610,7 +678,7 @@
                 if (this.selectedBank == null) {
                     this.selectedBank = {
                         id: '',
-                        display_name: '',
+                        display_name: 'select product',
                         last_digit: '',
                         amount: ''
                     }
@@ -667,7 +735,7 @@
             clearBankCart() {
                 this.selectedBank = {
                     id: '',
-                    display_name: '',
+                    display_name: 'select product',
                     last_digit: '',
                     amount: ''
                 };
@@ -718,6 +786,7 @@
                     id: "",
                     invoice: "{{$invoice}}",
                     date: moment().format('YYYY-MM-DD'),
+                    sale_type: 'retail',
                     employee_id: "",
                     subtotal: 0,
                     discount: 0,

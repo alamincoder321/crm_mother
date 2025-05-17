@@ -34,6 +34,7 @@ class CreateSalesTable extends Migration
             $table->decimal('returnAmount')->default(0);
             $table->decimal('due')->default(0);
             $table->decimal('previous_due')->default(0);
+            $table->enum('sale_type', ['retail', 'wholesale'])->default('retail')->index();
             $table->text('note')->nullable();
             $table->char('status', 1)->default('a');
             $table->foreignId('created_by')->nullable()->constrained('users', 'id');

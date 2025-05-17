@@ -61,14 +61,14 @@
                                 </div>
                             </div>
                             <div class="mb-1 row">
-                                <label class="form-label col-4 col-md-3 pe-md-0" for="customer_type">Customer Type:</label>
+                                <label class="form-label col-4 col-md-3 pe-md-0" for="type">Customer Type:</label>
                                 <div class="col-8 col-md-9">
                                     <label for="retail" class="form-label">
-                                        <input type="radio" name="customer_type" value="retail" id="retail" v-model="customer.customer_type">
+                                        <input type="radio" name="type" value="retail" id="retail" v-model="customer.type">
                                         Retail
                                     </label>
                                     <label for="wholesale" class="form-label ms-md-3">
-                                        <input type="radio" name="customer_type" value="wholesale" id="wholesale" v-model="customer.customer_type">
+                                        <input type="radio" name="type" value="wholesale" id="wholesale" v-model="customer.type">
                                         Wholesale
                                     </label>
                                 </div>
@@ -148,8 +148,8 @@
                         field: 'owner'
                     },
                     {
-                        label: "Customer_Type",
-                        field: 'customer_type'
+                        label: "Customer Type",
+                        field: 'type'
                     },
                     {
                         label: "Mobile",
@@ -193,7 +193,7 @@
                     owner: '',
                     email: '',
                     phone: '',
-                    customer_type: 'retail',
+                    type: 'retail',
                     address: '',
                     area_id: '',
                     previous_due: 0,
@@ -299,7 +299,7 @@
                     owner: '',
                     email: '',
                     phone: '',
-                    customer_type: 'retail',
+                    type: 'retail',
                     address: '',
                     area_id: '',
                     previous_due: 0,

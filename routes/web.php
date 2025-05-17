@@ -23,6 +23,7 @@ use App\Http\Controllers\DesignationtController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseReturnController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SaleController;
 
 Route::fallback(function () {
@@ -209,3 +210,11 @@ Route::post('/get-sale', [SaleController::class, 'index'])->name('sale.index');
 Route::post('/sale', [SaleController::class, 'store'])->name('sale.store');
 Route::post('/update-sale', [SaleController::class, 'update'])->name('sale.update');
 Route::post('/delete-sale', [SaleController::class, 'destroy'])->name('sale.delete');
+
+// quotation route
+Route::get('/quotation/{id?}', [QuotationController::class, 'create'])->name('quotation.create');
+Route::get('/quotation-record', [QuotationController::class, 'saleRecord'])->name('quotation.record');
+Route::post('/get-quotation', [QuotationController::class, 'index'])->name('quotation.index');
+Route::post('/quotation', [QuotationController::class, 'store'])->name('quotation.store');
+Route::post('/update-quotation', [QuotationController::class, 'update'])->name('quotation.update');
+Route::post('/delete-quotation', [QuotationController::class, 'destroy'])->name('quotation.delete');

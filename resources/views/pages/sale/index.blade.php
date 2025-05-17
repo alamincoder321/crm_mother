@@ -136,7 +136,7 @@
                                     <th></th>
                                 </tr>
                                 <tr :class="sales.length == 0 ? '' : 'd-none'" v-if="sales.length == 0">
-                                    <td colspan="13" class="text-center">Not Found Data</td>
+                                    <td colspan="16" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -194,7 +194,7 @@
                                     </tr>
                                 </template>
                                 <tr :class="sales.length == 0 ? '' : 'd-none'" v-if="sales.length == 0">
-                                    <td colspan="13" class="text-center">Not Found Data</td>
+                                    <td colspan="10" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>

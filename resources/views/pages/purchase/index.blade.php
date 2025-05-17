@@ -188,7 +188,7 @@
                                     </tr>
                                 </template>
                                 <tr :class="purchases.length == 0 ? '' : 'd-none'" v-if="purchases.length == 0">
-                                    <td colspan="13" class="text-center">Not Found Data</td>
+                                    <td colspan="10" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>

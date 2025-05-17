@@ -8,6 +8,10 @@
         text-align: center !important;
         background-color: gray;
         color: #fff;
+        vertical-align: middle !important;
+    }
+    .table>tbody>tr>td{
+        vertical-align: middle !important;
     }
 </style>
 @endpush
@@ -33,6 +37,10 @@
                         <div class="form-group" :class="searchType == 'designation' ? '' : 'd-none'" v-if="searchType == 'designation'">
                             <label for="Designation">Designation</label>
                             <v-select :options="designations" v-model="selectedDesignations" label="name"></v-select>
+                        </div>
+                        <div class="form-group">
+                            <label for="month">Month</label>
+                            <input type="month" id="month" v-model="salary.month" class="form-control"/>
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary btn-sm">Generate</button>

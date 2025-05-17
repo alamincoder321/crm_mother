@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sale;
+use App\Http\Requests\QuotationRequest;
 use App\Models\User;
 use App\Models\Customer;
-use App\Models\SaleDetail;
+use App\Models\Quotation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Http\Requests\SaleRequest;
-use App\Models\SaleBank;
+use App\Models\QuotationDetail;
 use Illuminate\Support\Facades\DB;
 
-class SaleController extends Controller
+class QuotationController extends Controller
 {
     protected $userId;
     protected $branchId;
@@ -29,9 +28,9 @@ class SaleController extends Controller
 
     public function index(Request $request)
     {
-        $sales = Sale::with('adUser', 'upUser')->where('branch_id', $this->branchId);
-        if (!empty($request->saleId)) {
-            $sales->where('id', $request->saleId);
+        $sales = Quotation::with('adUser', 'upUser')->where('branch_id', $this->branchId);
+        if (!empty($request->quotationId)) {
+            $sales->where('id', $request->quotationId);
         }
         if (!empty($request->customerId)) {
             $sales->where('customer_id', $request->customerId);
@@ -52,21 +51,14 @@ class SaleController extends Controller
             $sales = $sales->limit(50);
         }
         $sales = $sales->latest()->get()->map(function ($sale) {
-            $sale->details = DB::table('sale_details as pd')
+            $sale->details = DB::table('quotation_details as pd')
                 ->select('p.name', 'p.code', 'u.name as unit_name', 'c.name as category_name', 'pd.*')
                 ->leftJoin('products as p', 'p.id', '=', 'pd.product_id')
                 ->leftJoin('units as u', 'u.id', '=', 'p.unit_id')
                 ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
-                ->where('sale_id', $sale->id)
+                ->where('quotation_id', $sale->id)
                 ->where('pd.status', 'a')
                 ->where('pd.branch_id', $this->branchId)
-                ->get();
-            $sale->bank_details = DB::table("sale_banks as sb")
-                ->select('b.bank_name', 'b.number', 'sb.*')
-                ->leftJoin('banks as b', 'b.id', '=', 'sb.bank_id')
-                ->where('sb.sale_id', $sale->id)
-                ->where('sb.status', 'a')
-                ->where('sb.branch_id', $this->branchId)
                 ->get();
 
             $customer = Customer::where('id', $sale->customer_id)->where('branch_id', $this->branchId)->withTrashed()->first();
@@ -92,43 +84,25 @@ class SaleController extends Controller
     }
 
 
-    public function store(SaleRequest $request)
+    public function store(QuotationRequest $request)
     {
         try {
             DB::beginTransaction();
-            $sale = (object) $request->sale;
+            $quotation = (object) $request->quotation;
             $customer = (object) $request->customer;
             $customerId = $customer->id ?? NULL;
 
-            $invoice = Sale::where('invoice', $sale->invoice)->first();
+            $invoice = Quotation::where('invoice', $quotation->invoice)->first();
             if (empty($invoice)) {
-                $invoice = invoiceGenerate('Sale', '', $this->branchId);
+                $invoice = invoiceGenerate('Quotation', '', $this->branchId);
             }
-            if (!empty($customer) && $customer->type == 'new') {
-                $checkSupp = Customer::where('phone', $customer->phone)->where('branch_id', $this->branchId)->first();
-                if (!empty($checkSupp)) {
-                    $customerId = $checkSupp->id;
-                } else {
-                    $cus             = new Customer();
-                    $cus->code       = generateCode('Customer', 'C', $this->branchId);
-                    $cus->name       = $customer->name;
-                    $cus->owner      = $customer->name;
-                    $cus->phone      = $customer->phone;
-                    $cus->address    = $customer->address;
-                    $cus->type       = $sale->sale_type;
-                    $cus->created_by = $this->userId;
-                    $cus->ipAddress  = request()->ip();
-                    $cus->branch_id  = $this->branchId;
-                    $cus->save();
-                    $customerId = $cus->id;
-                }
-            }
-            $dataKey = $sale;
+            
+            $dataKey = $quotation;
             unset($dataKey->id);
             unset($dataKey->invoice);
-            $data = new Sale();
+            $data = new Quotation();
             $data->invoice = $invoice;
-            $data->employee_id = $sale->employee_id ?? NULL;
+            $data->employee_id = $quotation->employee_id ?? NULL;
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
             }
@@ -140,14 +114,14 @@ class SaleController extends Controller
                 $data->customer_phone = $customer->phone;
                 $data->customer_address = $customer->address;
             } else {
-                $data->customer_type = $sale->sale_type;
+                $data->customer_type = 'regular';
                 $data->customer_id = $customerId;
             }
             $data->save();
 
             foreach ($request->carts as $key => $cart) {
-                $detail = new SaleDetail();
-                $detail->sale_id = $data->id;
+                $detail = new QuotationDetail();
+                $detail->quotation_id = $data->id;
                 $detail->product_id = $cart['id'];
                 $detail->purchase_rate = $cart['purchase_rate'];
                 $detail->quantity = $cart['quantity'];
@@ -160,32 +134,17 @@ class SaleController extends Controller
                 $detail->branch_id = $this->branchId;
                 $detail->save();
             }
-
-            // bank transaction
-            if (!empty($sale->bankPaid) && $sale->bankPaid > 0) {
-                foreach ($request->bankCart as $key => $cart) {
-                    $bank             = new SaleBank();
-                    $bank->sale_id    = $data->id;
-                    $bank->bank_id    = $cart['id'];
-                    $bank->last_digit = $cart['last_digit'];
-                    $bank->amount     = $cart['amount'];
-                    $bank->created_by = $this->userId;
-                    $bank->ipAddress = request()->ip();
-                    $bank->branch_id = $this->branchId;
-                    $bank->save();
-                }
-            }
-
+            
             DB::commit();
-            $msg = "Sale has created successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'saleId' => $data->id, 'invoice' => invoiceGenerate('Sale', '', $this->branchId)]);
+            $msg = "Quotation has created successfully";
+            return response()->json(['status' => true, 'message' => $msg, 'quotationId' => $data->id, 'invoice' => invoiceGenerate('Quotation', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
         }
     }
 
-    public function update(SaleRequest $request)
+    public function update(QuotationRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -214,7 +173,7 @@ class SaleController extends Controller
             }
             $dataKey = $sale;
             unset($dataKey->invoice);
-            $data = Sale::find($sale->id);
+            $data = Quotation::find($sale->id);
             $data->employee_id = $sale->employee_id ?? NULL;
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
@@ -228,18 +187,18 @@ class SaleController extends Controller
                 $data->customer_phone = $customer->phone;
                 $data->customer_address = $customer->address;
             } else {
-                $data->customer_type = $sale->sale_type;
+                $data->customer_type = 'regular';
                 $data->customer_id = $customerId;
             }
             $data->update();
 
 
-            // old sale_detail delete
-            SaleDetail::where('sale_id', $sale->id)->forceDelete();
+            // old quotation_detail delete
+            QuotationDetail::where('quotation_id', $sale->id)->forceDelete();
 
             foreach ($request->carts as $key => $cart) {
-                $detail = new SaleDetail();
-                $detail->sale_id = $sale->id;
+                $detail = new QuotationDetail();
+                $detail->quotation_id = $sale->id;
                 $detail->product_id = $cart['id'];
                 $detail->purchase_rate = $cart['purchase_rate'];
                 $detail->quantity = $cart['quantity'];
@@ -254,28 +213,9 @@ class SaleController extends Controller
                 $detail->save();
             }
 
-            // Delete Bank Transaction
-            SaleBank::where('sale_id', $sale->id)->forceDelete();
-            // bank transaction
-            if (!empty($sale->bankPaid) && $sale->bankPaid > 0) {
-                foreach ($request->bankCart as $key => $cart) {
-                    $bank             = new SaleBank();
-                    $bank->sale_id    = $data->id;
-                    $bank->bank_id    = $cart['id'];
-                    $bank->last_digit = $cart['last_digit'];
-                    $bank->amount     = $cart['amount'];
-                    $bank->created_by = $this->userId;
-                    $bank->updated_by = $this->userId;
-                    $bank->updated_at = Carbon::now();
-                    $bank->ipAddress = request()->ip();
-                    $bank->branch_id = $this->branchId;
-                    $bank->save();
-                }
-            }
-
             DB::commit();
-            $msg = "Sale has updated successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'saleId' => $sale->id, 'invoice' => invoiceGenerate('Sale', '', $this->branchId)]);
+            $msg = "Quotation has updated successfully";
+            return response()->json(['status' => true, 'message' => $msg, 'quotationId' => $sale->id, 'invoice' => invoiceGenerate('Sale', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
@@ -285,20 +225,13 @@ class SaleController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $data = Sale::find($request->id);
+            $data = Quotation::find($request->id);
             $data->deleted_by = $this->userId;
             $data->status = 'd';
             $data->ipAddress = request()->ip();
             $data->update();
 
-            SaleDetail::where('sale_id', $request->id)->update([
-                'deleted_by' => $this->userId,
-                'status' => 'd',
-                'ipAddress' => request()->ip(),
-                'deleted_at' => Carbon::now()
-            ]);
-
-            SaleBank::where('sale_id', $request->id)->update([
+            QuotationDetail::where('quotation_id', $request->id)->update([
                 'deleted_by' => $this->userId,
                 'status' => 'd',
                 'ipAddress' => request()->ip(),
@@ -307,15 +240,15 @@ class SaleController extends Controller
 
             $data->delete();
 
-            $msg = "Sale has deleted successfully";
+            $msg = "Quotation has deleted successfully";
             return response()->json(['status' => true, 'message' => $msg]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }
     }
 
-    public function saleRecord()
+    public function quotationRecord()
     {
-        return view("pages.sale.index");
+        return view("pages.quotation.index");
     }
 }
