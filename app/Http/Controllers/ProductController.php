@@ -173,4 +173,19 @@ class ProductController extends Controller
             return send_error("Something went wrong", $th->getMessage());
         }
     }
+
+    public function currentStock()
+    {
+        return view('pages.stock.current_stock');
+    }
+
+    public function getProductStock(Request $request)
+    {
+        try {
+            $stock = Product::stock($request);
+            return response()->json($stock, 200);
+        } catch (\Throwable $th) {
+            return send_error("Something went wrong", $th->getMessage());
+        }
+    }
 }
