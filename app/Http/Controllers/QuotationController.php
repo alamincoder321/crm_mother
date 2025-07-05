@@ -96,7 +96,7 @@ class QuotationController extends Controller
             if (empty($invoice)) {
                 $invoice = invoiceGenerate('Quotation', '', $this->branchId);
             }
-            
+
             $dataKey = $quotation;
             unset($dataKey->id);
             unset($dataKey->invoice);
@@ -119,22 +119,24 @@ class QuotationController extends Controller
             }
             $data->save();
 
-            foreach ($request->carts as $key => $cart) {
-                $detail = new QuotationDetail();
-                $detail->quotation_id = $data->id;
-                $detail->product_id = $cart['id'];
-                $detail->purchase_rate = $cart['purchase_rate'];
-                $detail->quantity = $cart['quantity'];
-                $detail->sale_rate = $cart['sale_rate'];
-                $detail->discount = $cart['discount'] ?? 0;
-                $detail->vat = $cart['vat'] ?? 0;
-                $detail->total = $cart['total'];
-                $detail->created_by = $this->userId;
-                $detail->ipAddress = request()->ip();
-                $detail->branch_id = $this->branchId;
-                $detail->save();
+            $cartDetails = [];
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'quotation_id'  => $data->id,
+                    'product_id'    => $cart['id'],
+                    'purchase_rate' => $cart['purchase_rate'],
+                    'quantity'      => $cart['quantity'],
+                    'sale_rate'     => $cart['sale_rate'],
+                    'discount'      => $cart['discount'] ?? 0,
+                    'vat'           => $cart['vat'] ?? 0,
+                    'total'         => $cart['total'],
+                    'created_by'    => $this->userId,
+                    'ipAddress'     => request()->ip(),
+                    'branch_id'     => $this->branchId,
+                ];
             }
-            
+            QuotationDetail::insert($cartDetails);
+
             DB::commit();
             $msg = "Quotation has created successfully";
             return response()->json(['status' => true, 'message' => $msg, 'quotationId' => $data->id, 'invoice' => invoiceGenerate('Quotation', '', $this->branchId)]);
@@ -180,39 +182,39 @@ class QuotationController extends Controller
             }
             $data->updated_by = $this->userId;
             $data->updated_at = Carbon::now();
-            $data->ipAddress = request()->ip();
-            $data->branch_id = $this->branchId;
+            $data->ipAddress  = request()->ip();
+            $data->branch_id  = $this->branchId;
             if (!empty($customer) && $customer->type == 'general') {
-                $data->customer_name = $customer->name;
-                $data->customer_phone = $customer->phone;
+                $data->customer_name    = $customer->name;
+                $data->customer_phone   = $customer->phone;
                 $data->customer_address = $customer->address;
             } else {
                 $data->customer_type = 'regular';
-                $data->customer_id = $customerId;
+                $data->customer_id   = $customerId;
             }
             $data->update();
 
 
             // old quotation_detail delete
             QuotationDetail::where('quotation_id', $quotation->id)->forceDelete();
-
-            foreach ($request->carts as $key => $cart) {
-                $detail = new QuotationDetail();
-                $detail->quotation_id = $quotation->id;
-                $detail->product_id = $cart['id'];
-                $detail->purchase_rate = $cart['purchase_rate'];
-                $detail->quantity = $cart['quantity'];
-                $detail->sale_rate = $cart['sale_rate'];
-                $detail->discount = $cart['discount'] ?? 0;
-                $detail->vat = $cart['vat'] ?? 0;
-                $detail->total = $cart['total'];
-                $detail->created_by = $data->created_by;
-                $detail->updated_by = $this->userId;
-                $detail->updated_at = Carbon::now();
-                $detail->ipAddress = request()->ip();
-                $detail->branch_id = $this->branchId;
-                $detail->save();
+            $cartDetails = [];
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'quotation_id'  => $data->id,
+                    'product_id'    => $cart['id'],
+                    'purchase_rate' => $cart['purchase_rate'],
+                    'quantity'      => $cart['quantity'],
+                    'sale_rate'     => $cart['sale_rate'],
+                    'discount'      => $cart['discount'] ?? 0,
+                    'vat'           => $cart['vat'] ?? 0,
+                    'total'         => $cart['total'],
+                    'created_by'    => $data->created_by,
+                    'updated_by'    => $this->userId,
+                    'ipAddress'     => request()->ip(),
+                    'branch_id'     => $this->branchId,
+                ];
             }
+            QuotationDetail::insert($cartDetails);
 
             DB::commit();
             $msg = "Quotation has updated successfully";
@@ -238,7 +240,6 @@ class QuotationController extends Controller
                 'ipAddress' => request()->ip(),
                 'deleted_at' => Carbon::now()
             ]);
-
             $data->delete();
 
             $msg = "Quotation has deleted successfully";
