@@ -70,7 +70,7 @@ class SaleController extends Controller
                 ->get();
 
             $customer = Customer::where('id', $sale->customer_id)->where('branch_id', $this->branchId)->withTrashed()->first();
-            $sale->customer_code = $customer->code ?? 'WalkIn customer';
+            $sale->customer_code = $customer->code ?? 'WalkIn Customer';
             $sale->customer_name = $customer->name ?? $sale->customer_name;
             $sale->customer_phone = $customer->phone ?? $sale->customer_phone;
             $sale->customer_address = $customer->address ?? $sale->customer_address;
@@ -145,35 +145,39 @@ class SaleController extends Controller
             }
             $data->save();
 
-            foreach ($request->carts as $key => $cart) {
-                $detail = new SaleDetail();
-                $detail->sale_id = $data->id;
-                $detail->product_id = $cart['id'];
-                $detail->purchase_rate = $cart['purchase_rate'];
-                $detail->quantity = $cart['quantity'];
-                $detail->sale_rate = $cart['sale_rate'];
-                $detail->discount = $cart['discount'] ?? 0;
-                $detail->vat = $cart['vat'] ?? 0;
-                $detail->total = $cart['total'];
-                $detail->created_by = $this->userId;
-                $detail->ipAddress = request()->ip();
-                $detail->branch_id = $this->branchId;
-                $detail->save();
+            $cartDetails = [];
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'sale_id'       => $data->id,
+                    'product_id'    => $cart['id'],
+                    'purchase_rate' => $cart['purchase_rate'],
+                    'quantity'      => $cart['quantity'],
+                    'sale_rate'     => $cart['sale_rate'],
+                    'discount'      => $cart['discount'] ?? 0,
+                    'vat'           => $cart['vat'] ?? 0,
+                    'total'         => $cart['total'],
+                    'created_by'    => $data->created_by,
+                    'ipAddress'     => request()->ip(),
+                    'branch_id'     => $this->branchId,
+                ];
             }
+            SaleDetail::insert($cartDetails);
 
             // bank transaction
             if (!empty($sale->bankPaid) && $sale->bankPaid > 0) {
-                foreach ($request->bankCart as $key => $cart) {
-                    $bank             = new SaleBank();
-                    $bank->sale_id    = $data->id;
-                    $bank->bank_id    = $cart['id'];
-                    $bank->last_digit = $cart['last_digit'];
-                    $bank->amount     = $cart['amount'];
-                    $bank->created_by = $this->userId;
-                    $bank->ipAddress = request()->ip();
-                    $bank->branch_id = $this->branchId;
-                    $bank->save();
+                $bankDetails = array();
+                foreach ($request->bankCart as $key => $bank) {
+                    $bankDetails[] = [
+                        'sale_id' => $data->id,
+                        'bank_id' => $bank['id'],
+                        'last_digit' => $bank['last_digit'],
+                        'amount' => $bank['amount'],
+                        'created_by' => $this->userId,
+                        'ipAddress' => request()->ip(),
+                        'branch_id' => $this->branchId
+                    ];
                 }
+                SaleBank::insert($bankDetails);
             }
 
             DB::commit();
@@ -236,41 +240,43 @@ class SaleController extends Controller
 
             // old sale_detail delete
             SaleDetail::where('sale_id', $sale->id)->forceDelete();
-
-            foreach ($request->carts as $key => $cart) {
-                $detail = new SaleDetail();
-                $detail->sale_id = $sale->id;
-                $detail->product_id = $cart['id'];
-                $detail->purchase_rate = $cart['purchase_rate'];
-                $detail->quantity = $cart['quantity'];
-                $detail->sale_rate = $cart['sale_rate'];
-                $detail->discount = $cart['discount'] ?? 0;
-                $detail->vat = $cart['vat'] ?? 0;
-                $detail->total = $cart['total'];
-                $detail->created_by = $data->created_by;
-                $detail->updated_by = $this->userId;
-                $detail->ipAddress = request()->ip();
-                $detail->branch_id = $this->branchId;
-                $detail->save();
+            $cartDetails = [];
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'sale_id'       => $data->id,
+                    'product_id'    => $cart['id'],
+                    'purchase_rate' => $cart['purchase_rate'],
+                    'quantity'      => $cart['quantity'],
+                    'sale_rate'     => $cart['sale_rate'],
+                    'discount'      => $cart['discount'] ?? 0,
+                    'vat'           => $cart['vat'] ?? 0,
+                    'total'         => $cart['total'],
+                    'created_by'    => $data->created_by,
+                    'updated_by'    => $this->userId,
+                    'ipAddress'     => request()->ip(),
+                    'branch_id'     => $this->branchId,
+                ];
             }
+            SaleDetail::insert($cartDetails);
 
             // Delete Bank Transaction
             SaleBank::where('sale_id', $sale->id)->forceDelete();
             // bank transaction
             if (!empty($sale->bankPaid) && $sale->bankPaid > 0) {
-                foreach ($request->bankCart as $key => $cart) {
-                    $bank             = new SaleBank();
-                    $bank->sale_id    = $data->id;
-                    $bank->bank_id    = $cart['id'];
-                    $bank->last_digit = $cart['last_digit'];
-                    $bank->amount     = $cart['amount'];
-                    $bank->created_by = $this->userId;
-                    $bank->updated_by = $this->userId;
-                    $bank->updated_at = Carbon::now();
-                    $bank->ipAddress = request()->ip();
-                    $bank->branch_id = $this->branchId;
-                    $bank->save();
+                $bankDetails = array();
+                foreach ($request->bankCart as $key => $bank) {
+                    $bankDetails[] = [
+                        'sale_id'    => $data->id,
+                        'bank_id'    => $bank['id'],
+                        'last_digit' => $bank['last_digit'],
+                        'amount'     => $bank['amount'],
+                        'created_by' => $data->created_by,
+                        'updated_by' => $this->userId,
+                        'ipAddress'  => request()->ip(),
+                        'branch_id'  => $this->branchId
+                    ];
                 }
+                SaleBank::insert($bankDetails);
             }
 
             DB::commit();

@@ -213,7 +213,7 @@ Route::post('/delete-sale', [SaleController::class, 'destroy'])->name('sale.dele
 
 // quotation route
 Route::get('/quotation/{id?}', [QuotationController::class, 'create'])->name('quotation.create');
-Route::get('/quotation-record', [QuotationController::class, 'saleRecord'])->name('quotation.record');
+Route::get('/quotation-record', [QuotationController::class, 'quotationRecord'])->name('quotation.record');
 Route::post('/get-quotation', [QuotationController::class, 'index'])->name('quotation.index');
 Route::post('/quotation', [QuotationController::class, 'store'])->name('quotation.store');
 Route::post('/update-quotation', [QuotationController::class, 'update'])->name('quotation.update');

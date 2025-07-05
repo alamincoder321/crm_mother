@@ -28,59 +28,59 @@ class QuotationController extends Controller
 
     public function index(Request $request)
     {
-        $sales = Quotation::with('adUser', 'upUser')->where('branch_id', $this->branchId);
+        $quotations = Quotation::with('adUser', 'upUser')->where('branch_id', $this->branchId);
         if (!empty($request->quotationId)) {
-            $sales->where('id', $request->quotationId);
+            $quotations->where('id', $request->quotationId);
         }
         if (!empty($request->customerId)) {
-            $sales->where('customer_id', $request->customerId);
+            $quotations->where('customer_id', $request->customerId);
         }
         if (!empty($request->userId)) {
-            $sales->where('created_by', $request->userId);
+            $quotations->where('created_by', $request->userId);
         }
         if (!empty($request->dateFrom) && !empty($request->dateTo)) {
-            $sales->whereBetween('date', [$request->dateFrom, $request->dateTo]);
+            $quotations->whereBetween('date', [$request->dateFrom, $request->dateTo]);
         }
         if (!empty($request->search)) {
-            $sales = $sales->where(function ($query) use ($request) {
+            $quotations = $quotations->where(function ($query) use ($request) {
                 $query->where('invoice', 'like', '%' . $request->search . '%')
                     ->orWhere('customer_name', 'like', '%' . $request->search . '%');
             });
         }
         if (!empty($request->forSearch)) {
-            $sales = $sales->limit(50);
+            $quotations = $quotations->limit(50);
         }
-        $sales = $sales->latest()->get()->map(function ($sale) {
-            $sale->details = DB::table('quotation_details as pd')
+        $quotations = $quotations->latest()->get()->map(function ($quotation) {
+            $quotation->details = DB::table('quotation_details as pd')
                 ->select('p.name', 'p.code', 'u.name as unit_name', 'c.name as category_name', 'pd.*')
                 ->leftJoin('products as p', 'p.id', '=', 'pd.product_id')
                 ->leftJoin('units as u', 'u.id', '=', 'p.unit_id')
                 ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
-                ->where('quotation_id', $sale->id)
+                ->where('quotation_id', $quotation->id)
                 ->where('pd.status', 'a')
                 ->where('pd.branch_id', $this->branchId)
                 ->get();
 
-            $customer = Customer::where('id', $sale->customer_id)->where('branch_id', $this->branchId)->withTrashed()->first();
-            $sale->customer_code = $customer->code ?? 'WalkIn customer';
-            $sale->customer_name = $customer->name ?? $sale->customer_name;
-            $sale->customer_phone = $customer->phone ?? $sale->customer_phone;
-            $sale->customer_address = $customer->address ?? $sale->customer_address;
+            $customer = Customer::where('id', $quotation->customer_id)->where('branch_id', $this->branchId)->withTrashed()->first();
+            $quotation->customer_code = $customer->code ?? 'WalkIn Customer';
+            $quotation->customer_name = $customer->name ?? $quotation->customer_name;
+            $quotation->customer_phone = $customer->phone ?? $quotation->customer_phone;
+            $quotation->customer_address = $customer->address ?? $quotation->customer_address;
 
-            $employee = User::where('id', $sale->employee_id)->where('branch_id', $this->branchId)->withTrashed()->first();
-            $sale->employee_name = $employee->name ?? "NA";
+            $employee = User::where('id', $quotation->employee_id)->where('branch_id', $this->branchId)->withTrashed()->first();
+            $quotation->employee_name = $employee->name ?? "NA";
 
-            $sale->display_name = $sale->invoice . ' - ' . $sale->customer_name;
-            return $sale;
-        }, $sales);
-        return response()->json($sales);
+            $quotation->display_name = $quotation->invoice . ' - ' . $quotation->customer_name;
+            return $quotation;
+        }, $quotations);
+        return response()->json($quotations);
     }
 
     public function create($id = "")
     {
         $data['id'] = $id;
-        $data['invoice'] = invoiceGenerate('Sale', '', $this->branchId);
-        return view('pages.sale.create', $data);
+        $data['invoice'] = invoiceGenerate('Quotation', '', $this->branchId);
+        return view('pages.quotation.create', $data);
     }
 
 
@@ -148,7 +148,7 @@ class QuotationController extends Controller
     {
         try {
             DB::beginTransaction();
-            $sale = (object) $request->sale;
+            $quotation = (object) $request->quotation;
             $customer = (object) $request->customer;
             $customerId = $customer->id ?? NULL;
 
@@ -162,7 +162,7 @@ class QuotationController extends Controller
                     $cus->name       = $customer->name;
                     $cus->owner      = $customer->name;
                     $cus->phone      = $customer->phone;
-                    $cus->type       = $sale->customer_type;
+                    $cus->type       = $quotation->customer_type;
                     $cus->address    = $customer->address;
                     $cus->created_by = $this->userId;
                     $cus->ipAddress  = request()->ip();
@@ -171,10 +171,10 @@ class QuotationController extends Controller
                     $customerId = $cus->id;
                 }
             }
-            $dataKey = $sale;
+            $dataKey = $quotation;
             unset($dataKey->invoice);
-            $data = Quotation::find($sale->id);
-            $data->employee_id = $sale->employee_id ?? NULL;
+            $data = Quotation::find($quotation->id);
+            $data->employee_id = $quotation->employee_id ?? NULL;
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
             }
@@ -194,11 +194,11 @@ class QuotationController extends Controller
 
 
             // old quotation_detail delete
-            QuotationDetail::where('quotation_id', $sale->id)->forceDelete();
+            QuotationDetail::where('quotation_id', $quotation->id)->forceDelete();
 
             foreach ($request->carts as $key => $cart) {
                 $detail = new QuotationDetail();
-                $detail->quotation_id = $sale->id;
+                $detail->quotation_id = $quotation->id;
                 $detail->product_id = $cart['id'];
                 $detail->purchase_rate = $cart['purchase_rate'];
                 $detail->quantity = $cart['quantity'];
@@ -208,6 +208,7 @@ class QuotationController extends Controller
                 $detail->total = $cart['total'];
                 $detail->created_by = $data->created_by;
                 $detail->updated_by = $this->userId;
+                $detail->updated_at = Carbon::now();
                 $detail->ipAddress = request()->ip();
                 $detail->branch_id = $this->branchId;
                 $detail->save();
@@ -215,7 +216,7 @@ class QuotationController extends Controller
 
             DB::commit();
             $msg = "Quotation has updated successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'quotationId' => $sale->id, 'invoice' => invoiceGenerate('Sale', '', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => $msg, 'quotationId' => $quotation->id, 'invoice' => invoiceGenerate('quotation', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());

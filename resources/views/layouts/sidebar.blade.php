@@ -98,13 +98,13 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/quotation">
                 <i class="bi bi-file-plus"></i>
                 <span>Quotation Entry</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/quotation-record">
                 <i class="bi bi-file-text"></i>
                 <span>Quotation Record</span>
             </a>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PurchaseReturn;
 use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseReturnDetail;
+use App\Http\Requests\PurchaseReturnRequest;
 
 class PurchaseReturnController extends Controller
 {
@@ -47,13 +48,20 @@ class PurchaseReturnController extends Controller
         return view('pages.purchase.purchaseReturn');
     }
 
-    public function store(Request $request)
+    public function store(PurchaseReturnRequest $request)
     {
         try {
             DB::beginTransaction();
             $purchaseReturn = (object) $request->purchaseReturn;
-
             
+            $data = array(
+                'invoice' => invoiceGenerate('Purchase_Return', '', $this->branchId),
+                'supplier_id' => $purchaseReturn->supplierId,
+                'purchase_id' => $purchaseReturn->purchaseId,
+                'date' => $purchaseReturn->date,
+                'total' => $purchaseReturn->total
+            );
+            $purchaseReturn = PurchaseReturn::create($data);
 
             DB::commit();
             $msg = "Purchase Return has updated successfully";

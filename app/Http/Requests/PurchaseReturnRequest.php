@@ -13,7 +13,7 @@ class PurchaseReturnRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +23,26 @@ class PurchaseReturnRequest extends FormRequest
      */
     public function rules()
     {
+        $rules = [
+            'purchaseReturn.date' => 'required'
+        ];
+
+        if(count($this->carts) == 0){
+            $rules['carts'] = 'required';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
         return [
-            //
+            'purchaseReturn.date.required' => 'Purchase date required'
         ];
     }
 }

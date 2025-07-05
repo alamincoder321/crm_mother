@@ -47,7 +47,7 @@ class PurchaseController extends Controller
                     ->orWhere('supplier_name', 'like', '%' . $request->search . '%');
             });
         }
-        if(!empty($request->forSearch)){
+        if (!empty($request->forSearch)) {
             $purchases = $purchases->limit(50);
         }
         $purchases = $purchases->latest()->get()->map(function ($purchase) {
@@ -69,7 +69,7 @@ class PurchaseController extends Controller
             $employee = User::where('id', $purchase->employee_id)->where('branch_id', $this->branchId)->withTrashed()->first();
             $purchase->employee_name = $employee->name ?? "NA";
 
-            $purchase->display_name = $purchase->invoice. ' - '. $purchase->supplier_name;
+            $purchase->display_name = $purchase->invoice . ' - ' . $purchase->supplier_name;
             return $purchase;
         }, $purchases);
         return response()->json($purchases);
@@ -135,21 +135,23 @@ class PurchaseController extends Controller
             }
             $data->save();
 
-            foreach ($request->carts as $key => $cart) {
-                $detail = new PurchaseDetail();
-                $detail->purchase_id = $data->id;
-                $detail->product_id = $cart['id'];
-                $detail->purchase_rate = $cart['purchase_rate'];
-                $detail->quantity = $cart['quantity'];
-                $detail->sale_rate = $cart['sale_rate'];
-                $detail->discount = $cart['discount'] ?? 0;
-                $detail->vat = $cart['vat'] ?? 0;
-                $detail->total = $cart['total'];
-                $detail->created_by = $this->userId;
-                $detail->ipAddress = request()->ip();
-                $detail->branch_id = $this->branchId;
-                $detail->save();
+            $cartDetails = [];
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'purchase_id'   => $data->id,
+                    'product_id'    => $cart['id'],
+                    'purchase_rate' => $cart['purchase_rate'],
+                    'quantity'      => $cart['quantity'],
+                    'sale_rate'     => $cart['sale_rate'],
+                    'discount'      => $cart['discount'] ?? 0,
+                    'vat'           => $cart['vat'] ?? 0,
+                    'total'         => $cart['total'],
+                    'created_by'    => $this->userId,
+                    'ipAddress'     => request()->ip(),
+                    'branch_id'     => $this->branchId,
+                ];
             }
+            PurchaseDetail::insert($cartDetails);
 
             DB::commit();
             $msg = "Purchase has created successfully";
@@ -210,22 +212,24 @@ class PurchaseController extends Controller
 
             // old purchase_detail delete
             PurchaseDetail::where('purchase_id', $purchase->id)->forceDelete();
-            foreach ($request->carts as $key => $cart) {
-                $detail = new PurchaseDetail();
-                $detail->purchase_id = $purchase->id;
-                $detail->product_id = $cart['id'];
-                $detail->purchase_rate = $cart['purchase_rate'];
-                $detail->quantity = $cart['quantity'];
-                $detail->sale_rate = $cart['sale_rate'];
-                $detail->discount = $cart['discount'] ?? 0;
-                $detail->vat = $cart['vat'] ?? 0;
-                $detail->total = $cart['total'];
-                $detail->created_by = $data->created_by;
-                $detail->updated_by = $this->userId;
-                $detail->ipAddress = request()->ip();
-                $detail->branch_id = $this->branchId;
-                $detail->save();
+            $cartDetails = [];
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'purchase_id'   => $data->id,
+                    'product_id'    => $cart['id'],
+                    'purchase_rate' => $cart['purchase_rate'],
+                    'quantity'      => $cart['quantity'],
+                    'sale_rate'     => $cart['sale_rate'],
+                    'discount'      => $cart['discount'] ?? 0,
+                    'vat'           => $cart['vat'] ?? 0,
+                    'total'         => $cart['total'],
+                    'created_by'    => $data->created_by,
+                    'updated_by'    => $this->userId,
+                    'ipAddress'     => request()->ip(),
+                    'branch_id'     => $this->branchId,
+                ];
             }
+            PurchaseDetail::insert($cartDetails);
 
             DB::commit();
             $msg = "Purchase has updated successfully";

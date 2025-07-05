@@ -8,8 +8,14 @@
         text-align: center !important;
         background-color: gray;
         color: #fff;
+        vertical-align: middle !important;
     }
-    .v-select{
+
+    .table>tbody>tr>td {
+        vertical-align: middle !important;
+    }
+
+    .v-select {
         width: 300px !important;
     }
 </style>
@@ -62,21 +68,39 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in purchases.details">
+                                <tr v-for="(item, index) in purchase.details">
                                     <td class="text-center" v-text="index + 1"></td>
                                     <td class="text-left" v-text="`${item.name} - ${item.code}`"></td>
                                     <td class="text-center" v-text="item.quantity"></td>
                                     <td class="text-center" v-text="item.total"></td>
                                     <td class="text-center" v-text="'already taken'"></td>
                                     <td class="text-center">
-                                        <input type="number" class="text-center" min="0" step="any" v-model="item.return_quantity" @input="qtyRateChange(index)"/>
+                                        <input type="number" class="text-center" min="0" step="any" v-model="item.return_quantity" @input="qtyRateChange(index)" />
                                     </td>
                                     <td class="text-center">
-                                        <input type="number" class="text-center" min="0" step="any" v-model="item.purchase_rate" @input="qtyRateChange(index)"/>
+                                        <input type="number" class="text-center" min="0" step="any" v-model="item.purchase_rate" @input="qtyRateChange(index)" />
                                     </td>
-                                    <td class="text-rnf" v-text="item.returnTotal"></td>
+                                    <td class="text-center" v-text="item.returnTotal"></td>
                                 </tr>
-                                <tr :class="purchases.details.length == 0 ? '' : 'd-none'" v-if="purchases.details.length == 0">
+                                <tr>
+                                    <td colspan="5">
+                                        <textarea name="note" id="note" placeholder="Enter note here..." class="form-control" v-model="purchaseReturn.note"></textarea>
+                                    </td>
+                                    <td class="text-center">
+                                        @{{ purchase.details.reduce((acc, item) => {
+                                            return acc + (item.return_quantity !== "" && !isNaN(item.return_quantity) ? parseFloat(item.return_quantity) : 0);
+                                        }, 0) }}
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" :disabled="onProgress" @click="saveData" class="btn btn-success btn-sm d-block w-100">Save Return</button>
+                                    </td>
+                                    <td class="text-center">
+                                        @{{ purchase.details.reduce((acc, item) => {
+                                            return acc + (item.returnTotal !== "" && !isNaN(item.returnTotal) ? parseFloat(item.returnTotal) : 0);
+                                        }, 0).toFixed(2) }}
+                                    </td>
+                                </tr>
+                                <tr :class="purchase.details.length == 0 ? '' : 'd-none'" v-if="purchase.details.length == 0">
                                     <td :colspan="5" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
@@ -95,14 +119,21 @@
     new Vue({
         el: '#purchasereturnList',
         data: {
-            purchases: {
+            purchase: {
                 details: []
+            },
+            purchaseReturn: {
+                date: moment().format('YYYY-MM-DD'),
+                supplier_id: '',
+                purchase_id: '',
+                note: '',
             },
             suppliers: [],
             selectedSupplier: null,
             invoices: [],
             selectedInvoice: null,
-            isLoading: null
+            isLoading: null,
+            onProgress: false,
         },
 
         created() {
@@ -143,8 +174,8 @@
                 }
             },
 
-            onChangeSupplier(){
-                if(this.selectedSupplier != null){
+            onChangeSupplier() {
+                if (this.selectedSupplier != null) {
                     this.getPurchase();
                 }
             },
@@ -155,7 +186,7 @@
                         supplierId: this.selectedSupplier ? this.selectedSupplier.id : ""
                     })
                     .then(res => {
-                        this.invoices = res.data;                        
+                        this.invoices = res.data;
                     })
             },
 
@@ -166,7 +197,7 @@
                             search: val,
                         })
                         .then(res => {
-                            this.purchases = res.data;
+                            this.purchase = res.data;
                             loading(false)
                         })
                 } else {
@@ -175,13 +206,12 @@
                 }
             },
 
-            async qtyRateChange(ind){
-                let item = this.purchases.details[ind];
-                // axios.post('/get-stock');
-                if(item.return_quantity > item.quantity){
+            async qtyRateChange(ind) {
+                let item = this.purchase.details[ind];
+                if (item.return_quantity > item.quantity) {
                     item.return_quantity = item.quantity;
                 }
-                if(item.purchase_rate < 0){
+                if (item.purchase_rate < 0) {
                     item.purchase_rate = 0;
                 }
                 item.returnTotal = (item.return_quantity * item.purchase_rate).toFixed(2);
@@ -195,10 +225,61 @@
                 this.isLoading = false;
                 axios.post('/get-purchase', filter)
                     .then(res => {
-                        this.purchases = res.data[0]
+                        this.purchase = res.data[0]
+                        this.purchaseReturn.supplier_id = this.selectedSupplier ? this.selectedSupplier.id : '';
+                        this.purchaseReturn.purchase_id = this.selectedInvoice ? this.selectedInvoice.id : '';
                         this.isLoading = true;
                     })
-            }
+            },
+
+            saveData() {
+                let details = this.purchase.details.filter(item => item.return_quantity > 0).map(item => {
+                    return {
+                        id: item.id,
+                        product_id: item.product_id,
+                        return_quantity: item.return_quantity,
+                        purchase_rate: item.purchase_rate,
+                        discount: item.discount,
+                        returnTotal: item.returnTotal
+                    }
+                });
+
+                this.purchaseReturn.total = details.reduce((pr, cu) => {return pr + parseFloat(cu.returnTotal)}, 0).toFixed(2);
+                
+                let filter = {
+                    purchaseReturn: this.purchaseReturn,
+                    carts: details
+                }
+                this.onProgress = true;
+                axios.post('/purchase-return', filter)
+                    .then(res => {
+                        if (res.data.status == 'success') {
+                            toastr.success(res.data.message);
+                            this.showList();
+                        } else {
+                            toastr.error(res.data.message);
+                        }
+                        this.onProgress = false;
+                    })
+                    .catch(err => {
+                        this.onProgress = false
+                        var r = JSON.parse(err.request.response);
+                        console.log(r);
+
+                        if (err.request.status == '422' && r.errors != undefined && typeof r.errors == 'object') {
+                            $.each(r.errors, (index, value) => {
+                                $.each(value, (ind, val) => {
+                                    toastr.error(val)
+                                })
+                            })
+                        } else {
+                            if (r.errors != undefined) {
+                                console.log(r.errors);
+                            }
+                            toastr.error(val)
+                        }
+                    })
+            },
         },
     })
 </script>
