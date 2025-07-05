@@ -57,7 +57,6 @@ class Product extends Model
         if (!empty($request->brandId)) {
             $clauses .= " and p.brand_id = '$request->brandId'";
         }
-        file_put_contents(__DIR__ . "/log.text", json_encode($clauses));
 
         $query = DB::select("select p.id, p.code, p.name, p.purchase_rate, u.name as unit_name,
                             (select ifnull(sum(pd.quantity), 0) from purchase_details pd
