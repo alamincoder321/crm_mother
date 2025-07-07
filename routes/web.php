@@ -109,7 +109,7 @@ Route::post('/update-product', [ProductController::class, 'update'])->name('prod
 Route::post('/delete-product', [ProductController::class, 'destroy'])->name('product.delete');
 
 // stock route
-Route::get('/currentStock', [ProductController::class, 'currentStock'])->name('product.current.stock');
+Route::get('/stock', [ProductController::class, 'stock'])->name('product.stock');
 Route::post('/get-currentStock', [ProductController::class, 'getProductStock'])->name('get.product.stock');
 
 

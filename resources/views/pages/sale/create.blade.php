@@ -121,7 +121,7 @@
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Address:</label>
                             <div class="col-8 col-md-8">
-                                <input type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.address" >
+                                <input type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.address">
                             </div>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                             </div>
                             <div class="form-group row" style="display: flex; align-items: center;">
                                 <div class="col-12 col-md-7" style="font-size: 13px;">
-                                    <span>Stock:</span> <span class="text-success" v-text="stock"></span>
+                                    <span>Stock:</span> <span class="text-success" v-text="stock"></span> <span v-text="selectedProduct.unit?.name"></span>
                                     <span class="text-danger" v-if="stock <= 0"> (Out of Stock)</span>
                                 </div>
                                 <div class="col-12 col-md-5 text-end">
@@ -417,6 +417,7 @@
                 products: [],
                 selectedProduct: {
                     id: '',
+                    unit: {},
                     display_name: 'select product'
                 },
                 employees: [],
@@ -530,6 +531,7 @@
                 }
                 this.selectedProduct = {
                     id: '',
+                    unit: {},
                     display_name: 'select product'
                 }
                 this.getCustomer();
@@ -567,15 +569,21 @@
                 }
             },
 
-            onChangeProduct() {
+            async onChangeProduct() {
                 if (this.selectedProduct == null) {
                     this.selectedProduct = {
                         id: '',
+                        unit: {},
                         display_name: 'select product'
                     }
                     return;
                 }
-                if(this.selectedProduct.id != ''){
+                if (this.selectedProduct.id != '') {
+                    await axios.post('/get-currentStock', {
+                        productId: this.selectedProduct.id
+                    }).then(res => {
+                        this.stock = res.data.length > 0 ? res.data[0].stock : 0;
+                    })
                     this.$refs.quantity.focus();
                 }
             },
@@ -589,8 +597,9 @@
                     toastr.error('Please select a product')
                     return;
                 }
-                let cart = this.carts.find(item => item.id == this.selectedProduct.id);
-                if (cart) {
+                let cartInd = this.carts.findIndex(item => item.id == this.selectedProduct.id);
+
+                if (cartInd > -1) {
                     cart.quantity = parseFloat(cart.quantity) + parseFloat(this.selectedProduct.quantity);
                     cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
                 } else {
@@ -629,6 +638,7 @@
             clearProduct() {
                 this.selectedProduct = {
                     id: '',
+                    unit: {},
                     display_name: 'select product'
                 }
             },

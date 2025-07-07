@@ -174,7 +174,7 @@ class ProductController extends Controller
         }
     }
 
-    public function currentStock()
+    public function stock()
     {
         return view('pages.stock.current_stock');
     }

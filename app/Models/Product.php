@@ -59,15 +59,33 @@ class Product extends Model
         }
 
         $query = DB::select("select p.id, p.code, p.name, p.purchase_rate, u.name as unit_name,
+
                             (select ifnull(sum(pd.quantity), 0) from purchase_details pd
-                            where pd.product_id = p.id) as purchase_quantity,
+                            where pd.product_id = p.id
+                            and pd.status = 'a'
+                            and pd.branch_id = '$branchId') as purchase_quantity,
+                            
+                            (select ifnull(sum(prd.quantity), 0) from purchase_return_details prd
+                            where prd.product_id = p.id
+                            and prd.status = 'a'
+                            and prd.branch_id = '$branchId') as purchase_return_quantity,
+
                             (select ifnull(sum(sd.quantity), 0) from sale_details sd
-                            where sd.product_id = p.id) as sale_quantity,
-                            (select purchase_quantity - sale_quantity) as stock,
+                            where sd.product_id = p.id
+                            and sd.status = 'a'
+                            and sd.branch_id = '$branchId') as sale_quantity,
+                            
+                            (select ifnull(sum(srd.quantity), 0) from sale_return_details srd
+                            where srd.product_id = p.id
+                            and srd.status = 'a'
+                            and srd.branch_id = '$branchId') as sale_return_quantity,
+
+                            (select (purchase_quantity + sale_return_quantity) - (sale_quantity + purchase_return_quantity)) as stock,
                             (select stock * p.purchase_rate) as stock_value
                             from products p
                             left join units u on u.id = p.unit_id
                             where p.status = 'a'
+                            and p.branch_id = '$branchId'
                             $clauses");
 
 
