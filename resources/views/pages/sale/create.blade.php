@@ -597,12 +597,21 @@
                     toastr.error('Please select a product')
                     return;
                 }
-                let cartInd = this.carts.findIndex(item => item.id == this.selectedProduct.id);
+                let cart = this.carts.find(item => item.id == this.selectedProduct.id);
 
-                if (cartInd > -1) {
-                    cart.quantity = parseFloat(cart.quantity) + parseFloat(this.selectedProduct.quantity);
+                if (cart != undefined) {
+                    let newQuantity = parseFloat(cart.quantity) + parseFloat(this.selectedProduct.quantity)
+                    if (parseFloat(newQuantity) > parseFloat(this.stock)) {
+                        toastr.error('Stock is unavailable');
+                        return;
+                    }
+                    cart.quantity = newQuantity;
                     cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
                 } else {
+                    if (parseFloat(this.selectedProduct.quantity) > parseFloat(this.stock)) {
+                        toastr.error('Stock is unavailable');
+                        return;
+                    }
                     this.carts.push({
                         id: this.selectedProduct.id,
                         code: this.selectedProduct.code,
@@ -620,13 +629,25 @@
             },
 
             async quantityRateTotal(cart) {
+                let stock = await axios.post('/get-currentStock', {
+                    productId: cart.id
+                }).then(res => {
+                    return res.data.length > 0 ? res.data[0].stock : 0;
+                });
+
                 this.carts = this.carts.map(item => {
-                    if (item.quantity == '') {
-                        item.quantity = 1;
+                    if (item.id === cart.id) {
+                        if (item.quantity == '') {
+                            item.quantity = 1;
+                        }
+                        if (parseFloat(item.quantity) > parseFloat(stock)) {
+                            toastr.error('Stock is unavailable');
+                            item.quantity = stock;
+                        }
+                        item.total = parseFloat(item.sale_rate * item.quantity).toFixed(2);
                     }
-                    item.total = parseFloat(item.sale_rate * item.quantity).toFixed(2);
                     return item;
-                })
+                });
                 await this.calculateTotal();
             },
 
@@ -641,6 +662,7 @@
                     unit: {},
                     display_name: 'select product'
                 }
+                this.stock = 0;
             },
 
             calculateTotal() {

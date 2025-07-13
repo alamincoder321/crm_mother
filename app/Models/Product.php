@@ -43,7 +43,7 @@ class Product extends Model
 
 
     //stock
-    public static function stock($request)
+    public static function stock($request, $date = null)
     {
         $branchId = session('branch')->id;
         $request = (object)$request;
@@ -61,24 +61,32 @@ class Product extends Model
         $query = DB::select("select p.id, p.code, p.name, p.purchase_rate, u.name as unit_name,
 
                             (select ifnull(sum(pd.quantity), 0) from purchase_details pd
+                            join purchases pm on pm.id = pd.purchase_id
                             where pd.product_id = p.id
                             and pd.status = 'a'
-                            and pd.branch_id = '$branchId') as purchase_quantity,
+                            ".($date == null ? "" : " and pm.date <= '$date'" )."
+                            ".($branchId == null ? "" : " and pd.branch_id = '$branchId'" ).") as purchase_quantity,
                             
                             (select ifnull(sum(prd.quantity), 0) from purchase_return_details prd
+                            join purchase_returns prm on prm.id = prd.purchase_return_id
                             where prd.product_id = p.id
                             and prd.status = 'a'
-                            and prd.branch_id = '$branchId') as purchase_return_quantity,
+                            ".($date == null ? "" : " and prm.date <= '$date'" )."
+                            ".($branchId == null ? "" : " and prd.branch_id = '$branchId'" ).") as purchase_return_quantity,
 
                             (select ifnull(sum(sd.quantity), 0) from sale_details sd
+                            join sales sm on sm.id = sd.sale_id
                             where sd.product_id = p.id
                             and sd.status = 'a'
-                            and sd.branch_id = '$branchId') as sale_quantity,
+                            ".($date == null ? "" : " and sm.date <= '$date'")."
+                            ".($branchId == null ? "" : " and sd.branch_id = '$branchId'" ).") as sale_quantity,
                             
                             (select ifnull(sum(srd.quantity), 0) from sale_return_details srd
+                            join sale_returns srm on srm.id = srd.sale_return_id
                             where srd.product_id = p.id
                             and srd.status = 'a'
-                            and srd.branch_id = '$branchId') as sale_return_quantity,
+                            ".($date == null ? "" : " and srm.date <= '$date'")."
+                            ".($branchId == null ? "" : " and srd.branch_id = '$branchId'" ).") as sale_return_quantity,
 
                             (select (purchase_quantity + sale_return_quantity) - (sale_quantity + purchase_return_quantity)) as stock,
                             (select stock * p.purchase_rate) as stock_value

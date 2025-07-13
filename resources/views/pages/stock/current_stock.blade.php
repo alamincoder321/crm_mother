@@ -3,11 +3,20 @@
 @section('title', 'Stock List')
 @section('breadcrumb', 'Stock List')
 @push('style')
-<style>
+<style scoped>
     .table>thead>tr>th {
         text-align: center !important;
         background-color: gray;
         color: #fff;
+    }
+
+    .v-select .dropdown-toggle {
+        width: 250px !important;
+    }
+
+    .v-select .dropdown-menu {
+        width: 350px !important;
+        overflow-y: hidden !important;
     }
 </style>
 @endpush
@@ -21,11 +30,16 @@
                         <div class="form-group">
                             <label for="searchType">SearchType</label>
                             <select id="searchType" class="form-select" v-model="searchType" @change="onChangeSearchType">
-                                <option value="">Total Stock</option>
                                 <option value="current">Current Stock</option>
+                                <option value="">Total Stock</option>
                                 <option value="category">By Category</option>
                                 <option value="brand">By Brand</option>
+                                <option value="product">By Product</option>
                             </select>
+                        </div>
+                        <div class="form-group" :class="searchType == 'product' ? '' : 'd-none'" v-if="searchType == 'product'">
+                            <label for="product_id">Product</label>
+                            <v-select :options="products" v-model="selectedProduct" label="display_name"></v-select>
                         </div>
                         <div class="form-group" :class="searchType == 'category' ? '' : 'd-none'" v-if="searchType == 'category'">
                             <label for="category_id">Category</label>
@@ -34,6 +48,10 @@
                         <div class="form-group" :class="searchType == 'brand' ? '' : 'd-none'" v-if="searchType == 'brand'">
                             <label for="brand_id">Brand</label>
                             <v-select :options="brands" v-model="selectedBrand" label="name"></v-select>
+                        </div>
+                        <div class="form-group" :class="searchType != 'current' ? '' : 'd-none'" v-if="searchType != 'current'">
+                            <label for="date">Date</label>
+                            <input type="date" class="form-control" id="date" v-model="date" />
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary btn-sm">Show</button>
@@ -77,6 +95,12 @@
                                     <td v-html="item.purchase_rate" class="text-end"></td>
                                     <td v-html="parseFloat(item.stock_value).toFixed(2)" class="text-end"></td>
                                 </tr>
+                                <tr :class="stocks.length > 0 ? '' : 'd-none'" v-if="stocks.length > 0">
+                                    <td class="text-center bg-light" colspan="3">Total</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock)}, 0) }}</td>
+                                    <td class="bg-light"></td>
+                                    <td class="text-end bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock_value)}, 0).toFixed(2) }}</td>
+                                </tr>
                                 <tr :class="stocks.length == 0 ? '' : 'd-none'" v-if="stocks.length == 0">
                                     <td colspan="6" class="text-center">Not Found Data</td>
                                 </tr>
@@ -111,14 +135,14 @@
                                     <td v-html="parseFloat(item.stock_value).toFixed(2)" class="text-end"></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-end" style="font-weight: 700;" colspan="3">Total</td>
-                                    <td class="text-center" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.purchase_quantity)}, 0) }}</td>
-                                    <td class="text-center" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.purchase_return_quantity)}, 0) }}</td>
-                                    <td class="text-center" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.sale_quantity)}, 0) }}</td>
-                                    <td class="text-center" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.sale_return_quantity)}, 0) }}</td>
-                                    <td class="text-center" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock)}, 0) }}</td>
-                                    <td></td>
-                                    <td class="text-end" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock_value)}, 0).toFixed(2) }}</td>
+                                    <td class="text-end bg-light" style="font-weight: 700;" colspan="3">Total</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.purchase_quantity)}, 0) }}</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.purchase_return_quantity)}, 0) }}</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.sale_quantity)}, 0) }}</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.sale_return_quantity)}, 0) }}</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock)}, 0) }}</td>
+                                    <td class="bg-light"></td>
+                                    <td class="text-end bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock_value)}, 0).toFixed(2) }}</td>
                                 </tr>
                                 <tr :class="stocks.length == 0 ? '' : 'd-none'" v-if="stocks.length == 0">
                                     <td colspan="6" class="text-center">Not Found Data</td>
@@ -140,7 +164,10 @@
         el: '#stockList',
         data: {
             searchType: 'current',
+            date: moment().format('YYYY-MM-DD'),
             stocks: [],
+            products: [],
+            selectedProduct: null,
             categories: [],
             selectedCategory: null,
             brands: [],
@@ -161,19 +188,26 @@
                         this.categories = res.data;
                     })
             },
+            getProduct() {
+                axios.post('/get-product')
+                    .then(res => {
+                        this.products = res.data;
+                    })
+            },
 
             onChangeSearchType() {
                 this.stocks = [];
-                this.categories = [];
-                this.brands = [];
                 this.selectedCategory = null;
                 this.selectedBrand = null;
-                this.priceType = "";
+                this.selectedProduct = null;
                 this.isLoading = null;
+                this.date = moment().format('YYYY-MM-DD');
                 if (this.searchType == 'category') {
                     this.getCategory();
                 } else if (this.searchType == 'brand') {
                     this.getBrand();
+                } else if (this.searchType == 'product') {
+                    this.getProduct();
                 }
             },
 
@@ -181,6 +215,8 @@
                 let filter = {
                     categoryId: this.selectedCategory ? this.selectedCategory.id : '',
                     brandId: this.selectedBrand ? this.selectedBrand.id : '',
+                    productId: this.selectedProduct ? this.selectedProduct.id : '',
+                    date: this.searchType == 'current' ? '' : this.date
                 }
                 this.isLoading = false;
                 axios.post('/get-currentStock', filter)

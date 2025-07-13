@@ -15,7 +15,7 @@ class CreateSaleReturnDetailsTable extends Migration
     {
         Schema::create('sale_return_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_return_id')->nullable()->constrained('purchase_returns', 'id');
+            $table->foreignId('sale_return_id')->nullable()->constrained('sale_returns', 'id');
             $table->foreignId('sale_detail_id')->nullable()->constrained('sale_details', 'id');
             $table->foreignId('product_id')->nullable()->constrained('products', 'id');
             $table->float('quantity')->default(0);

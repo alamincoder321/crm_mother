@@ -182,7 +182,11 @@ class ProductController extends Controller
     public function getProductStock(Request $request)
     {
         try {
-            $stock = Product::stock($request);
+            $date = null;
+            if (!empty($request->date)) {
+                $date = $request->date;
+            }
+            $stock = Product::stock($request, $date);
             return response()->json($stock, 200);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
