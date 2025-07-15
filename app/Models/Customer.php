@@ -51,7 +51,7 @@ class Customer extends Model
         }
 
         $query = "select
-                    c.id, c.code, c.name, c.owner, c.phone,
+                    c.id, c.code, c.name, c.owner, c.phone, c.address,
                     (select ifnull(sum(sm.total), 0) from sales sm
                     where sm.status = 'a'
                     " . ($date == null ? "" : " and sm.date <= '$date'") . "
@@ -89,7 +89,7 @@ class Customer extends Model
                     from customers c
                     where c.status = 'a'
                     $clauses
-                    " . ($branchId == null ? "" : " and cr.branch_id = '$branchId'") . "";
+                    " . ($branchId == null ? "" : " and c.branch_id = '$branchId'") . "";
 
         return DB::select($query);
     }

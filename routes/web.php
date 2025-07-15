@@ -99,6 +99,8 @@ Route::post('/get-customer', [CustomerController::class, 'index'])->name('custom
 Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
 Route::post('/update-customer', [CustomerController::class, 'update'])->name('customer.update');
 Route::post('/delete-customer', [CustomerController::class, 'destroy'])->name('customer.delete');
+Route::get('/customerDue', [CustomerController::class, 'customerDue'])->name('customer.due');
+Route::post('/get-customerDue', [CustomerController::class, 'getCustomerDue'])->name('get.customer.due');
 
 // product route
 Route::get('/product', [ProductController::class, 'create'])->name('product.create');

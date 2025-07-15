@@ -109,6 +109,12 @@ $panel = session('panel');
                 <span>Quotation Record</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/stock">
+                <i class="bi bi-list"></i>
+                <span>Stock Report</span>
+            </a>
+        </li>
 
         @elseif($panel == 'PurchasePanel')
         <li class="nav-item">
@@ -209,6 +215,25 @@ $panel = session('panel');
             <a class="nav-link" href="/bank">
                 <i class="bi bi-plus-circle"></i>
                 <span>Bank Entry</span>
+            </a>
+        </li>
+
+        @elseif($panel == 'ReportPanel')
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link panel-link" href="/panel/ReportPanel">
+                <span>Report Panel</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/customerDue">
+                <i class="bi bi-cash"></i>
+                <span>Customer Due</span>
             </a>
         </li>
 

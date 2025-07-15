@@ -43,7 +43,7 @@ class CustomerController extends Controller
                     ->orWhere('code', 'like', '%' . $request->search . '%');
             });
         }
-        if(!empty($request->forSearch)){
+        if (!empty($request->forSearch)) {
             $customers = $customers->limit(50);
         }
         $customers = $customers->latest()->get()->map(function ($item) {
@@ -163,5 +163,18 @@ class CustomerController extends Controller
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }
+    }
+
+    // customer due
+    public function customerDue()
+    {
+        return view('pages.report.customerDue');
+    }
+
+    public function getCustomerDue(Request $request)
+    {
+        $date = $request->date ? Carbon::parse($request->date)->format('Y-m-d') : null;
+        $dues = Customer::customerDue($request, $date);
+        return response()->json($dues);
     }
 }

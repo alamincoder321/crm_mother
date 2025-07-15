@@ -387,6 +387,29 @@ $panel = session('panel');
         </div>
     </div>
 
+    @elseif($panel == 'ReportPanel')
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-10 col-12 offset-md-1 mb-5">
+                <div class="card mb-0" style="box-shadow: 0px 5px 1px 2px #058ed152;">
+                    <div class="card-body p-3 text-center">
+                        <h2 class="m-0">Report Panel</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="/customerDue">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-cash"></i>
+                            <span>Customer Due</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
     @elseif($panel == 'HRPanel')
     <div class="col-md-12">
         <div class="row">
