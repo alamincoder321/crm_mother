@@ -398,6 +398,16 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                <a href="/supplierDue">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-cash"></i>
+                            <span>Supplier Due</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
                 <a href="/customerDue">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">

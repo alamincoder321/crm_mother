@@ -91,6 +91,10 @@ Route::post('/get-supplier', [SupplierController::class, 'index'])->name('suppli
 Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
 Route::post('/update-supplier', [SupplierController::class, 'update'])->name('supplier.update');
 Route::post('/delete-supplier', [SupplierController::class, 'destroy'])->name('supplier.delete');
+Route::get('/supplierDue', [SupplierController::class, 'supplierDue'])->name('supplier.due');
+Route::post('/get-supplierDue', [SupplierController::class, 'getSupplierDue'])->name('get.supplier.due');
+Route::get('/supplierLedger', [SupplierController::class, 'supplierLedger'])->name('supplier.ledger');
+Route::post('/get-supplier-ledger', [SupplierController::class, 'getSupplierLedger'])->name('get.supplier.ledger');
 
 // customer route
 Route::get('/customer', [CustomerController::class, 'create'])->name('customer.create');

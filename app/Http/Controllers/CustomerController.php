@@ -173,7 +173,7 @@ class CustomerController extends Controller
 
     public function getCustomerDue(Request $request)
     {
-        $date = $request->date ? Carbon::parse($request->date)->format('Y-m-d') : null;
+        $date = $request->date ? $request->date : null;
         $dues = Customer::customerDue($request, $date);
         return response()->json($dues);
     }

@@ -6,6 +6,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,7 +41,7 @@ class SupplierController extends Controller
                     ->orWhere('code', 'like', '%' . $request->search . '%');
             });
         }
-        if(!empty($request->forSearch)){
+        if (!empty($request->forSearch)) {
             $suppliers = $suppliers->limit(50);
         }
         $suppliers = $suppliers->latest()->get()->map(function ($item) {
@@ -161,5 +162,133 @@ class SupplierController extends Controller
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }
+    }
+
+    // supplier due
+    public function supplierDue()
+    {
+        return view('pages.report.supplierDue');
+    }
+
+    public function getSupplierDue(Request $request)
+    {
+        $date = $request->date ? $request->date : null;
+        $dues = Supplier::supplierDue($request, $date);
+        return response()->json($dues);
+    }
+
+    public function supplierLedger()
+    {
+        return view('pages.report.supplierLedger');
+    }
+
+    public function getSupplierLedger(Request $request)
+    {
+        $branchId = $this->branchId;
+        $query = "select
+                'a' as sequence,
+                pm.id,
+                pm.date,
+                concat('Purchase Invoice - ', pm.invoice, '(Supplier: ', ifnull(s.name, pm.supplier_name), ')') as description,
+                pm.total as bill,
+                pm.paid as paid,
+                (pm.total - pm.paid) as due,
+                0 as cash_payment,
+                0 as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from purchases pm
+                left join suppliers s on s.id = pm.supplier_id
+                where pm.status = 'a'
+                " . (empty($request->supplierId) ? "" : " and pm.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and pm.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'b' as sequence,
+                pr.id,
+                pr.date,
+                concat('Purchase Return Invoice - ', pr.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                0 as cash_payment,
+                0 as cash_receive,
+                pr.total as return_amount,
+                0 as balance
+                from purchase_returns pr
+                left join suppliers s on s.id = pr.supplier_id
+                where pr.status = 'a'
+                " . (empty($request->supplierId) ? "" : " and pr.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'c' as sequence,
+                sp.id,
+                sp.date,
+                concat('Supplier Payment - ', sp.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                sp.amount as cash_payment,
+                0 as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from payments sp
+                left join suppliers s on s.id = sp.supplier_id
+                where sp.status = 'a'
+                and sp.type = 'supplier'
+                " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'd' as sequence,
+                sp.id,
+                sp.date,
+                concat('Supplier Receive - ', sp.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                0 as cash_payment,
+                sp.amount as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from receives sp
+                left join suppliers s on s.id = sp.supplier_id
+                where sp.status = 'a'
+                and sp.type = 'supplier'
+                " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
+                
+                order by date, sequence asc";
+
+        $ledgers = DB::select($query);
+
+        $supplier = Supplier::select('previous_due')->where('id', $request->supplierId)
+            ->where('branch_id', $branchId)
+            ->first();
+        $previousBalance = empty($supplier) ? 0 : $supplier->previous_due;
+
+        $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($previousBalance, $ledgers) {
+            $lastBalance = $key == 0 ? $previousBalance : $ledgers[$key - 1]->balance;
+            $ledger->balance = ($lastBalance + $ledger->bill + $ledger->cash_receive + $ledger->return_amount) - ($ledger->paid + $ledger->cash_payment);
+            return $ledger;
+        });
+
+        $previousLedger = collect($ledgers)->filter(function ($ledger) use ($request) {
+            return $ledger->date < $request->dateFrom;
+        });
+        $previousBalance = count($previousLedger) > 0 ? $previousLedger[count($previousLedger) - 1]->balance : $previousBalance;
+
+        if (!empty($request->dateFrom) && !empty($request->dateTo)) {
+            $ledgers = $ledgers->filter(function ($ledger) use ($request) {
+                return $ledger->date >= $request->dateFrom && $ledger->date <= $request->dateTo;
+            })->values();
+        }
+
+
+        return response()->json(['previousBalance' => $previousBalance, 'ledgers' => $ledgers]);
     }
 }

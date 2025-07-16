@@ -230,6 +230,14 @@ $panel = session('panel');
                 <span>Report Panel</span>
             </a>
         </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/supplierDue">
+                <i class="bi bi-cash"></i>
+                <span>Supplier Due</span>
+            </a>
+        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="/customerDue">
                 <i class="bi bi-cash"></i>

@@ -84,7 +84,7 @@ class Customer extends Model
                     " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . "
                     and sr.customer_id = c.id) as return_amount,
                     
-                    (select (sale_total + payment_amount) - (sale_paid + received_amount + return_amount)) as due
+                    (select (c.previous_due + sale_total + payment_amount) - (sale_paid + received_amount + return_amount)) as due
 
                     from customers c
                     where c.status = 'a'
