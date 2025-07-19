@@ -239,9 +239,23 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
+            <a class="nav-link" href="/supplierLedger">
+                <i class="bi bi-list"></i>
+                <span>Supplier Ledger</span>
+            </a>
+        </li>
+        
+        <li class="nav-item">
             <a class="nav-link" href="/customerDue">
                 <i class="bi bi-cash"></i>
                 <span>Customer Due</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/customerLedger">
+                <i class="bi bi-list"></i>
+                <span>Customer Ledger</span>
             </a>
         </li>
 

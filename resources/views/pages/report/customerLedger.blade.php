@@ -1,6 +1,6 @@
 @extends('master')
-@section('title', 'Supplier Ledger')
-@section('breadcrumb', 'Supplier Ledger')
+@section('title', 'Customer Ledger')
+@section('breadcrumb', 'Customer Ledger')
 @push('style')
 <style scoped>
     .table>thead>tr>th {
@@ -20,15 +20,15 @@
 </style>
 @endpush
 @section('content')
-<div id="supplierLedger">
+<div id="customerLedger">
     <div class="row">
         <div class="col-12 col-md-12">
             <div class="card m-0">
                 <div class="card-body py-3 px-2">
                     <form @submit.prevent="showLedger" class="form-inline">
                         <div class="form-group">
-                            <label for="customer_id">Supplier</label>
-                            <v-select :options="suppliers" v-model="selectedSupplier" label="display_name"></v-select>
+                            <label for="customer_id">Customer</label>
+                            <v-select :options="customers" v-model="selectedCustomer" label="display_name"></v-select>
                         </div>
                         <div class="form-group">
                             <label for="dateFrom">From</label>
@@ -115,14 +115,14 @@
 @push('js')
 <script>
     new Vue({
-        el: '#supplierLedger',
+        el: '#customerLedger',
         data: {
             dateFrom: moment().format('YYYY-MM-DD'),
             dateTo: moment().format('YYYY-MM-DD'),
             ledgers: [],
             previousBalance: 0,
-            suppliers: [],
-            selectedSupplier: null,
+            customers: [],
+            selectedCustomer: null,
             isLoading: null
         },
 
@@ -133,29 +133,29 @@
         },
 
         created() {
-            this.getSupplier();
+            this.getCustomer();
         },
 
         methods: {
-            getSupplier() {
-                axios.post('/get-supplier')
+            getCustomer() {
+                axios.post('/get-customer')
                     .then(res => {
-                        this.suppliers = res.data;
+                        this.customers = res.data;
                     })
             },
 
             showLedger() {
-                if (this.selectedSupplier == null) {
-                    toastr.error('Please select a supplier');
+                if (this.selectedCustomer == null) {
+                    toastr.error('Please select a customer');
                     return;
                 }
                 let filter = {
-                    supplierId: this.selectedSupplier ? this.selectedSupplier.id : '',
+                    customerId: this.selectedCustomer ? this.selectedCustomer.id : '',
                     dateFrom: this.dateFrom,
                     dateTo: this.dateTo
                 }
                 this.isLoading = false;
-                axios.post('/get-supplier-ledger', filter)
+                axios.post('/get-customer-ledger', filter)
                     .then(res => {
                         this.ledgers = res.data.ledgers;
                         this.previousBalance = res.data.previousBalance;
@@ -165,16 +165,16 @@
 
             async print() {
                 const oldTitle = window.document.title;
-                window.document.title = "Supplier Ledger"
-                let supplierText = '';
-                if (this.selectedSupplier != null) {
-                    supplierText = `
-                        <strong>Supplier ID: </strong>
-                        <span>${this.selectedSupplier.code}</span><br>
+                window.document.title = "Customer Ledger"
+                let customerText = '';
+                if (this.selectedCustomer != null) {
+                    customerText = `
+                        <strong>Customer ID: </strong>
+                        <span>${this.selectedCustomer.code}</span><br>
                         <strong>Name: </strong>
-                        <span>${this.selectedSupplier.name}</span><br>
+                        <span>${this.selectedCustomer.name}</span><br>
                         <strong>Mobile: </strong>
-                        <span>${this.selectedSupplier.phone}</span>
+                        <span>${this.selectedCustomer.phone}</span>
                     `;
                 }
                 let dateText = '';
@@ -201,9 +201,9 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12 text-center">
-                                <h5 style="text-decoration:underline;">Supplier Ledger</h5>
+                                <h5 style="text-decoration:underline;">Customer Ledger</h5>
                             </div>
-                            <div class="col-6">${supplierText}</div>
+                            <div class="col-6">${customerText}</div>
                             <div class="col-6">${dateText}</div>
                         </div>
                         <div class="row">

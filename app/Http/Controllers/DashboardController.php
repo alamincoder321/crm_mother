@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountHead;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\CompanyProfile;
@@ -27,16 +28,18 @@ class DashboardController extends Controller
 
     public function index()
     {
+        $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
         Session::forget('panel');
         Session::put('panel', 'dashboard');
-        return view('pages.dashboard');
+        return view('pages.dashboard', $data);
     }
 
     public function panel($panel)
     {
+        $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
         Session::forget('panel');
         Session::put('panel', $panel);
-        return view('pages.dashboard');
+        return view('pages.dashboard', $data);
     }
 
     // admin logout

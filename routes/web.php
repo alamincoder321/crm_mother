@@ -105,6 +105,8 @@ Route::post('/update-customer', [CustomerController::class, 'update'])->name('cu
 Route::post('/delete-customer', [CustomerController::class, 'destroy'])->name('customer.delete');
 Route::get('/customerDue', [CustomerController::class, 'customerDue'])->name('customer.due');
 Route::post('/get-customerDue', [CustomerController::class, 'getCustomerDue'])->name('get.customer.due');
+Route::get('/customerLedger', [CustomerController::class, 'customerLedger'])->name('customer.ledger');
+Route::post('/get-customer-ledger', [CustomerController::class, 'getCustomerLedger'])->name('get.customer.ledger');
 
 // product route
 Route::get('/product', [ProductController::class, 'create'])->name('product.create');

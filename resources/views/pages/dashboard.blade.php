@@ -59,6 +59,32 @@ $panel = session('panel');
 
     <div class="col-md-12">
         <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body p-3 text-center">
+                        <h2 class="m-0">Cash Balance</h2>
+                        <h3 class="m-0">{{number_format($cashBalance->cashbalance, 2)}}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body p-3 text-center">
+                        <h2 class="m-0">Bank Balance</h2>
+                        <h3 class="m-0">{{number_format(0, 2)}}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body p-3 text-center">
+                        <h2 class="m-0">Total Balance</h2>
+                        <h3 class="m-0">{{number_format($cashBalance->cashbalance, 2)}}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-6 col-md-3">
                 <a href="/panel/SalePanel">
                     <div class="card mb-3 panel" style="background: #a7ecfb;" onmouseover="this.style.background = '#7de6ff'" onmouseout="this.style.background = '#a7ecfb'">
@@ -408,11 +434,31 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                <a href="/supplierLedger">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-list"></i>
+                            <span>Supplier Ledger</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
                 <a href="/customerDue">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-cash"></i>
                             <span>Customer Due</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="/customerLedger">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-list"></i>
+                            <span>Customer Ledger</span>
                         </div>
                     </div>
                 </a>

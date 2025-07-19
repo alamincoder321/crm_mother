@@ -6,6 +6,7 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -176,5 +177,120 @@ class CustomerController extends Controller
         $date = $request->date ? $request->date : null;
         $dues = Customer::customerDue($request, $date);
         return response()->json($dues);
+    }
+
+    public function customerLedger()
+    {
+        return view('pages.report.customerLedger');
+    }
+
+    public function getCustomerLedger(Request $request)
+    {
+        $branchId = $this->branchId;
+        $query = "select
+                'a' as sequence,
+                sm.id,
+                sm.date,
+                concat('Sale Invoice - ', sm.invoice, '(Customer: ', ifnull(c.name, sm.customer_name), ')') as description,
+                sm.total as bill,
+                sm.paid as paid,
+                (sm.total - sm.paid) as due,
+                0 as cash_payment,
+                0 as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from sales sm
+                left join customers c on c.id = sm.customer_id
+                where sm.status = 'a'
+                " . (empty($request->customerId) ? "" : " and sm.customer_id = '$request->customerId'") . "
+                " . ($branchId == null ? "" : " and sm.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'b' as sequence,
+                sr.id,
+                sr.date,
+                concat('Sale Return Invoice - ', sr.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                0 as cash_payment,
+                0 as cash_receive,
+                sr.total as return_amount,
+                0 as balance
+                from sale_returns sr
+                left join customers c on c.id = sr.customer_id
+                where sr.status = 'a'
+                " . (empty($request->customerId) ? "" : " and sr.customer_id = '$request->customerId'") . "
+                " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'c' as sequence,
+                cp.id,
+                cp.date,
+                concat('customer Payment - ', cp.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                cp.amount as cash_payment,
+                0 as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from payments cp
+                left join customers c on c.id = cp.customer_id
+                where cp.status = 'a'
+                and cp.type = 'customer'
+                " . (empty($request->customerId) ? "" : " and cp.customer_id = '$request->customerId'") . "
+                " . ($branchId == null ? "" : " and cp.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'd' as sequence,
+                cp.id,
+                cp.date,
+                concat('Customer Receive - ', cp.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                0 as cash_payment,
+                cp.amount as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from receives cp
+                left join customers c on c.id = cp.customer_id
+                where cp.status = 'a'
+                and cp.type = 'customer'
+                " . (empty($request->customerId) ? "" : " and cp.customer_id = '$request->customerId'") . "
+                " . ($branchId == null ? "" : " and cp.branch_id = '$branchId'") . "
+                
+                order by date, sequence asc";
+
+        $ledgers = DB::select($query);
+
+        $customer = Customer::select('previous_due')->where('id', $request->customerId)
+            ->where('branch_id', $branchId)
+            ->first();
+        $previousBalance = empty($customer) ? 0 : $customer->previous_due;
+
+        $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($previousBalance, $ledgers) {
+            $lastBalance = $key == 0 ? $previousBalance : $ledgers[$key - 1]->balance;
+            $ledger->balance = ($lastBalance + $ledger->bill + $ledger->cash_payment + $ledger->return_amount) - ($ledger->paid + $ledger->cash_receive);
+            return $ledger;
+        });
+
+        $previousLedger = collect($ledgers)->filter(function ($ledger) use ($request) {
+            return $ledger->date < $request->dateFrom;
+        });
+        $previousBalance = count($previousLedger) > 0 ? $previousLedger[count($previousLedger) - 1]->balance : $previousBalance;
+
+        if (!empty($request->dateFrom) && !empty($request->dateTo)) {
+            $ledgers = $ledgers->filter(function ($ledger) use ($request) {
+                return $ledger->date >= $request->dateFrom && $ledger->date <= $request->dateTo;
+            })->values();
+        }
+
+
+        return response()->json(['previousBalance' => $previousBalance, 'ledgers' => $ledgers]);
     }
 }
