@@ -232,6 +232,13 @@ $panel = session('panel');
         </li>
 
         <li class="nav-item">
+            <a class="nav-link" href="/profitLoss">
+                <i class="bi bi-journal-text"></i>
+                <span>Profit/Loss</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link" href="/supplierDue">
                 <i class="bi bi-cash"></i>
                 <span>Supplier Due</span>

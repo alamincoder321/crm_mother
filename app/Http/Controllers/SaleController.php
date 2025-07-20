@@ -52,14 +52,22 @@ class SaleController extends Controller
             $sales = $sales->limit(50);
         }
         $sales = $sales->latest()->get()->map(function ($sale) {
-            $sale->details = DB::table('sale_details as pd')
-                ->select('p.name', 'p.code', 'u.name as unit_name', 'c.name as category_name', 'pd.*')
-                ->leftJoin('products as p', 'p.id', '=', 'pd.product_id')
+            $sale->details = DB::table('sale_details as sd')
+                ->select(
+                    'p.name',
+                    'p.code',
+                    'u.name as unit_name',
+                    'c.name as category_name',
+                    'sd.*',
+                    DB::raw('(sd.purchase_rate * sd.quantity) as purchase_total'),
+                    DB::raw('(sd.total - (sd.purchase_rate * sd.quantity)) as profitLoss')
+                )
+                ->leftJoin('products as p', 'p.id', '=', 'sd.product_id')
                 ->leftJoin('units as u', 'u.id', '=', 'p.unit_id')
                 ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
                 ->where('sale_id', $sale->id)
-                ->where('pd.status', 'a')
-                ->where('pd.branch_id', $this->branchId)
+                ->where('sd.status', 'a')
+                ->where('sd.branch_id', $this->branchId)
                 ->get();
             $sale->bank_details = DB::table("sale_banks as sb")
                 ->select('b.bank_name', 'b.number', 'sb.*')

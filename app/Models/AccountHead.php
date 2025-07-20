@@ -113,4 +113,52 @@ class AccountHead extends Model
 
         return DB::select($query)[0];
     }
+
+    // get other expense income
+    public static function getOtherExpenseIncome($request)
+    {
+        $request = (object)$request;
+        $branchId = !empty($request->branchId) ? $request->branchId : session('branch')->id;
+
+        $query = "select
+                (select ifnull(sum(ti.amount), 0) from transactions ti
+                 where ti.status = 'a'
+                 and ti.type = 'income'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and ti.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and ti.branch_id = '$branchId'") . ") as income,
+                
+                (select ifnull(sum(te.amount), 0) from transactions te
+                 where te.status = 'a'
+                 and te.type = 'expense'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and te.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and te.branch_id = '$branchId'") . ") as expense,
+                
+                (select ifnull(sum(pm.vat), 0) from purchases pm
+                 where pm.status = 'a'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and pm.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and pm.branch_id = '$branchId'") . ") as purchase_vat,
+
+                (select ifnull(sum(pm.discount), 0) from purchases pm
+                 where pm.status = 'a'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and pm.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and pm.branch_id = '$branchId'") . ") as purchase_discount,
+
+                (select ifnull(sum(pm.transport_cost), 0) from purchases pm
+                 where pm.status = 'a'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and pm.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and pm.branch_id = '$branchId'") . ") as purchase_transport_cost,
+                
+                (select ifnull(sum(sr.total), 0) from sale_returns sr
+                 where sr.status = 'a'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and sr.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . ") as sale_return_amount,
+                
+                (select ifnull(sum(sme.amount), 0) from salary_masters sme
+                 where sme.status = 'a'
+                " . (empty($request->dateFrom) && empty($request->dateTo) ? "" : " and sme.date between '$request->dateFrom' and '$request->dateTo'") . "
+                " . ($branchId == null ? "" : " and sme.branch_id = '$branchId'") . ") as salary_payment
+                ";
+
+        return DB::select($query)[0];
+    }
 }

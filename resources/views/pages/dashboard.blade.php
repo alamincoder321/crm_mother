@@ -71,7 +71,7 @@ $panel = session('panel');
                 <div class="card mb-3">
                     <div class="card-body p-3 text-center">
                         <h2 class="m-0">Bank Balance</h2>
-                        <h3 class="m-0">{{number_format(0, 2)}}</h3>
+                        <h3 class="m-0">{{number_format($bankBalance, 2)}}</h3>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@ $panel = session('panel');
                 <div class="card mb-3">
                     <div class="card-body p-3 text-center">
                         <h2 class="m-0">Total Balance</h2>
-                        <h3 class="m-0">{{number_format($cashBalance->cashbalance, 2)}}</h3>
+                        <h3 class="m-0">{{number_format($cashBalance->cashbalance + $bankBalance, 2)}}</h3>
                     </div>
                 </div>
             </div>
@@ -422,6 +422,16 @@ $panel = session('panel');
                         <h2 class="m-0">Report Panel</h2>
                     </div>
                 </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="/profitLoss">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-journal-text"></i>
+                            <span>Profit/Loss</span>
+                        </div>
+                    </div>
+                </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
                 <a href="/supplierDue">

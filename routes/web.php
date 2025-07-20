@@ -24,6 +24,7 @@ use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 
 Route::fallback(function () {
@@ -230,3 +231,7 @@ Route::post('/get-quotation', [QuotationController::class, 'index'])->name('quot
 Route::post('/quotation', [QuotationController::class, 'store'])->name('quotation.store');
 Route::post('/update-quotation', [QuotationController::class, 'update'])->name('quotation.update');
 Route::post('/delete-quotation', [QuotationController::class, 'destroy'])->name('quotation.delete');
+
+// ============================= Report Panel Route ==============================
+Route::get('/profitLoss', [ReportController::class, 'profitLoss'])->name('profitLoss');
+Route::post('/get-other-expense-income', [ReportController::class, 'getOtherExpenseIncome'])->name('get.other.expense.income');

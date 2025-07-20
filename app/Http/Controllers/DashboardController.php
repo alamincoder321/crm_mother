@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountHead;
+use App\Models\Bank;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\CompanyProfile;
@@ -29,6 +30,10 @@ class DashboardController extends Controller
     public function index()
     {
         $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
+        $bankAccounts = Bank::getBankBalance((object)[], date('Y-m-d'));
+        $data['bankBalance'] = collect($bankAccounts)->reduce(function ($pre, $cur) {
+            return $pre + $cur->currentbalance;
+        }, 0);
         Session::forget('panel');
         Session::put('panel', 'dashboard');
         return view('pages.dashboard', $data);
@@ -37,6 +42,10 @@ class DashboardController extends Controller
     public function panel($panel)
     {
         $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
+        $bankAccounts = Bank::getBankBalance((object)[], date('Y-m-d'));
+        $data['bankBalance'] = collect($bankAccounts)->reduce(function ($pre, $cur) {
+            return $pre + $cur->currentbalance;
+        }, 0);
         Session::forget('panel');
         Session::put('panel', $panel);
         return view('pages.dashboard', $data);

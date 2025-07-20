@@ -46,7 +46,7 @@
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="balance">Balance:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="number" min="0" step="any" class="form-control" autocomplete="off" id="balance" name="balance" v-model="bank.balance" />
+                                    <input type="number" min="0" step="any" :readonly="bank.id != '' && (role == 'user' || role == 'manager')" class="form-control" autocomplete="off" id="balance" name="balance" v-model="bank.balance" />
                                 </div>
                             </div>
                             <div class="mt-1 row">
@@ -146,6 +146,7 @@
                 },
                 banks: [],
 
+                role: "{{ auth()->user()->role }}",
                 loading: true,
                 onProgress: false
             }
