@@ -121,7 +121,7 @@
                                     <td style="font-weight: 700;padding: 3px !important;" class="text-end">@{{ totalProfitLoss }}</td>
                                 </tr>
                                 <tr :class="sales.length == 0 ? '' : 'd-none'" v-if="sales.length == 0">
-                                    <td colspan="6" class="text-center">Not Found Data</td>
+                                    <td colspan="8" class="text-center">Not Found Data</td>
                                 </tr>
                                 <tr :class="selectedCustomer != null ? 'd-none' : ''" v-if="selectedCustomer == null">
                                     <td style="font-weight: 700;padding: 3px !important;" class="text-end" colspan="5">Income(+)</td>

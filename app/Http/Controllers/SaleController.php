@@ -96,7 +96,8 @@ class SaleController extends Controller
     {
         $data['id'] = $id;
         $data['invoice'] = invoiceGenerate('Sale', '', $this->branchId);
-        return view('pages.sale.create', $data);
+        // return view('pages.sale.create', $data);
+        return view('pages.sale.barcodesale', $data);
     }
 
 
