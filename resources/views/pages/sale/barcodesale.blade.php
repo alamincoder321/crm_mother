@@ -5,8 +5,8 @@
 @push('style')
 <style scoped>
     .purTable thead tr th {
-        background: #96a0a5;
-        padding: 3px 4px !important;
+        background: #64747ca3;
+        padding: 7px 5px !important;
         color: #fff;
         text-align: center !important;
     }
@@ -14,6 +14,10 @@
     table tr td,
     table tr th {
         vertical-align: middle !important;
+    }
+
+    tr td {
+        padding: 6px !important;
     }
 
     .CustomerCard {
@@ -82,18 +86,15 @@
             <div class="card-body p-2">
                 <div class="input-group mb-2">
                     <input type="text" class="form-control" style="padding: 10px;" placeholder="Search Product" v-model="searchProductText"
-                        @focus="onChangeProduct"
-                        @keyup.enter="onChangeProduct"
                         @input="onSearchProduct($event)"
                         @keydown.down.prevent="moveHighlight(1)"
                         @keydown.up.prevent="moveHighlight(-1)"
-                        @keydown.enter.prevent="selectHighlightedProduct"
+                        @keydown.enter.prevent="addToCart(products[highlightedIndex])"
                         autocomplete="off"
-                        ref="searchInput"
-                    />
-                    <button class="btn btn-primary" type="button" @click="onChangeProduct" style="font-size: 22px;"><i class="bi bi-upc"></i></button>
+                        ref="searchInput" />
+                    <button class="btn btn-primary" type="button" style="font-size: 22px;"><i class="bi bi-upc"></i></button>
                 </div>
-                <div v-if="products.length > 0 && searchProductText" class="position-relative" @click.self="hideProductList">
+                <div v-if="products.length > 0 && searchProductText" class="position-relative">
                     <ul class="list-group position-absolute w-100 shadow" style="z-index: 1000; max-height: 250px; overflow-y: auto;"
                         tabindex="0"
                         ref="productList">
@@ -102,7 +103,7 @@
                             :key="product.id"
                             :class="['list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'list-group-item-action', {active: idx === highlightedIndex}]"
                             style="cursor: pointer;"
-                            @click="selectProductFromList(product)"
+                            @click="addToCart(product)"
                             @mouseenter="highlightedIndex = idx">
                             <div>
                                 <strong v-text="product.name"></strong>
@@ -120,6 +121,69 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="col-12 col-md-12 mt-1" style="overflow-x: auto;">
+        <table class="table table-hover purTable">
+            <thead>
+                <tr>
+                    <th>Sl</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Rate</th>
+                    <th>Total</th>
+                    <th style="width: 3%;">Action</th>
+                </tr>
+            </thead>
+            <tbody v-if="carts.length > 0" :class="carts.length > 0 ? '' : 'd-none'">
+                <tr v-for="(cart, index) in carts" :key="index">
+                    <td class="text-center" v-text="index + 1"></td>
+                    <td v-text="`${cart.name} - ${cart.code}`"></td>
+                    <td class="text-center" v-text="cart.category_name"></td>
+                    <td class="text-center">
+                        <div class="input-group input-group-sm" style="width: 180px; margin: 0 auto;">
+                            <button class="btn btn-outline-secondary" type="button" @click="cart.quantity = Math.max(1, +cart.quantity - 1); quantityRateTotal(cart)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" min="1" step="any"
+                                class="form-control text-center"
+                                style="width:80px;padding: 3px 6px; outline: none; border-radius: 0;border-color: #000;"
+                                v-model="cart.quantity"
+                                @input="quantityRateTotal(cart)" />
+                            <button class="btn btn-outline-secondary" type="button" @click="cart.quantity = +cart.quantity + 1; quantityRateTotal(cart)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="text-center" v-text="cart.unit_name"></td>
+                    <td class="text-center">
+                        <div class="input-group input-group-sm" style="width: 210px; margin: 0 auto;">
+                            <button class="btn btn-outline-secondary" type="button" @click="cart.sale_rate = Math.max(0, +cart.sale_rate - 1); quantityRateTotal(cart)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" min="0" step="any"
+                                class="form-control text-center"
+                                style="width:120px;padding: 3px 6px; outline: none; border-radius: 0;border-color: #000;"
+                                v-model="cart.sale_rate"
+                                @input="quantityRateTotal(cart)" />
+                            <button class="btn btn-outline-secondary" type="button" @click="cart.sale_rate = +cart.sale_rate + 1; quantityRateTotal(cart)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="text-center" v-text="cart.total"></td>
+                    <td class="text-center">
+                        <i @click="removeCart(index)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody v-if="carts.length == 0" :class="carts.length == 0 ? '' : 'd-none'">
+                <tr>
+                    <td colspan="8" style="padding: 6px !important;" class="text-center">Cart is Empty</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection
@@ -149,6 +213,7 @@
                     previous_due: 0,
                     note: ''
                 },
+
                 discountPercent: 0,
                 vatPercent: 0,
                 customers: [],
@@ -183,14 +248,13 @@
             this.getEmployee();
             this.getBank();
             this.getCustomer();
-            this.getProduct();
             if (this.sale.id != '') {
                 await this.getSale();
             }
         },
 
         methods: {
-            moveHighlight(direction) {
+            async moveHighlight(direction) {
                 if (!this.products.length) return;
                 this.highlightedIndex += direction;
                 if (this.highlightedIndex < 0) {
@@ -198,11 +262,12 @@
                 } else if (this.highlightedIndex >= this.products.length) {
                     this.highlightedIndex = 0;
                 }
-                // Scroll into view if needed
                 this.$nextTick(() => {
                     const list = this.$refs.productList;
                     if (list && list.children[this.highlightedIndex]) {
-                        list.children[this.highlightedIndex].scrollIntoView({ block: 'nearest' });
+                        list.children[this.highlightedIndex].scrollIntoView({
+                            block: 'nearest'
+                        });
                     }
                 });
             },
@@ -279,37 +344,22 @@
 
             },
 
-            onChangeSaleType() {
-                this.selectedCustomer = {
-                    id: '',
-                    display_name: 'Walk In Customer',
-                    name: 'Walk In Customer',
-                    phone: '',
-                    address: '',
-                    type: 'general'
-                }
-                this.selectedProduct = {
-                    id: '',
-                    unit: {},
-                    display_name: 'select product'
-                }
-                this.getCustomer();
-                this.getProduct();
-            },
+            // async getProduct() {
+            //     await axios.post('/get-product', {
+            //             forSearch: 'yes'
+            //         })
+            //         .then(res => {
+            //             this.products = res.data.map(item => {
+            //                 item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
+            //                 item.id = item.id;
+            //                 item.code = item.code ? String(item.code) : '';
+            //                 return item;
+            //             });
+            //         })
+            // },
 
-            getProduct() {
-                axios.post('/get-product', {
-                        forSearch: 'yes'
-                    })
-                    .then(res => {
-                        this.products = res.data.map(item => {
-                            item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
-                            return item;
-                        });
-                    })
-            },
             async onSearchProduct(event) {
-                if (event.target.value.length > 1) {
+                if (event.target.value.length > 2) {
                     await axios.post("/get-product", {
                             search: event.target.value,
                             is_service: 'false'
@@ -317,87 +367,39 @@
                         .then(res => {
                             this.products = res.data.map(item => {
                                 item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
+                                item.id = item.id;
+                                item.code = item.code ? String(item.code) : '';
                                 return item;
                             });
                         })
                 } else {
-                    await this.getProduct();
+                    this.products = [];
                 }
             },
 
-            async onChangeProduct() {
-                if (this.selectedProduct == null) {
-                    this.selectedProduct = {
-                        id: '',
-                        unit: {},
-                        display_name: 'select product'
-                    }
-                    return;
-                }
-                if (this.selectedProduct.id != '') {
-                    await axios.post('/get-currentStock', {
-                        productId: this.selectedProduct.id
-                    }).then(res => {
-                        this.stock = res.data.length > 0 ? res.data[0].stock : 0;
-                    })
-                    this.$refs.quantity.focus();
-                }
-            },
-            selectProductFromList(product) {
-                // Check if the product is already in the sale's product list
-                const exists = this.sale.products.find(p => p.id === product.id);
+            async addToCart(product) {
+                const exists = this.carts.find(p => p.id === product.id);
                 if (!exists) {
-                    // Add the selected product to the sale's products array
-                    this.sale.products.push({
-                        ...product,
-                        quantity: 1, // default quantity
-                        total: product.price // or calculate as needed
-                    });
+                    let cart = {
+                        id: product.id,
+                        code: product.code ? String(product.code) : '',
+                        category_name: product.category?.name,
+                        name: product.name,
+                        unit_name: product.unit?.name,
+                        purchase_rate: product.purchase_rate,
+                        sale_rate: product.sale_rate,
+                        quantity: 1,
+                        total: parseFloat(product.sale_rate).toFixed(2),
+                    };
+                    this.carts.push(cart);
                 } else {
-                    // Optionally, increase quantity if already exists
-                    exists.quantity += 1;
-                    exists.total = exists.quantity * exists.price;
+                    exists.quantity = Number(exists.quantity) + 1;
+                    exists.total = (exists.quantity * exists.sale_rate).toFixed(2);
                 }
-            },
 
-            productTotal() {
-                this.selectedProduct.total = parseFloat(this.selectedProduct.sale_rate * this.selectedProduct.quantity).toFixed(2);
-            },
-
-            addToCart() {
-                if (this.selectedProduct.id == '') {
-                    toastr.error('Please select a product')
-                    return;
-                }
-                let cart = this.carts.find(item => item.id == this.selectedProduct.id);
-
-                if (cart != undefined) {
-                    let newQuantity = parseFloat(cart.quantity) + parseFloat(this.selectedProduct.quantity)
-                    if (parseFloat(newQuantity) > parseFloat(this.stock)) {
-                        toastr.error('Stock is unavailable');
-                        return;
-                    }
-                    cart.quantity = newQuantity;
-                    cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
-                } else {
-                    if (parseFloat(this.selectedProduct.quantity) > parseFloat(this.stock)) {
-                        toastr.error('Stock is unavailable');
-                        return;
-                    }
-                    this.carts.push({
-                        id: this.selectedProduct.id,
-                        code: this.selectedProduct.code,
-                        category_name: this.selectedProduct.category?.name,
-                        name: this.selectedProduct.name,
-                        unit_name: this.selectedProduct.unit?.name,
-                        purchase_rate: this.selectedProduct.purchase_rate,
-                        sale_rate: this.selectedProduct.sale_rate,
-                        quantity: this.selectedProduct.quantity,
-                        total: this.selectedProduct.total,
-                    })
-                }
-                this.clearProduct();
-                this.calculateTotal();
+                this.searchProductText = '';
+                this.products = [];
+                await this.calculateTotal();
             },
 
             async quantityRateTotal(cart) {
@@ -423,21 +425,12 @@
                 await this.calculateTotal();
             },
 
-            removeCart(sl) {
+            async removeCart(sl) {
                 this.carts.splice(sl, 1);
-                this.calculateTotal();
+                await this.calculateTotal();
             },
 
-            clearProduct() {
-                this.selectedProduct = {
-                    id: '',
-                    unit: {},
-                    display_name: 'select product'
-                }
-                this.stock = 0;
-            },
-
-            calculateTotal() {
+            async calculateTotal() {
                 this.sale.subtotal = this.carts.reduce((pr, cu) => {
                     return pr + parseFloat(cu.total)
                 }, 0).toFixed(2);
