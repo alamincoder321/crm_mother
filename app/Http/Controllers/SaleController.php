@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use App\Http\Requests\SaleRequest;
 use App\Models\SaleBank;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class SaleController extends Controller
 {
@@ -96,8 +97,13 @@ class SaleController extends Controller
     {
         $data['id'] = $id;
         $data['invoice'] = invoiceGenerate('Sale', '', $this->branchId);
-        // return view('pages.sale.create', $data);
-        return view('pages.sale.barcodesale', $data);
+        if (Session::get('sale_page') == '3') {
+            return view('pages.sale.possale', $data);
+        } else if (Session::get('sale_page') == '2') {
+            return view('pages.sale.barcodesale', $data);
+        } else {
+            return view('pages.sale.create', $data);
+        }
     }
 
 

@@ -3,7 +3,6 @@
 @section('title', 'Sale Entry')
 @section('breadcrumb', 'Sale Entry')
 @push('style')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <style scoped>
     .purTable thead tr th {
         background: #64747ca3;
@@ -15,44 +14,6 @@
     table tr td,
     table tr th {
         vertical-align: middle !important;
-    }
-
-    tr td {
-        padding: 6px !important;
-    }
-
-    .CustomerCard {
-        height: 210px;
-    }
-
-    .btnCart,
-    .btnCart:hover,
-    .btnCart:focus {
-        background: #228dc1;
-        color: #fff;
-    }
-
-    .bankBtn:focus {
-        background: #db9696 !important;
-    }
-
-    .sale-type-box.active {
-        background: #228dc1 !important;
-        color: #fff !important;
-        border-color: #228dc1 !important;
-    }
-
-    .sale_type_label {
-        cursor: pointer;
-        font-size: 13px;
-        width: 80px;
-        text-align: center;
-        border-radius: 6px;
-        border: 1px solid #228dc1;
-        background: #fff;
-        color: #228dc1;
-        font-weight: 500;
-        transition: all .2s;
     }
 </style>
 @endpush
@@ -82,240 +43,108 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-12 mt-2">
-        <div class="card mb-0">
+    <div class="mt-2 col-md-6 col-12 pe-md-0">
+        <div class="card mb-0 shadow-none" style="border-top-right-radius: 0 !important;border-bottom-right-radius: 0 !important;">
             <div class="card-body p-2">
-                <div class="input-group mb-1">
-                    <input v-if="!isBarcode" type="text" class="form-control" style="padding: 10px;" placeholder="Search Product" v-model="searchProductText"
-                        @input="onSearchProduct($event)"
-                        @keydown.down.prevent="moveHighlight(1)"
-                        @keydown.up.prevent="moveHighlight(-1)"
-                        @keydown.enter.prevent="addToCart(products[highlightedIndex])"
-                        autocomplete="off"
-                        ref="searchInput" />
-                    <input v-if="isBarcode" @keydown.enter.prevent="getProduct" type="text" class="form-control" style="padding: 10px;" placeholder="Scan Barcode" v-model="searchProductText">
-                    <button @click="isBarcode = !isBarcode" class="btn btn-primary" type="button" style="font-size: 22px;"><i :class="isBarcode ? 'fa fa-product-hunt' : 'bi bi-upc'"></i></button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="" class="me-2">Category</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="" class="me-2">Brand</label>
+                            <input type="text" class="form-control" />
+                        </div>
+                    </div>
                 </div>
-                <div class="position-relative" @click.stop>
-                    <ul
-                        v-if="searchProductText && !isBarcode"
-                        class="list-group position-absolute w-100 shadow"
-                        style="z-index: 1000; max-height: 250px; overflow-y: auto;"
-                        tabindex="0"
-                        ref="productList">
-                        <li
-                            v-for="(product, idx) in products"
-                            :key="product.id"
-                            :class="['list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'list-group-item-action', {active: idx === highlightedIndex}]"
-                            style="cursor: pointer;"
-                            @click="addToCart(product)"
-                            @mouseenter="highlightedIndex = idx">
-                            <div>
-                                <strong v-text="product.name"></strong>
-                                <span class="text-muted small" v-if="product.code"> - <span v-text="product.code"></span></span>
-                                <span class="badge bg-secondary ms-2" v-if="product.stock == undefined">
-                                    Stock: <span v-text="0"></span>
+                <div class="row mt-4 bg-light">
+                    <div class="col-md-4 col-6" v-for="(product, index) in products" :key="index">
+                        <div
+                            class="card my-1 text-center shadow-sm"
+                            :class="carts.some(c => c.id == product.id) ? 'border border-warning' : 'border border-success'"
+                            style="cursor:pointer; border-radius: 10px; padding: 10px;"
+                            @click="selectedProduct = product; addToCart()">
+                            <img :src="`/${product.image ? product.image : 'noImage.jpg'}`" alt="Product Image" style="width: 40px; height: 40px; object-fit: cover; margin: 0 auto; border-radius: 8px;">
+                            <div class="mt-2">
+                                <h6 class="mb-1" v-text="product.name || 'Select a product'"></h6>
+                                <span class="badge bg-primary fs-6" v-if="product.sale_rate">
+                                    ৳ @{{ product.sale_rate }}
                                 </span>
                             </div>
-                            <span class="badge bg-primary" v-if="product.sale_rate">৳ <span v-text="product.sale_rate"></span></span>
-                        </li>
-                        <li v-if="products.length == 0" class="list-group-item text-center text-muted">
-                            No products found
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-12 mt-1" style="overflow-x: auto;">
-        <table class="table table-bordered table-hover purTable">
-            <thead>
-                <tr>
-                    <th>Sl</th>
-                    <th>Description</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Rate</th>
-                    <th>Total</th>
-                    <th style="width: 3%;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(cart, index) in carts" :key="index" v-if="carts.length > 0" :class="carts.length > 0 ? '' : 'd-none'">
-                    <td class="text-center" v-text="index + 1"></td>
-                    <td v-text="`${cart.name} - ${cart.code}`"></td>
-                    <td class="text-center" v-text="cart.category_name"></td>
-                    <td class="text-center">
-                        <div class="input-group input-group-sm" style="width: 150px; margin: 0 auto;">
-                            <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.quantity = Math.max(1, +cart.quantity - 1); quantityRateTotal(cart)">
-                                <i class="bi bi-dash"></i>
-                            </button>
-                            <input type="number" min="1" step="any"
-                                class="form-control text-center"
-                                style="width:70px;padding: 1px 6px; outline: none; border-radius: 0;border-color: #000;"
-                                v-model="cart.quantity"
-                                @input="quantityRateTotal(cart)" />
-                            <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.quantity = +cart.quantity + 1; quantityRateTotal(cart)">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </td>
-                    <td class="text-center" v-text="cart.unit_name"></td>
-                    <td class="text-center">
-                        <div class="input-group input-group-sm" style="width: 210px; margin: 0 auto;">
-                            <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.sale_rate = Math.max(0, +cart.sale_rate - 1); quantityRateTotal(cart)">
-                                <i class="bi bi-dash"></i>
-                            </button>
-                            <input type="number" min="0" step="any"
-                                class="form-control text-center"
-                                style="width:120px;padding: 1px 6px; outline: none; border-radius: 0;border-color: #000;"
-                                v-model="cart.sale_rate"
-                                @input="quantityRateTotal(cart)" />
-                            <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.sale_rate = +cart.sale_rate + 1; quantityRateTotal(cart)">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </td>
-                    <td class="text-center" v-text="cart.total"></td>
-                    <td class="text-center">
-                        <i @click="removeCart(index)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
-                    </td>
-                </tr>
-                <tr v-if="carts.length == 0" :class="carts.length == 0 ? '' : 'd-none'">
-                    <td colspan="8" class="text-center">Not Found Data</td>
-                </tr>
-                <tr>
-                    <td colspan="8" style="padding: 8px !important;"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-12 col-md-6 mt-2">
-        <div class="card mb-0">
-            <div class="card-body p-2">
-                <div class="row">
-                    <label class="col-md-3" for="">Customer</label>
-                    <div class="col-md-9">
-                        <div class="input-group mb-1">
-                            <v-select :options="customers" style="width: 85%;" v-model="selectedCustomer" label="display_name" @input="onChangeCustomer"></v-select>
-                            <button onclick="window.open('/customer', '_blank')" class="btn btn-primary btn-sm" type="button" style="font-size: 12px; width:15%"><i class="bi bi-person-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-md-3" for="">Name</label>
-                    <div class="col-md-9">
-                        <div class="input-group mb-1">
-                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.name" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-md-3" for="">Mobile</label>
-                    <div class="col-md-9">
-                        <div class="input-group mb-1">
-                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.phone" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-md-3" for="">Address</label>
-                    <div class="col-md-9">
-                        <div class="input-group mb-1">
-                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.address">
-                        </div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-text">Note:</span>
-                    <textarea rows="5" name="note" id="note" class="form-control" v-model="sale.note"></textarea>
-                </div>
+    <div class="mt-2 col-md-6 col-12 ps-md-0">
+        <div class="card mb-0 shadow-none" style="border-top-left-radius: 0 !important;border-bottom-left-radius: 0 !important;">
+            <div class="card-body p-2" style="overflow-x: auto;">
+                <table class="table table-hover purTable">
+                    <thead>
+                        <tr>
+                            <th>Sl</th>
+                            <th style="width: 30%;">Description</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Rate</th>
+                            <th>Total</th>
+                            <th style="width: 3%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(cart, index) in carts" :key="index" v-if="carts.length > 0" :class="carts.length > 0 ? '' : 'd-none'">
+                            <td class="text-center" v-text="index + 1"></td>
+                            <td v-text="`${cart.name} - ${cart.code}`"></td>
+                            <td class="text-center" v-text="cart.category_name"></td>
+                            <td class="text-center">
+                                <div class="input-group input-group-sm" style="width: 100px; margin: 0 auto;">
+                                    <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.quantity = Math.max(1, +cart.quantity - 1); quantityRateTotal(cart)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" min="1" step="any"
+                                        class="form-control text-center"
+                                        style="width:50px;padding: 1px 6px; outline: none; border-radius: 0;border-color: #000;"
+                                        v-model="cart.quantity"
+                                        @input="quantityRateTotal(cart)" />
+                                    <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.quantity = +cart.quantity + 1; quantityRateTotal(cart)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="input-group input-group-sm" style="width: 150px; margin: 0 auto;">
+                                    <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.sale_rate = Math.max(0, +cart.sale_rate - 1); quantityRateTotal(cart)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" min="0" step="any"
+                                        class="form-control text-center"
+                                        style="width:100px;padding: 1px 6px; outline: none; border-radius: 0;border-color: #000;"
+                                        v-model="cart.sale_rate"
+                                        @input="quantityRateTotal(cart)" />
+                                    <button style="padding: 1px 5px;" class="btn btn-outline-secondary" type="button" @click="cart.sale_rate = +cart.sale_rate + 1; quantityRateTotal(cart)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="text-center" v-text="cart.total"></td>
+                            <td class="text-center">
+                                <i @click="removeCart(index)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
+                            </td>
+                        </tr>
+                        <tr v-if="carts.length == 0" :class="carts.length == 0 ? '' : 'd-none'">
+                            <td colspan="8" class="text-center">Not Found Data</td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="padding: 8px !important;"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-    <div class="col-12 col-md-6 mt-2">
-        <form @submit.prevent="saveData($event)">
-            <div class="card mb-0">
-                <div class="card-body p-2">
-                    <table class="table table-hover">
-                        <tr>
-                            <td>SubTotal</td>
-                            <td colspan="3">
-                                <input type="number" min="0" step="any" class="form-control" id="subtotal" name="subtotal" v-model="sale.subtotal" readonly />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Discount</td>
-                            <td>
-                                <input type="number" @input="calculateTotal" min="0" step="any" class="form-control" id="discountPercent" name="discountPercent" v-model="discountPercent" />
-                            </td>
-                            <td style="width: 13px;">%</td>
-                            <td>
-                                <input type="number" @input="calculateTotal" min="0" step="any" class="form-control" id="discount" name="discount" v-model="sale.discount" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Vat</td>
-                            <td>
-                                <input type="number" @input="calculateTotal" min="0" step="any" class="form-control" id="vatPercent" name="vatPercent" v-model="vatPercent" />
-                            </td>
-                            <td style="width: 13px;">%</td>
-                            <td>
-                                <input type="number" @input="calculateTotal" min="0" step="any" class="form-control" id="vat" name="vat" v-model="sale.vat" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Transport Cost</td>
-                            <td colspan="3">
-                                <input type="number" @input="calculateTotal" min="0" step="any" class="form-control" id="transport_cost" name="transport_cost" v-model="sale.transport_cost" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Total</td>
-                            <td colspan="3">
-                                <input type="number" min="0" step="any" class="form-control" id="total" name="total" v-model="sale.total" readonly />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CashPaid</td>
-                            <td colspan="3">
-                                <input type="number" @input="calculateTotal" min="0" step="any" class="form-control" id="cashPaid" name="cashPaid" v-model="sale.cashPaid" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label class="form-label mb-0 btn btn-secondary w-100 px-0" @click="showModal">Multi-Payment</label></td>
-                            <td colspan="3">
-                                <input type="number" v-model="sale.bankPaid" id="paid" min="0" step="any" class="form-control" readonly />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Change Amount</td>
-                            <td colspan="3">
-                                <input type="number" v-model="sale.returnAmount" min="0" step="any" class="form-control" readonly />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Due</td>
-                            <td>
-                                <input type="number" v-model="sale.due" min="0" step="any" class="form-control" readonly />
-                            </td>
-                            <td colspan="2">
-                                <input type="number" v-model="sale.previous_due" min="0" step="any" class="form-control text-danger" readonly />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <button type="submit" :disabled="onProgress" class="btn btn-success w-100" v-text="sale.id != '' ? 'Update' : 'Save'"></button>
-                            </td>
-                            <td colspan="2">
-                                <button type="button" class="btn btn-danger w-100">Reset</button>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </form>
     </div>
 
     <!-- bank account entry -->
@@ -395,7 +224,6 @@
                     previous_due: 0,
                     note: ''
                 },
-
                 discountPercent: 0,
                 vatPercent: 0,
                 customers: [],
@@ -408,8 +236,11 @@
                     type: 'general'
                 },
                 products: [],
-                searchProductText: "",
-                highlightedIndex: 0,
+                selectedProduct: {
+                    id: '',
+                    unit: {},
+                    display_name: 'select product'
+                },
                 employees: [],
                 selectedEmployee: null,
                 banks: [],
@@ -422,7 +253,6 @@
                 carts: [],
                 bankCart: [],
                 stock: 0,
-                isBarcode: false,
                 onProgress: false,
             }
         },
@@ -431,29 +261,13 @@
             this.getEmployee();
             this.getBank();
             this.getCustomer();
+            this.getProduct();
             if (this.sale.id != '') {
                 await this.getSale();
             }
         },
 
         methods: {
-            async moveHighlight(direction) {
-                if (!this.products.length) return;
-                this.highlightedIndex += direction;
-                if (this.highlightedIndex < 0) {
-                    this.highlightedIndex = this.products.length - 1;
-                } else if (this.highlightedIndex >= this.products.length) {
-                    this.highlightedIndex = 0;
-                }
-                this.$nextTick(() => {
-                    const list = this.$refs.productList;
-                    if (list && list.children[this.highlightedIndex]) {
-                        list.children[this.highlightedIndex].scrollIntoView({
-                            block: 'nearest'
-                        });
-                    }
-                });
-            },
             getBank() {
                 axios.get('/get-bank')
                     .then(res => {
@@ -527,64 +341,112 @@
 
             },
 
-            async getProduct() {
-                await axios.post('/get-product', {
-                        search: this.searchProductText,
-                    })
-                    .then(async res => {
-                        this.products = res.data.map(item => {
-                            item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
-                            item.id = item.id;
-                            item.code = item.code ? String(item.code) : '';
-                            return item;
-                        });
-                        await this.addToCart(this.products[0]);
-                    })
+            onChangeSaleType() {
+                this.selectedCustomer = {
+                    id: '',
+                    display_name: 'Walk In Customer',
+                    name: 'Walk In Customer',
+                    phone: '',
+                    address: '',
+                    type: 'general'
+                }
+                this.selectedProduct = {
+                    id: '',
+                    unit: {},
+                    display_name: 'select product'
+                }
+                this.getCustomer();
+                this.getProduct();
             },
 
-            async onSearchProduct(event) {
-                if (event.target.value != '') {
+            getProduct() {
+                axios.post('/get-product', {
+                        forSearch: 'yes'
+                    })
+                    .then(res => {
+                        this.products = res.data.map(item => {
+                            item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
+                            return item;
+                        });
+                    })
+            },
+            async onSearchProduct(val, loading) {
+                if (val.length > 2) {
+                    loading(true);
                     await axios.post("/get-product", {
-                            search: event.target.value,
-                            is_service: 'false',
-                            forSearch: 'yes'
+                            search: val,
+                            is_service: 'false'
                         })
                         .then(res => {
                             this.products = res.data.map(item => {
                                 item.sale_rate = this.sale.sale_type == 'retail' ? item.sale_rate : item.wholesale_rate;
-                                item.id = item.id;
-                                item.code = item.code ? String(item.code) : '';
                                 return item;
                             });
+                            loading(false)
                         })
                 } else {
-                    this.products = [];
+                    loading(false)
+                    await this.getProduct();
                 }
             },
 
-            async addToCart(product) {
-                const exists = this.carts.find(p => p.id === product.id);
-                if (!exists) {
-                    let cart = {
-                        id: product.id,
-                        code: product.code ? String(product.code) : '',
-                        category_name: product.category?.name,
-                        name: product.name,
-                        unit_name: product.unit?.name,
-                        purchase_rate: product.purchase_rate,
-                        sale_rate: product.sale_rate,
-                        quantity: 1,
-                        total: parseFloat(product.sale_rate).toFixed(2),
-                    };
-                    this.carts.push(cart);
-                } else {
-                    exists.quantity = Number(exists.quantity) + 1;
-                    exists.total = (exists.quantity * exists.sale_rate).toFixed(2);
+            async onChangeProduct() {
+                if (this.selectedProduct == null) {
+                    this.selectedProduct = {
+                        id: '',
+                        unit: {},
+                        display_name: 'select product'
+                    }
+                    return;
                 }
+                if (this.selectedProduct.id != '') {
+                    await axios.post('/get-currentStock', {
+                        productId: this.selectedProduct.id
+                    }).then(res => {
+                        this.stock = res.data.length > 0 ? res.data[0].stock : 0;
+                    })
+                    this.$refs.quantity.focus();
+                }
+            },
 
-                this.searchProductText = '';
-                this.products = [];
-                await this.calculateTotal();
+            productTotal() {
+                this.selectedProduct.total = parseFloat(this.selectedProduct.sale_rate * this.selectedProduct.quantity).toFixed(2);
+            },
+
+            addToCart() {
+                if (this.selectedProduct.id == '') {
+                    toastr.error('Please select a product')
+                    return;
+                }
+                let cart = this.carts.find(item => item.id == this.selectedProduct.id);
+
+                if (cart != undefined) {
+                    let newQuantity = parseFloat(cart.quantity) + parseFloat(1)
+                    // if (parseFloat(newQuantity) > parseFloat(this.stock)) {
+                    //     toastr.error('Stock is unavailable');
+                    //     return;
+                    // }
+                    cart.quantity = newQuantity;
+                    cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
+                } else {
+                    // if (1 > parseFloat(this.stock)) {
+                    //     toastr.error('Stock is unavailable');
+                    //     return;
+                    // }
+                    this.carts.push({
+                        id: this.selectedProduct.id,
+                        code: this.selectedProduct.code,
+                        category_name: this.selectedProduct.category?.name,
+                        name: this.selectedProduct.name,
+                        unit_name: this.selectedProduct.unit?.name,
+                        purchase_rate: this.selectedProduct.purchase_rate,
+                        sale_rate: this.selectedProduct.sale_rate,
+                        quantity: 1,
+                        total: parseFloat(this.selectedProduct.sale_rate * 1).toFixed(2)
+                    })
+                }
+                this.clearProduct();
+                this.calculateTotal();
             },
 
             async quantityRateTotal(cart) {
@@ -610,12 +472,21 @@
                 await this.calculateTotal();
             },
 
-            async removeCart(sl) {
+            removeCart(sl) {
                 this.carts.splice(sl, 1);
-                await this.calculateTotal();
+                this.calculateTotal();
             },
 
-            async calculateTotal() {
+            clearProduct() {
+                this.selectedProduct = {
+                    id: '',
+                    unit: {},
+                    display_name: 'select product'
+                }
+                this.stock = 0;
+            },
+
+            calculateTotal() {
                 this.sale.subtotal = this.carts.reduce((pr, cu) => {
                     return pr + parseFloat(cu.total)
                 }, 0).toFixed(2);

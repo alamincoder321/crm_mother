@@ -26,6 +26,7 @@ use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use Illuminate\Support\Facades\Session;
 
 Route::fallback(function () {
     return view('error.404');
@@ -235,3 +236,8 @@ Route::post('/delete-quotation', [QuotationController::class, 'destroy'])->name(
 // ============================= Report Panel Route ==============================
 Route::get('/profitLoss', [ReportController::class, 'profitLoss'])->name('profitLoss');
 Route::post('/get-other-expense-income', [ReportController::class, 'getOtherExpenseIncome'])->name('get.other.expense.income');
+
+Route::get('/pageSet/{page}', function ($page) {
+    Session::put('sale_page', $page);
+    return redirect()->route('sale.create');
+});
