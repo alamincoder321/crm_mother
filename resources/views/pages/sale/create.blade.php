@@ -109,19 +109,19 @@
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Name:</label>
                             <div class="col-8 col-md-8">
-                                <input type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.name" />
+                                <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.name" />
                             </div>
                         </div>
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Phone:</label>
                             <div class="col-8 col-md-8">
-                                <input type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.phone" />
+                                <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.phone" />
                             </div>
                         </div>
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Address:</label>
                             <div class="col-8 col-md-8">
-                                <input type="text" :disabled="selectedCustomer.type == 'regular'" class="form-control" v-model="selectedCustomer.address">
+                                <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.address">
                             </div>
                         </div>
                     </div>
