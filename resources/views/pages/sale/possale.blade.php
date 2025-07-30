@@ -31,6 +31,22 @@
     .mostly-customized-scrollbar::-webkit-scrollbar-thumb {
         background: #4154f1 !important;
     }
+
+    @media (max-width: 767px) {
+        .bottomSide {
+            position: relative !important;
+        }
+    }
+
+    .bottomSide {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 999;
+        background: #fff;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.07);
+    }
 </style>
 @endpush
 @section('content')
@@ -60,7 +76,7 @@
         </div>
     </div>
     <div class="mt-2 col-md-6 col-12 pe-md-0">
-        <div class="card mb-0 shadow-none" style="height:560px;border: 1px solid gray;border-top-right-radius: 0 !important;border-bottom-right-radius: 0 !important;">
+        <div class="card mb-0 shadow-none" style="padding-bottom:90px;height:560px;border: 1px solid gray;border-top-right-radius: 0 !important;border-bottom-right-radius: 0 !important;">
             <div class="card-header" style="padding: 7px 15px;">
                 <div class="row">
                     <div class="col-md-6">
@@ -83,7 +99,7 @@
                         <div class="form-group row">
                             <label for="" class="col-md-2">Product</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" placeholder="Search Product Or Code"/>
+                                <input type="text" class="form-control" placeholder="Search Product Or Code" />
                             </div>
                         </div>
                     </div>
@@ -117,7 +133,7 @@
         </div>
     </div>
     <div class="mt-2 col-md-6 col-12 ps-md-0">
-        <div class="card mb-0 shadow-none" style="height:560px;border: 1px solid gray;border-top-left-radius: 0 !important;border-bottom-left-radius: 0 !important;">
+        <div class="card mb-0 shadow-none" style="padding-bottom:90px;height:560px;border: 1px solid gray;border-top-left-radius: 0 !important;border-bottom-left-radius: 0 !important;">
             <div class="card-header" style="padding: 7px;padding-bottom:2px;">
                 <div class="row">
                     <div class="col-md-4">
@@ -125,12 +141,12 @@
                     </div>
                     <div class="col-md-4">
                         <div class="input-group">
-                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.name" />
+                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.name" placeholder="name" />
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="input-group">
-                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.phone" />
+                            <input type="text" :disabled="selectedCustomer.type == 'retail'" class="form-control" v-model="selectedCustomer.phone" placeholder="phone" />
                         </div>
                     </div>
                     <div class="col-12 col-md-12 mt-2">
@@ -141,7 +157,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body bg-light p-2" style="overflow-x: auto;">
+            <div class="card-body bg-light p-2 mostly-customized-scrollbar" style="overflow-x: auto;">
                 <table class="table table-hover purTable">
                     <thead>
                         <tr>
@@ -202,24 +218,24 @@
             </div>
         </div>
     </div>
-    <div class="col-md-12 col-12 mt-1">
+    <div class="col-md-12 col-12 mt-1 bottomSide" @keyup.enter="saveData" @keyup.f2="saveData">
         <div class="card mb-0" style="border: 1px solid gray;">
             <div class="card-body p-2">
-                <div class="row">
+                <div class="row" style="min-height: 80px;">
                     <div class="col-md-3">
-                        <div class="input-group align-items-center">
+                        <div class="input-group align-items-center h-100">
                             <label for="" class="pe-2">Note</label>
-                            <textarea rows="6" name="note" id="note" class="form-control"></textarea>
+                            <textarea rows="6" name="note" id="note" class="form-control" style="height: 100%;"></textarea>
                         </div>
                     </div>
                     <div class="col-md-3" style="border-left: 1px solid gray;">
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-bottom: 10px;">
                             <label for="" class="col-md-4">SubTotal</label>
                             <div class="col-md-8">
                                 <input type="text" class="form-control" v-model="sale.subtotal" readonly>
                             </div>
                         </div>
-                        <div class="form-group row mt-1">
+                        <div class="form-group row mt-1" style="margin-bottom: 10px;">
                             <label for="" class="col-md-4">Discount</label>
                             <div class="col-md-8">
                                 <div class="input-group">
@@ -241,16 +257,16 @@
                         </div>
                     </div>
                     <div class="col-md-3" style="border-left: 1px solid gray;">
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-bottom: 10px;">
                             <label for="" class="col-md-4">Total</label>
                             <div class="col-md-8">
                                 <input type="number" v-model="sale.total" min="0" step="any" class="form-control" readonly>
                             </div>
                         </div>
-                        <div class="form-group row mt-1">
+                        <div class="form-group row mt-1" style="margin-bottom: 10px;">
                             <label for="" class="col-md-4">CashPaid</label>
                             <div class="col-md-8">
-                                <input type="number" v-model="sale.cashPaid" id="cashPaid" @input="calculateTotal" min="0" step="any" class="form-control">
+                                <input type="number" v-model="sale.cashPaid" ref="cashPaid" tabindex="0" id="cashPaid" @input="calculateTotal" min="0" step="any" class="form-control">
                             </div>
                         </div>
                         <div class="form-group row mt-1">
@@ -263,7 +279,7 @@
                         </div>
                     </div>
                     <div class="col-md-3" style="border-left: 1px solid gray;">
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-bottom: 10px;">
                             <label for="" class="col-md-4">Change</label>
                             <div class="col-md-8">
                                 <input type="number" v-model="sale.returnAmount" min="0" step="any" class="form-control" readonly />
@@ -271,10 +287,10 @@
                         </div>
                         <div class="form-group row mt-1">
                             <div class="col-md-6">
-                                <button class="btn w-100 btn-success" style="height: 57px;">Save</button>
+                                <button @click="saveData" class="btn w-100 btn-success" style="height: 57px;">Save</button>
                             </div>
                             <div class="col-md-6">
-                                <button class="btn w-100 btn-danger" style="height: 57px;">Hold</button>
+                                <button type="button" @click="showInvoice = true" @click="$emit('close')" class="btn w-100 btn-danger" style="height: 57px;">Preview</button>
                             </div>
                         </div>
                     </div>
@@ -332,10 +348,18 @@
             </div>
         </div>
     </div>
+    <invoice-preview
+        :visible="showInvoice"
+        :cart="carts"
+        :customer="selectedCustomer"
+        :sale="sale"
+        @close="showInvoice = false"
+        style="display:none;"></invoice-preview>
 </div>
 @endsection
 
 @push("js")
+<script src="{{asset('component')}}/InvoicePreview.js"></script>
 <script>
     new Vue({
         el: "#sale",
@@ -360,6 +384,7 @@
                     previous_due: 0,
                     note: ''
                 },
+                showInvoice: false,
                 discountPercent: 0,
                 vatPercent: 0,
                 customers: [],
@@ -393,8 +418,19 @@
                 carts: [],
                 bankCart: [],
                 stock: 0,
-                onProgress: false,
+                onProgress: false
             }
+        },
+
+        mounted() {
+            window.addEventListener('keydown', this.handleTabPress);
+        },
+        beforeDestroy() {
+            window.removeEventListener('keydown', this.handleTabPress);
+        },
+
+        beforeCreate() {
+            $("body").addClass("toggle-sidebar");
         },
 
         async created() {
@@ -410,17 +446,29 @@
         },
 
         methods: {
-            getBrand(){
+            handleTabPress(e) {
+                if (e.key === 'Tab' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.$refs.cashPaid?.focus();
+                }
+            },
+            getBrand() {
                 axios.get('/get-brand')
                     .then(res => {
                         this.brands = res.data;
                     })
             },
-            getCategory(){
+            getCategory() {
                 axios.get('/get-category')
                     .then(res => {
                         this.categories = res.data;
                     })
+            },
+            onChangeBrand() {
+                this.getProduct();
+            },
+            onChangeCategory() {
+                this.getProduct();
             },
             getBank() {
                 axios.get('/get-bank')
@@ -515,7 +563,9 @@
 
             getProduct() {
                 axios.post('/get-product', {
-                        forSearch: 'yes'
+                        brandId: this.selectedBrand ? this.selectedBrand.id : '',
+                        categoryId: this.selectedCategory ? this.selectedCategory.id : '',
+                        forSearch: this.selectedBrand || this.selectedCategory ? '' : 'yes'
                     })
                     .then(res => {
                         this.products = res.data.map(item => {
@@ -576,17 +626,9 @@
 
                 if (cart != undefined) {
                     let newQuantity = parseFloat(cart.quantity) + parseFloat(1)
-                    // if (parseFloat(newQuantity) > parseFloat(this.stock)) {
-                    //     toastr.error('Stock is unavailable');
-                    //     return;
-                    // }
                     cart.quantity = newQuantity;
                     cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
                 } else {
-                    // if (1 > parseFloat(this.stock)) {
-                    //     toastr.error('Stock is unavailable');
-                    //     return;
-                    // }
                     this.carts.push({
                         id: this.selectedProduct.id,
                         code: this.selectedProduct.code,
@@ -871,8 +913,5 @@
             }
         },
     })
-    $(document).ready(function() {
-        $("body").addClass("toggle-sidebar");
-    });
 </script>
 @endpush

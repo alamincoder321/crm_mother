@@ -40,6 +40,7 @@ Route::get('/logout', [DashboardController::class, 'Logout'])->middleware('auth'
 
 //company profile update
 Route::get('/companyProfile', [DashboardController::class, 'companyProfile'])->name('companyProfile');
+Route::get('/get-companyProfile', [DashboardController::class, 'getcompanyProfile'])->name('getcompanyProfile');
 Route::post('/update-companyProfile', [DashboardController::class, 'updatecompanyProfile'])->name('update.companyProfile');
 Route::get('/get-headerInfo', [DashboardController::class, 'getHeaderInfo'])->name('get.headerInfo');
 

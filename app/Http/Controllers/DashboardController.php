@@ -93,6 +93,11 @@ class DashboardController extends Controller
         return view('pages.control.companyProfile');
     }
 
+    public function getcompanyProfile()
+    {
+        return response()->json(CompanyProfile::first());
+    }
+
     public function updatecompanyProfile(Request $request)
     {
         $this->validate($request, [

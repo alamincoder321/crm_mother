@@ -30,8 +30,8 @@ class ProductController extends Controller
         if (!empty($request->productId)) {
             $products = $products->where('id', $request->productId);
         }
-        if (!empty($request->category_id)) {
-            $products = $products->where('category_id', $request->category_id);
+        if (!empty($request->categoryId)) {
+            $products = $products->where('category_id', $request->categoryId);
         }
         if (!empty($request->brandId)) {
             $products = $products->where('brand_id', $request->brandId);
