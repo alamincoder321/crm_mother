@@ -99,7 +99,7 @@
                         <div class="form-group row">
                             <label for="" class="col-md-2">Product</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" placeholder="Search Product Or Code" />
+                                <input type="text" id="barcodeScan" class="form-control" placeholder="Search Product Or Code" />
                             </div>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                     </div>
                     <div class="col-12 col-md-12 mt-2">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Scan Barcode">
+                            <input type="text" class="form-control" placeholder="Scan Barcode" v-model="barcodeInput" @keyup.enter="onBarcodeEnter">
                             <button class="btn btn-primary" type="button" style="font-size: 15px;"><i class="bi bi-upc"></i></button>
                         </div>
                     </div>
@@ -218,85 +218,87 @@
             </div>
         </div>
     </div>
-    <div class="col-md-12 col-12 mt-1 bottomSide" @keyup.enter="saveData" @keyup.f2="saveData">
-        <div class="card mb-0" style="border: 1px solid gray;">
-            <div class="card-body p-2">
-                <div class="row" style="min-height: 80px;">
-                    <div class="col-md-3">
-                        <div class="input-group align-items-center h-100">
-                            <label for="" class="pe-2">Note</label>
-                            <textarea rows="6" name="note" id="note" class="form-control" style="height: 100%;"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-3" style="border-left: 1px solid gray;">
-                        <div class="form-group row" style="margin-bottom: 10px;">
-                            <label for="" class="col-md-4">SubTotal</label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" v-model="sale.subtotal" readonly>
+    <div class="col-md-12 col-12 mt-1 bottomSide" @keyup.f2="saveData">
+        <form @submit.prevent="saveData">
+            <div class="card mb-0" style="border: 1px solid gray;">
+                <div class="card-body p-2">
+                    <div class="row" style="min-height: 80px;">
+                        <div class="col-md-3">
+                            <div class="input-group align-items-center h-100">
+                                <label for="" class="pe-2">Note</label>
+                                <textarea rows="6" name="note" id="note" v-model="sale.note" class="form-control" style="height: 100%;"></textarea>
                             </div>
                         </div>
-                        <div class="form-group row mt-1" style="margin-bottom: 10px;">
-                            <label for="" class="col-md-4">Discount</label>
-                            <div class="col-md-8">
-                                <div class="input-group">
-                                    <input type="number" v-model="discountPercent" id="discountPercent" @input="calculateTotal" min="0" step="any" class="form-control">
-                                    <span class="px-1">%</span>
-                                    <input type="number" v-model="sale.discount" id="discount" @input="calculateTotal" min="0" step="any" class="form-control">
+                        <div class="col-md-3" style="border-left: 1px solid gray;">
+                            <div class="form-group row" style="margin-bottom: 10px;">
+                                <label for="" class="col-md-4">SubTotal</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" v-model="sale.subtotal" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row mt-1" style="margin-bottom: 10px;">
+                                <label for="" class="col-md-4">Discount</label>
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <input type="number" v-model="discountPercent" id="discountPercent" @input="calculateTotal" min="0" step="any" class="form-control">
+                                        <span class="px-1">%</span>
+                                        <input type="number" v-model="sale.discount" id="discount" @input="calculateTotal" min="0" step="any" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row mt-1">
+                                <label for="" class="col-md-4">Vat</label>
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <input type="number" v-model="vatPercent" id="vatPercent" @input="calculateTotal" min="0" step="any" class="form-control">
+                                        <span class="px-1">%</span>
+                                        <input type="number" v-model="sale.vat" id="vat" @input="calculateTotal" min="0" step="any" class="form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row mt-1">
-                            <label for="" class="col-md-4">Vat</label>
-                            <div class="col-md-8">
-                                <div class="input-group">
-                                    <input type="number" v-model="vatPercent" id="vatPercent" @input="calculateTotal" min="0" step="any" class="form-control">
-                                    <span class="px-1">%</span>
-                                    <input type="number" v-model="sale.vat" id="vat" @input="calculateTotal" min="0" step="any" class="form-control">
+                        <div class="col-md-3" style="border-left: 1px solid gray;">
+                            <div class="form-group row" style="margin-bottom: 10px;">
+                                <label for="" class="col-md-4">Total</label>
+                                <div class="col-md-8">
+                                    <input type="number" v-model="sale.total" min="0" step="any" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row mt-1" style="margin-bottom: 10px;">
+                                <label for="" class="col-md-4">CashPaid</label>
+                                <div class="col-md-8">
+                                    <input type="number" v-model="sale.cashPaid" ref="cashPaid" tabindex="0" id="cashPaid" @input="calculateTotal" min="0" step="any" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row mt-1">
+                                <div class="col-md-5 ps-1 pe-0">
+                                    <label class="form-label mb-0 btn btn-secondary px-0 w-100" @click="showModal">Multi-Payment</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="number" v-model="sale.bankPaid" id="bankPaid" min="0" step="any" class="form-control" disabled />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3" style="border-left: 1px solid gray;">
-                        <div class="form-group row" style="margin-bottom: 10px;">
-                            <label for="" class="col-md-4">Total</label>
-                            <div class="col-md-8">
-                                <input type="number" v-model="sale.total" min="0" step="any" class="form-control" readonly>
+                        <div class="col-md-3" style="border-left: 1px solid gray;">
+                            <div class="form-group row" style="margin-bottom: 10px;">
+                                <label for="" class="col-md-4">Change</label>
+                                <div class="col-md-8">
+                                    <input type="number" v-model="sale.returnAmount" min="0" step="any" class="form-control" readonly />
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row mt-1" style="margin-bottom: 10px;">
-                            <label for="" class="col-md-4">CashPaid</label>
-                            <div class="col-md-8">
-                                <input type="number" v-model="sale.cashPaid" ref="cashPaid" tabindex="0" id="cashPaid" @input="calculateTotal" min="0" step="any" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-group row mt-1">
-                            <div class="col-md-5 ps-1 pe-0">
-                                <label class="form-label mb-0 btn btn-secondary px-0 w-100" @click="showModal">Multi-Payment</label>
-                            </div>
-                            <div class="col-md-7">
-                                <input type="number" v-model="sale.bankPaid" id="bankPaid" min="0" step="any" class="form-control" disabled />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3" style="border-left: 1px solid gray;">
-                        <div class="form-group row" style="margin-bottom: 10px;">
-                            <label for="" class="col-md-4">Change</label>
-                            <div class="col-md-8">
-                                <input type="number" v-model="sale.returnAmount" min="0" step="any" class="form-control" readonly />
-                            </div>
-                        </div>
-                        <div class="form-group row mt-1">
-                            <div class="col-md-6">
-                                <button @click="saveData" class="btn w-100 btn-success" style="height: 57px;">Save</button>
-                            </div>
-                            <div class="col-md-6">
-                                <button type="button" @click="showInvoice = true" @click="$emit('close')" class="btn w-100 btn-danger" style="height: 57px;">Preview</button>
+                            <div class="form-group row mt-1">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn w-100 btn-success" style="height: 57px;">Save</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" @click="previewInvoice" class="btn w-100 btn-danger" style="height: 57px;">Save & Print</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- bank account entry -->
@@ -353,6 +355,7 @@
         :cart="carts"
         :customer="selectedCustomer"
         :sale="sale"
+        :username="username"
         @close="showInvoice = false"
         style="display:none;"></invoice-preview>
 </div>
@@ -418,6 +421,8 @@
                 carts: [],
                 bankCart: [],
                 stock: 0,
+                barcodeInput: '',
+                username: "{{ auth()->user()->username }}",
                 onProgress: false
             }
         },
@@ -446,6 +451,14 @@
         },
 
         methods: {
+            previewInvoice() {
+                if (this.carts.length == 0) {
+                    toastr.error("Cart is empty");
+                    return;
+                }
+                this.showInvoice = true;
+                this.saveData();
+            },
             handleTabPress(e) {
                 if (e.key === 'Tab' && !e.shiftKey) {
                     e.preventDefault();
@@ -617,6 +630,52 @@
                 this.selectedProduct.total = parseFloat(this.selectedProduct.sale_rate * this.selectedProduct.quantity).toFixed(2);
             },
 
+            async onBarcodeEnter() {
+                if (this.barcodeInput == '') {
+                    Swal.fire({
+                        icon: "error",
+                        text: "Barcode field is empty",
+                    });
+                    return;
+                }
+                let product = await axios.post("/get-product", {
+                    search: this.barcodeInput,
+                }).then(res => {
+                    let r = res.data
+                    return r.filter(item => item.status == 'a');
+                })
+                if (product.length == 0) {
+                    Swal.fire({
+                        icon: "error",
+                        text: "Product not found",
+                    });
+                    return;
+                }
+                
+                this.selectedProduct = product[0];
+                let cart = this.carts.find(item => item.id == this.selectedProduct.id);
+
+                if (cart != undefined) {
+                    let newQuantity = parseFloat(cart.quantity) + parseFloat(1)
+                    cart.quantity = newQuantity;
+                    cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
+                } else {
+                    this.carts.push({
+                        id: this.selectedProduct.id,
+                        code: this.selectedProduct.code,
+                        category_name: this.selectedProduct.category?.name,
+                        name: this.selectedProduct.name,
+                        unit_name: this.selectedProduct.unit?.name,
+                        purchase_rate: this.selectedProduct.purchase_rate,
+                        sale_rate: this.selectedProduct.sale_rate,
+                        quantity: 1,
+                        total: parseFloat(this.selectedProduct.sale_rate * 1).toFixed(2)
+                    })
+                }
+                this.clearProduct();
+                this.calculateTotal();
+            },
+
             addToCart() {
                 if (this.selectedProduct.id == '') {
                     toastr.error('Please select a product')
@@ -680,6 +739,7 @@
                     display_name: 'select product'
                 }
                 this.stock = 0;
+                this.barcodeInput = '';
             },
 
             calculateTotal() {
@@ -790,7 +850,7 @@
                 };
             },
 
-            saveData(event) {
+            saveData() {
                 this.sale.employee_id = this.selectedEmployee ? this.selectedEmployee.id : "";
                 let formdata = {
                     sale: this.sale,
@@ -806,9 +866,6 @@
                         this.clearData();
                         history.pushState(null, '', '/sale');
                         this.sale.invoice = res.data.invoice;
-                        if (confirm('Do you want to go to the invoice page?')) {
-                            window.open(`/sale-invoice/${res.data.saleId}`, '_blank');
-                        }
                     })
                     .catch(err => {
                         this.onProgress = false
@@ -860,6 +917,7 @@
                 this.selectedEmployee = null;
                 this.carts = [];
                 this.getCustomer();
+                document.querySelector("#barcodeScan").select();
             },
 
             async getSale() {
