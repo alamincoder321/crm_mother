@@ -434,6 +434,16 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                <a href="/bankLedger">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-list"></i>
+                            <span>Bank Ledger</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
                 <a href="/supplierDue">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">

@@ -9,6 +9,7 @@ use App\Models\SaleDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Requests\SaleRequest;
+use App\Models\Product;
 use App\Models\SaleBank;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -109,6 +110,13 @@ class SaleController extends Controller
 
     public function store(SaleRequest $request)
     {
+        //check stock
+        foreach ($request->carts as $key => $item) {
+            $stock = Product::stock(['productId' => $item['id']])[0]->stock;
+            if ($item['quantity'] > $stock) {
+                return send_error("Stock unavailable this product: {$item['name']}", null, 422);
+            }
+        }
         try {
             DB::beginTransaction();
             $sale = (object) $request->sale;
@@ -117,7 +125,7 @@ class SaleController extends Controller
 
             $invoice = Sale::where('invoice', $sale->invoice)->first();
             if (empty($invoice)) {
-                $invoice = invoiceGenerate('Sale', '', $this->branchId);
+                $invoice = invoiceGenerate('Sale');
             }
             if (!empty($customer) && $customer->type == 'new') {
                 $checkSupp = Customer::where('phone', $customer->phone)->where('branch_id', $this->branchId)->first();
@@ -125,7 +133,7 @@ class SaleController extends Controller
                     $customerId = $checkSupp->id;
                 } else {
                     $cus             = new Customer();
-                    $cus->code       = generateCode('Customer', 'C', $this->branchId);
+                    $cus->code       = generateCode('Customer', 'C');
                     $cus->name       = $customer->name;
                     $cus->owner      = $customer->name;
                     $cus->phone      = $customer->phone;
@@ -197,7 +205,7 @@ class SaleController extends Controller
 
             DB::commit();
             $msg = "Sale has created successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'saleId' => $data->id, 'invoice' => invoiceGenerate('Sale', '', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => $msg, 'saleId' => $data->id, 'invoice' => invoiceGenerate('Sale')]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
@@ -218,7 +226,7 @@ class SaleController extends Controller
                     $customerId = $checkSupp->id;
                 } else {
                     $cus             = new Customer();
-                    $cus->code       = generateCode('Customer', 'C', $this->branchId);
+                    $cus->code       = generateCode('Customer', 'C');
                     $cus->name       = $customer->name;
                     $cus->owner      = $customer->name;
                     $cus->phone      = $customer->phone;
@@ -255,6 +263,13 @@ class SaleController extends Controller
 
             // old sale_detail delete
             SaleDetail::where('sale_id', $sale->id)->forceDelete();
+            //check stock
+            foreach ($request->carts as $key => $item) {
+                $stock = Product::stock(['productId' => $item['id']])[0]->stock;
+                if ($item['quantity'] > $stock) {
+                    return send_error("Stock unavailable this product: {$item['name']}", null, 422);
+                }
+            }
             $cartDetails = [];
             foreach ($request->carts as $cart) {
                 $cartDetails[] = [

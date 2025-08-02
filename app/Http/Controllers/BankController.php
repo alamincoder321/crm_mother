@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BankController extends Controller
@@ -122,5 +123,148 @@ class BankController extends Controller
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }
+    }
+
+    public function bankLedger()
+    {
+        return view('pages.report.bankLedger');
+    }
+
+    public function getBankLedger(Request $request)
+    {
+        $branchId = $this->branchId;
+        $query = "
+                select
+                'a' as sequence,
+                bt.id,
+                bt.date,
+                concat('Bank Deposit - ', bt.invoice) as description,
+                0 as withdraw,
+                bt.amount as deposit,
+                0 as balance
+                from bank_transactions bt
+                where bt.status = 'a'
+                and bt.type = 'credit'
+                " . (empty($request->bankId) ? "" : " and bt.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'b' as sequence,
+                sb.id,
+                sm.date,
+                concat('Sale Invoice - ', sm.invoice) as description,
+                0 as withdraw,
+                sb.amount as deposit,
+                0 as balance
+                from sale_banks sb
+                join sales sm on sm.id = sb.sale_id
+                where sb.status = 'a'
+                " . (empty($request->bankId) ? "" : " and sb.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and sb.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'c' as sequence,
+                cpr.id,
+                cpr.date,
+                concat('Customer Payment - ', cpr.invoice) as description,
+                0 as withdraw,
+                cpr.amount as deposit,
+                0 as balance
+                from receives cpr
+                where cpr.status = 'a'
+                and cpr.type = 'customer'
+                " . (empty($request->bankId) ? "" : " and cpr.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and cpr.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'd' as sequence,
+                spr.id,
+                spr.date,
+                concat('Supplier Receive - ', spr.invoice) as description,
+                0 as withdraw,
+                spr.amount as deposit,
+                0 as balance
+                from receives spr
+                where spr.status = 'a'
+                and spr.type = 'supplier'
+                " . (empty($request->bankId) ? "" : " and spr.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and spr.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'e' as sequence,
+                bt.id,
+                bt.date,
+                concat('Bank Withdraw - ', bt.invoice) as description,
+                bt.amount as withdraw,
+                0 as deposit,
+                0 as balance
+                from bank_transactions bt
+                where bt.status = 'a'
+                and bt.type = 'debit'
+                " . (empty($request->bankId) ? "" : " and bt.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . "
+                
+                UNION
+                select
+                'f' as sequence,
+                spp.id,
+                spp.date,
+                concat('Supplier Payment - ', spp.invoice) as description,
+                spp.amount as withdraw,
+                0 as deposit,
+                0 as balance
+                from payments spp
+                where spp.status = 'a'
+                and spp.type = 'supplier'
+                " . (empty($request->bankId) ? "" : " and spp.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and spp.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'g' as sequence,
+                cpp.id,
+                cpp.date,
+                concat('Customer Payment - ', cpp.invoice) as description,
+                cpp.amount as withdraw,
+                0 as deposit,
+                0 as balance
+                from payments cpp
+                where cpp.status = 'a'
+                and cpp.type = 'customer'
+                " . (empty($request->bankId) ? "" : " and cpp.bank_id = '$request->bankId'") . "
+                " . ($branchId == null ? "" : " and cpp.branch_id = '$branchId'") . "
+                
+                order by date, sequence asc";
+
+        $ledgers = DB::select($query);
+
+        $supplier = Bank::select('balance')->where('id', $request->bankId)
+            ->where('branch_id', $branchId)
+            ->first();
+        $previousBalance = empty($supplier) ? 0 : $supplier->balance;
+
+        $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($previousBalance, $ledgers) {
+            $lastBalance = $key == 0 ? $previousBalance : $ledgers[$key - 1]->balance;
+            $ledger->balance = ($lastBalance + $ledger->deposit) - $ledger->withdraw;
+            return $ledger;
+        });
+
+        $previousLedger = collect($ledgers)->filter(function ($ledger) use ($request) {
+            return $ledger->date < $request->dateFrom;
+        });
+        $previousBalance = count($previousLedger) > 0 ? $previousLedger[count($previousLedger) - 1]->balance : $previousBalance;
+
+        if (!empty($request->dateFrom) && !empty($request->dateTo)) {
+            $ledgers = $ledgers->filter(function ($ledger) use ($request) {
+                return $ledger->date >= $request->dateFrom && $ledger->date <= $request->dateTo;
+            })->values();
+        }
+
+
+        return response()->json(['previousBalance' => $previousBalance, 'ledgers' => $ledgers]);
     }
 }

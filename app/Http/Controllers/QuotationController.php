@@ -160,7 +160,7 @@ class QuotationController extends Controller
                     $customerId = $checkSupp->id;
                 } else {
                     $cus             = new Customer();
-                    $cus->code       = generateCode('Customer', 'C', $this->branchId);
+                    $cus->code       = generateCode('Customer', 'C');
                     $cus->name       = $customer->name;
                     $cus->owner      = $customer->name;
                     $cus->phone      = $customer->phone;

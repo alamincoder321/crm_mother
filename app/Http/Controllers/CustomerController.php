@@ -88,7 +88,7 @@ class CustomerController extends Controller
                 $check->update();
             } else {
                 $data = new Customer();
-                $data->code = generateCode('Customer', 'C', $this->branchId);
+                $data->code = generateCode('Customer', 'C');
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;

@@ -122,6 +122,8 @@ Route::post('/delete-product', [ProductController::class, 'destroy'])->name('pro
 // stock route
 Route::get('/stock', [ProductController::class, 'stock'])->name('product.stock');
 Route::post('/get-currentStock', [ProductController::class, 'getProductStock'])->name('get.product.stock');
+Route::get('/productLedger', [ProductController::class, 'productLedger'])->name('product.ledger');
+Route::post('/get-product-ledger', [ProductController::class, 'getProductLedger'])->name('get.product.ledger');
 
 
 // ======================================== HR Panel =====================================
@@ -172,6 +174,8 @@ Route::match(['get', 'post'], '/get-bank', [BankController::class, 'index'])->na
 Route::post('/bank', [BankController::class, 'store'])->name('bank.store');
 Route::post('/update-bank', [BankController::class, 'update'])->name('bank.update');
 Route::post('/delete-bank', [BankController::class, 'destroy'])->name('bank.delete');
+Route::get('/bankLedger', [BankController::class, 'bankLedger'])->name('bank.ledger');
+Route::post('/get-bank-ledger', [BankController::class, 'getBankLedger'])->name('get.bank.ledger');
 
 // expense route
 Route::get('/expense', [TransactionController::class, 'expense'])->name('expense.create');

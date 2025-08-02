@@ -99,7 +99,7 @@
                         <div class="form-group row">
                             <label for="" class="col-md-2">Product</label>
                             <div class="col-md-10">
-                                <input type="text" id="barcodeScan" class="form-control" placeholder="Search Product Or Code" />
+                                <input type="text" id="productName" v-model="productName" @input="productSearch" class="form-control" placeholder="Search Product Or Code" />
                             </div>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                     </div>
                     <div class="col-12 col-md-12 mt-2">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Scan Barcode" v-model="barcodeInput" @keyup.enter="onBarcodeEnter">
+                            <input type="text" class="form-control" id="barcodeScan" placeholder="Scan Barcode" v-model="barcodeInput" @keyup.enter="onBarcodeEnter">
                             <button class="btn btn-primary" type="button" style="font-size: 15px;"><i class="bi bi-upc"></i></button>
                         </div>
                     </div>
@@ -403,6 +403,7 @@
                 selectedBrand: null,
                 categories: [],
                 selectedCategory: null,
+                productName: '',
                 products: [],
                 selectedProduct: {
                     id: '',
@@ -451,13 +452,29 @@
         },
 
         methods: {
-            previewInvoice() {
+            async previewInvoice() {
                 if (this.carts.length == 0) {
                     toastr.error("Cart is empty");
                     return;
                 }
+                for (const item of this.carts) {
+                    try {
+                        const res = await axios.post('/get-currentStock', {
+                            productId: item.id
+                        });
+                        let stock = res.data.length > 0 ? res.data[0].stock : 0;
+
+                        if (parseFloat(item.quantity) > parseFloat(stock)) {
+                            toastr.error(`Unavailable stock for this product: ${item.name}`);
+                            return;
+                        }
+                    } catch (error) {
+                        toastr.error(`Error checking stock for ${item.name}`);
+                        return;
+                    }
+                }
+                await this.saveData();
                 this.showInvoice = true;
-                this.saveData();
             },
             handleTabPress(e) {
                 if (e.key === 'Tab' && !e.shiftKey) {
@@ -556,29 +573,20 @@
 
             },
 
-            onChangeSaleType() {
-                this.selectedCustomer = {
-                    id: '',
-                    display_name: 'Walk In Customer',
-                    name: 'Walk In Customer',
-                    phone: '',
-                    address: '',
-                    type: 'general'
+            productSearch() {
+                if (this.productName.length > 1) {
+                    this.getProduct();
+                } else {
+                    this.getProduct();
                 }
-                this.selectedProduct = {
-                    id: '',
-                    unit: {},
-                    display_name: 'select product'
-                }
-                this.getCustomer();
-                this.getProduct();
             },
 
             getProduct() {
                 axios.post('/get-product', {
                         brandId: this.selectedBrand ? this.selectedBrand.id : '',
                         categoryId: this.selectedCategory ? this.selectedCategory.id : '',
-                        forSearch: this.selectedBrand || this.selectedCategory ? '' : 'yes'
+                        forSearch: this.selectedBrand || this.selectedCategory ? '' : 'yes',
+                        search: this.productName
                     })
                     .then(res => {
                         this.products = res.data.map(item => {
@@ -651,7 +659,7 @@
                     });
                     return;
                 }
-                
+
                 this.selectedProduct = product[0];
                 let cart = this.carts.find(item => item.id == this.selectedProduct.id);
 
@@ -674,6 +682,7 @@
                 }
                 this.clearProduct();
                 this.calculateTotal();
+                document.querySelector("#barcodeScan").select();
             },
 
             addToCart() {
@@ -739,7 +748,7 @@
                     display_name: 'select product'
                 }
                 this.stock = 0;
-                this.barcodeInput = '';
+                this.barcodeInput = '';                
             },
 
             calculateTotal() {
@@ -864,14 +873,14 @@
                     .then(async res => {
                         toastr.success(res.data.message);
                         this.clearData();
-                        history.pushState(null, '', '/sale');
                         this.sale.invoice = res.data.invoice;
+                        history.pushState(null, '', '/sale');
                     })
                     .catch(err => {
                         this.onProgress = false
                         var r = JSON.parse(err.request.response);
                         console.log(r);
-
+                        
                         if (err.request.status == '422' && r.errors != undefined && typeof r.errors == 'object') {
                             $.each(r.errors, (index, value) => {
                                 $.each(value, (ind, val) => {
@@ -882,7 +891,7 @@
                             if (r.errors != undefined) {
                                 console.log(r.errors);
                             }
-                            toastr.error(val)
+                            toastr.error(r.message)
                         }
                     })
 
@@ -916,8 +925,7 @@
                 };
                 this.selectedEmployee = null;
                 this.carts = [];
-                this.getCustomer();
-                document.querySelector("#barcodeScan").select();
+                this.getCustomer();                
             },
 
             async getSale() {

@@ -118,7 +118,7 @@
                             if (r.errors != undefined) {
                                 console.log(r.errors);
                             }
-                            toastr.error(val)
+                            toastr.error(r.message)
                         }
                     })
 

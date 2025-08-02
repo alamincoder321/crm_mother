@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -92,7 +93,7 @@ class ProductController extends Controller
                 $check->update();
             } else {
                 $data = new Product();
-                $data->code = generateCode('Product', 'P', $this->branchId);
+                $data->code = generateCode('Supplier', 'P');
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
@@ -106,7 +107,7 @@ class ProductController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Product has created successfully", 'code' => generateCode('Product', 'P', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => "Product has created successfully", 'code' => generateCode('Supplier', 'P')]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -150,7 +151,7 @@ class ProductController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Product has updated successfully", 'code' => generateCode('Product', 'P', $this->branchId)]);
+            return response()->json(['status' => true, 'message' => "Product has updated successfully", 'code' => generateCode('Supplier', 'P')]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -191,5 +192,95 @@ class ProductController extends Controller
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }
+    }
+
+    public function productLedger()
+    {
+        return view('pages.report.productLedger');
+    }
+
+    public function getProductLedger(Request $request)
+    {
+        $branchId = $this->branchId;
+        $query = "select
+                'a' as sequence,
+                pd.id,
+                pm.date,
+                concat_ws(' - ', 'Purchase Invoice', pm.invoice) as description,
+                pd.quantity as in_stock,
+                0 as out_stock,
+                0 as stock
+                from purchase_details pd
+                left join purchases pm on pm.id = pd.purchase_id
+                where pd.status = 'a'
+                " . (empty($request->productId) ? "" : " and pd.product_id = '$request->productId'") . "
+                " . ($branchId == null ? "" : " and pd.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'b' as sequence,
+                srd.id,
+                sr.date,
+                concat_ws(' - ', 'Sale Return Invoice', sr.invoice) as description,
+                srd.quantity as in_stock,
+                0 as out_stock,
+                0 as stock
+                from sale_return_details srd
+                left join sale_returns sr on sr.id = srd.sale_return_id
+                where srd.status = 'a'
+                " . (empty($request->productId) ? "" : " and srd.product_id = '$request->productId'") . "
+                " . ($branchId == null ? "" : " and srd.branch_id = '$branchId'") . "
+                
+                UNION
+                select
+                'c' as sequence,
+                sd.id,
+                sm.date,
+                concat_ws(' - ', 'Sale Invoice', ifnull(sm.invoice, '')) as description,
+                0 as in_stock,
+                sd.quantity as out_stock,
+                0 as stock
+                from sale_details sd
+                left join sales sm on sm.id = sd.sale_id
+                where sd.status = 'a'
+                " . (empty($request->productId) ? "" : " and sd.product_id = '$request->productId'") . "
+                " . ($branchId == null ? "" : " and sd.branch_id = '$branchId'") . "
+                
+                UNION
+                select
+                'd' as sequence,
+                prd.id,
+                pr.date,
+                concat_ws(' - ', 'Purchase Return Invoice', pr.invoice) as description,
+                0 as in_stock,
+                prd.quantity as out_stock,
+                0 as stock
+                from purchase_return_details prd
+                left join purchase_returns pr on pr.id = prd.purchase_return_id
+                where prd.status = 'a'
+                " . (empty($request->productId) ? "" : " and prd.product_id = '$request->productId'") . "
+                " . ($branchId == null ? "" : " and prd.branch_id = '$branchId'") . "
+                
+                order by date, sequence asc";
+
+        $ledgers = DB::select($query);
+        $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($ledgers) {
+            $lastStock = $key == 0 ? 0 : $ledgers[$key - 1]->stock;
+            $ledger->stock = ($lastStock + $ledger->in_stock) - $ledger->out_stock;
+            return $ledger;
+        });
+
+        $previousLedger = collect($ledgers)->filter(function ($ledger) use ($request) {
+            return $ledger->date < $request->dateFrom;
+        });
+        $previousStock = count($previousLedger) > 0 ? $previousLedger[count($previousLedger) - 1]->stock : 0;
+
+        if (!empty($request->dateFrom) && !empty($request->dateTo)) {
+            $ledgers = $ledgers->filter(function ($ledger) use ($request) {
+                return $ledger->date >= $request->dateFrom && $ledger->date <= $request->dateTo;
+            })->values();
+        }
+
+        return response()->json(['previousStock' => $previousStock, 'ledgers' => $ledgers]);
     }
 }
