@@ -62,18 +62,20 @@
                                     <th>Purchased Qty</th>
                                     <th>Purchased Total</th>
                                     <th>Already Return Qty</th>
+                                    <th>Already Return Rate</th>
                                     <th>Return Qty</th>
                                     <th>Return Rate</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in purchase.details">
+                                <tr v-for="(item, index) in details">
                                     <td class="text-center" v-text="index + 1"></td>
                                     <td class="text-left" v-text="`${item.name} - ${item.code}`"></td>
                                     <td class="text-center" v-text="item.quantity"></td>
                                     <td class="text-center" v-text="item.total"></td>
-                                    <td class="text-center" v-text="'already taken'"></td>
+                                    <td class="text-center" v-text="item.already_return_quantity"></td>
+                                    <td class="text-center" v-text="item.already_return_amount"></td>
                                     <td class="text-center">
                                         <input type="number" class="text-center" min="0" step="any" v-model="item.return_quantity" @input="qtyRateChange(index)" />
                                     </td>
@@ -83,11 +85,11 @@
                                     <td class="text-center" v-text="item.returnTotal"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="6">
                                         <textarea name="note" id="note" placeholder="Enter note here..." class="form-control" v-model="purchaseReturn.note"></textarea>
                                     </td>
                                     <td class="text-center">
-                                        @{{ purchase.details.reduce((acc, item) => {
+                                        @{{ details.reduce((acc, item) => {
                                             return acc + (item.return_quantity !== "" && !isNaN(item.return_quantity) ? parseFloat(item.return_quantity) : 0);
                                         }, 0) }}
                                     </td>
@@ -95,12 +97,12 @@
                                         <button type="button" :disabled="onProgress" @click="saveData" class="btn btn-success btn-sm d-block w-100">Save Return</button>
                                     </td>
                                     <td class="text-center">
-                                        @{{ purchase.details.reduce((acc, item) => {
+                                        @{{ details.reduce((acc, item) => {
                                             return acc + (item.returnTotal !== "" && !isNaN(item.returnTotal) ? parseFloat(item.returnTotal) : 0);
                                         }, 0).toFixed(2) }}
                                     </td>
                                 </tr>
-                                <tr :class="purchase.details.length == 0 ? '' : 'd-none'" v-if="purchase.details.length == 0">
+                                <tr :class="details.length == 0 ? '' : 'd-none'" v-if="details.length == 0">
                                     <td :colspan="5" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
@@ -119,9 +121,7 @@
     new Vue({
         el: '#purchasereturnList',
         data: {
-            purchase: {
-                details: []
-            },
+            details: [],
             purchaseReturn: {
                 date: moment().format('YYYY-MM-DD'),
                 supplier_id: '',
@@ -175,6 +175,7 @@
             },
 
             onChangeSupplier() {
+                this.selectedInvoice = null;
                 if (this.selectedSupplier != null) {
                     this.getPurchase();
                 }
@@ -197,7 +198,7 @@
                             search: val,
                         })
                         .then(res => {
-                            this.purchase = res.data;
+                            this.invoices = res.data;
                             loading(false)
                         })
                 } else {
@@ -207,9 +208,9 @@
             },
 
             async qtyRateChange(ind) {
-                let item = this.purchase.details[ind];
-                if (item.return_quantity > item.quantity) {
-                    item.return_quantity = item.quantity;
+                let item = this.details[ind];                
+                if (parseFloat(+item.return_quantity + + item.already_return_quantity) > parseFloat(item.quantity)) {
+                    item.return_quantity = item.quantity - item.already_return_quantity;
                 }
                 if (item.purchase_rate < 0) {
                     item.purchase_rate = 0;
@@ -223,9 +224,12 @@
                     purchaseId: this.selectedInvoice ? this.selectedInvoice.id : '',
                 }
                 this.isLoading = false;
-                axios.post('/get-purchase', filter)
+                axios.post('/get-purchase-detailforreturns', filter)
                     .then(res => {
-                        this.purchase = res.data[0]
+                        this.details = res.data.map(detail => {
+                                detail.purchase_detail_id = detail.id;
+                                return detail;
+                        })
                         this.purchaseReturn.supplier_id = this.selectedSupplier ? this.selectedSupplier.id : '';
                         this.purchaseReturn.purchase_id = this.selectedInvoice ? this.selectedInvoice.id : '';
                         this.isLoading = true;
@@ -233,10 +237,12 @@
             },
 
             saveData() {
-                let details = this.purchase.details.filter(item => item.return_quantity > 0).map(item => {
+                let details = this.details.filter(item => item.return_quantity > 0).map(item => {
                     return {
-                        id: item.id,
+                        purchase_detail_id: item.purchase_detail_id,
                         product_id: item.product_id,
+                        code: item.code,
+                        name: item.name,
                         return_quantity: item.return_quantity,
                         purchase_rate: item.purchase_rate,
                         discount: item.discount,
@@ -253,7 +259,7 @@
                 this.onProgress = true;
                 axios.post('/purchase-return', filter)
                     .then(res => {
-                        if (res.data.status == 'success') {
+                        if (res.data.status) {
                             toastr.success(res.data.message);
                             this.showList();
                         } else {

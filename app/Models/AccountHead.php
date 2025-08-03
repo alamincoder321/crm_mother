@@ -69,6 +69,11 @@ class AccountHead extends Model
                 " . ($date == null ? "" : " and bt.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . ") as bank_debit,
                 
+                (select ifnull(sum(pr.total), 0) from purchase_returns pr
+                where pr.status = 'a'
+                " . ($date == null ? "" : " and pr.date <= '$date'") . "
+                " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . ") as purchase_return_amount,
+                
                 /* Payment */
                 
                 (select ifnull(sum(pm.paid), 0) from purchases pm
@@ -106,9 +111,14 @@ class AccountHead extends Model
                 where emp.status = 'a'
                 " . ($date == null ? "" : " and emp.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and emp.branch_id = '$branchId'") . ") as salary_payment,
+
+                (select ifnull(sum(sr.total), 0) from purchase_returns sr
+                where sr.status = 'a'
+                " . ($date == null ? "" : " and sr.date <= '$date'") . "
+                " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . ") as sale_return_amount,
                 
-                (select receive_sale + receive_customer + receive_supplier + income + bank_debit) as total_in_amount,
-                (select purchase_paid + payment_customer + payment_supplier + expense + bank_credit + salary_payment) as total_out_amount,
+                (select receive_sale + purchase_return_amount + receive_customer + receive_supplier + income + bank_debit) as total_in_amount,
+                (select purchase_paid + sale_return_amount + payment_customer + payment_supplier + expense + bank_credit + salary_payment) as total_out_amount,
                 (select total_in_amount - total_out_amount) as cashbalance";
 
         return DB::select($query)[0];

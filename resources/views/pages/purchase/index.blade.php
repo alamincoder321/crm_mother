@@ -280,6 +280,24 @@
                             this.showReport();
                         }
                     })
+                    .catch(err => {
+                        this.onProgress = false
+                        var r = JSON.parse(err.request.response);
+                        console.log(r);
+
+                        if (err.request.status == '422' && r.errors != undefined && typeof r.errors == 'object') {
+                            $.each(r.errors, (index, value) => {
+                                $.each(value, (ind, val) => {
+                                    toastr.error(val)
+                                })
+                            })
+                        } else {
+                            if (r.errors != undefined) {
+                                console.log(r.errors);
+                            }
+                            toastr.error(r.message)
+                        }
+                    })
             },
 
             async print() {

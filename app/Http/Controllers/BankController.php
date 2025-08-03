@@ -175,6 +175,7 @@ class BankController extends Controller
                 from receives cpr
                 where cpr.status = 'a'
                 and cpr.type = 'customer'
+                and cpr.payment_method = 'bank'
                 " . (empty($request->bankId) ? "" : " and cpr.bank_id = '$request->bankId'") . "
                 " . ($branchId == null ? "" : " and cpr.branch_id = '$branchId'") . "
 

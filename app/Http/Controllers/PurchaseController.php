@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -242,6 +243,17 @@ class PurchaseController extends Controller
 
     public function destroy(Request $request)
     {
+        $carts = DB::table('purchase_details as pd')
+            ->select("pd.*", "p.code", "p.name")
+            ->leftJoin('products as p', 'p.id', '=', 'pd.product_id')
+            ->where('pd.purchase_id', $request->id)->get();
+        //check stock
+        foreach ($carts as $key => $item) {
+            $stock = Product::stock(['productId' => $item->product_id])[0]->stock;
+            if ($item->quantity > $stock) {
+                return send_error("Stock unavailable this product: {$item->name} - {$item->code}", null, 422);
+            }
+        }
         try {
             $data = Purchase::find($request->id);
             $data->deleted_by = $this->userId;

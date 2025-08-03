@@ -168,6 +168,9 @@ Route::post('/accounthead', [AccountHeadController::class, 'store'])->name('acco
 Route::post('/update-accounthead', [AccountHeadController::class, 'update'])->name('accounthead.update');
 Route::post('/delete-accounthead', [AccountHeadController::class, 'destroy'])->name('accounthead.delete');
 
+Route::get('/cashLedger', [AccountHeadController::class, 'cashLedger'])->name('cash.ledger');
+Route::post('/get-cash-ledger', [AccountHeadController::class, 'getCashLedger'])->name('get.cash.ledger');
+
 // bank route
 Route::get('/bank', [BankController::class, 'create'])->name('bank.create');
 Route::match(['get', 'post'], '/get-bank', [BankController::class, 'index'])->name('bank.index');
@@ -216,6 +219,7 @@ Route::post('/update-purchase', [PurchaseController::class, 'update'])->name('pu
 Route::post('/delete-purchase', [PurchaseController::class, 'destroy'])->name('purchase.delete');
 
 // purchase return route
+Route::post('/get-purchase-detailforreturns', [PurchaseReturnController::class, 'getDetailForReturns'])->name('get.purchase.detailforreturns');
 Route::get('/purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.create');
 Route::match(['get', 'post'], '/get-purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.index');
 Route::post('/purchase-return', [PurchaseReturnController::class, 'store'])->name('purchase.return.store');

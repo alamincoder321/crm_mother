@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\PurchaseReturn;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,31 @@ class PurchaseReturnController extends Controller
         return response()->json($returns);
     }
 
+    public function getDetailForReturns(Request $request)
+    {
+        $query = DB::select("select
+                            pd.*,
+                            p.code,
+                            p.name,
+                            (select sum(prd.quantity) from purchase_return_details prd
+                            where prd.status = 'a'
+                            and prd.branch_id = pd.branch_id
+                            and prd.product_id = pd.product_id) as already_return_quantity,
+
+                            (select sum(prd.total) from purchase_return_details prd
+                            where prd.status = 'a'
+                            and prd.branch_id = pd.branch_id
+                            and prd.product_id = pd.product_id) as already_return_amount
+
+                            from purchase_details pd
+                            left join products p on p.id = pd.product_id
+                            where pd.status = 'a'
+                            and pd.branch_id = ?
+                            and pd.purchase_id = ?", [$this->branchId, $request->purchaseId]);
+
+        return response()->json($query);
+    }
+
     public function create()
     {
         return view('pages.purchase.purchaseReturn');
@@ -50,21 +76,48 @@ class PurchaseReturnController extends Controller
 
     public function store(PurchaseReturnRequest $request)
     {
+        //check stock
+        foreach ($request->carts as $key => $item) {
+            $stock = Product::stock(['productId' => $item['product_id']])[0]->stock;
+            if ($item['return_quantity'] > $stock) {
+                return send_error("Stock unavailable this product: {$item['name']} - {$item['code']}", null, 422);
+            }
+        }
         try {
             DB::beginTransaction();
             $purchaseReturn = (object) $request->purchaseReturn;
-            
+
             $data = array(
                 'invoice' => invoiceGenerate('Purchase_Return', '', $this->branchId),
-                'supplier_id' => $purchaseReturn->supplierId,
-                'purchase_id' => $purchaseReturn->purchaseId,
+                'purchase_id' => $purchaseReturn->purchase_id,
+                'supplier_id' => $purchaseReturn->supplier_id,
                 'date' => $purchaseReturn->date,
-                'total' => $purchaseReturn->total
+                'total' => $purchaseReturn->total,
+                'created_by' => $this->userId,
+                'ipAddress' => request()->ip(),
+                'branch_id' => $this->branchId
             );
             $purchaseReturn = PurchaseReturn::create($data);
 
+            $cartDetails = array();
+            foreach ($request->carts as $cart) {
+                $cartDetails[] = [
+                    'purchase_return_id' => $purchaseReturn->id,
+                    'purchase_detail_id' => $cart['purchase_detail_id'],
+                    'product_id'         => $cart['product_id'],
+                    'purchase_rate'      => $cart['purchase_rate'],
+                    'quantity'           => $cart['return_quantity'],
+                    'discount'           => $cart['discount'] ?? 0,
+                    'total'              => $cart['returnTotal'],
+                    'created_by'         => $this->userId,
+                    'ipAddress'          => request()->ip(),
+                    'branch_id'          => $this->branchId,
+                ];
+            }
+            PurchaseReturnDetail::insert($cartDetails);
+
             DB::commit();
-            $msg = "Purchase Return has updated successfully";
+            $msg = "Purchase Return has create successfully";
             return response()->json(['status' => true, 'message' => $msg]);
         } catch (\Throwable $th) {
             DB::rollBack();
