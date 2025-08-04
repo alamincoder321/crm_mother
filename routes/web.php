@@ -26,6 +26,7 @@ use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SaleReturnController;
 use Illuminate\Support\Facades\Session;
 
 Route::fallback(function () {
@@ -221,8 +222,10 @@ Route::post('/delete-purchase', [PurchaseController::class, 'destroy'])->name('p
 // purchase return route
 Route::post('/get-purchase-detailforreturns', [PurchaseReturnController::class, 'getDetailForReturns'])->name('get.purchase.detailforreturns');
 Route::get('/purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.create');
-Route::match(['get', 'post'], '/get-purchase-return', [PurchaseReturnController::class, 'create'])->name('purchase.return.index');
+Route::match(['get', 'post'], '/get-purchase-return', [PurchaseReturnController::class, 'index'])->name('purchase.return.index');
 Route::post('/purchase-return', [PurchaseReturnController::class, 'store'])->name('purchase.return.store');
+Route::get('/purchase-return-record', [PurchaseReturnController::class, 'purchaseReturnRecord'])->name('purchase.return.record');
+Route::post('/delete-purchase-return', [PurchaseReturnController::class, 'destroy'])->name('purchase.return.delete');
 
 
 // ============================= Sale Panel Route ==============================
@@ -233,6 +236,14 @@ Route::match(['get', 'post'], '/get-sale', [SaleController::class, 'index'])->na
 Route::post('/sale', [SaleController::class, 'store'])->name('sale.store');
 Route::post('/update-sale', [SaleController::class, 'update'])->name('sale.update');
 Route::post('/delete-sale', [SaleController::class, 'destroy'])->name('sale.delete');
+
+// sale return route
+Route::post('/get-sale-detailforreturns', [SaleReturnController::class, 'getDetailForReturns'])->name('get.sale.detailforreturns');
+Route::get('/sale-return', [SaleReturnController::class, 'create'])->name('sale.return.create');
+Route::match(['get', 'post'], '/get-sale-return', [SaleReturnController::class, 'index'])->name('sale.return.index');
+Route::post('/sale-return', [SaleReturnController::class, 'store'])->name('sale.return.store');
+Route::get('/sale-return-record', [SaleReturnController::class, 'saleReturnRecord'])->name('sale.return.record');
+Route::post('/delete-sale-return', [SaleReturnController::class, 'destroy'])->name('sale.return.delete');
 
 // quotation route
 Route::get('/quotation/{id?}', [QuotationController::class, 'create'])->name('quotation.create');

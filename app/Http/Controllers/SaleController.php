@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use App\Http\Requests\SaleRequest;
 use App\Models\Product;
 use App\Models\SaleBank;
+use App\Models\SaleReturn;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -320,6 +321,9 @@ class SaleController extends Controller
 
     public function destroy(Request $request)
     {
+        //check return
+        $checkReturn = SaleReturn::where('sale_id', $request->id)->first();
+        if (!empty($checkReturn)) return send_error("Sale return found. You can not delete sale", null, 422);
         try {
             $data = Sale::find($request->id);
             $data->deleted_by = $this->userId;

@@ -86,13 +86,13 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/sale-return">
                 <i class="bi bi-arrow-return-left"></i>
                 <span>SaleReturn Entry</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/sale-return-record">
                 <i class="bi bi-file-text"></i>
                 <span>SaleReturn Record</span>
             </a>
@@ -147,7 +147,7 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="/purchase-return-record">
                 <i class="bi bi-file-text"></i>
                 <span>Return Record</span>
             </a>
@@ -238,6 +238,13 @@ $panel = session('panel');
             </a>
         </li>
         
+        <li class="nav-item">
+            <a class="nav-link" href="/cashLedger">
+                <i class="bi bi-list"></i>
+                <span>Cash Ledger</span>
+            </a>
+        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="/bankLedger">
                 <i class="bi bi-list"></i>

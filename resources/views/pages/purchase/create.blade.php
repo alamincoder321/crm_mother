@@ -153,7 +153,7 @@
                             <td v-text="`${cart.name} - ${cart.code}`"></td>
                             <td class="text-center" v-text="cart.category_name"></td>
                             <td class="text-center">
-                                <input type="number" min="0" step="any" style="width: 100px;padding:0; text-align: center; outline: none; border: 1px solid #c3c3c3; border-radius: 5px;" v-model="cart.quantity" @input="quantityRateTotal(cart)" />
+                                <input type="number" :disabled="purchase.id != ''" min="0" step="any" style="width: 100px;padding:0; text-align: center; outline: none; border: 1px solid #c3c3c3; border-radius: 5px;" v-model="cart.quantity" @input="quantityRateTotal(cart)" />
                             </td>
                             <td class="text-center" v-text="cart.unit_name"></td>
                             <td class="text-center" v-text="cart.purchase_rate"></td>
@@ -456,9 +456,21 @@
                 await this.calculateTotal();
             },
 
-            removeCart(sl) {
+            async removeCart(sl) {
+                let product = this.carts[sl];
+                if (this.purchase.id != "" && product.checkEdit == 'true') {
+                    let productStock = await axios.post("/get-currentStock", {
+                        productId: product.id
+                    }).then(res => {
+                        return res.data[0].stock;
+                    })
+                    if(parseFloat(product.quantity) > parseFloat(productStock)){
+                        toastr.error("Product Stock unavailable");
+                        return;
+                    }
+                }
                 this.carts.splice(sl, 1);
-                this.calculateTotal();
+                await this.calculateTotal();
             },
 
             clearProduct() {
@@ -584,7 +596,8 @@
                             purchase_rate: item.purchase_rate,
                             quantity: item.quantity,
                             total: item.total,
-                            sale_rate: item.sale_rate
+                            sale_rate: item.sale_rate,
+                            checkEdit: 'true'
                         };
                         this.carts.push(detail);
                     })

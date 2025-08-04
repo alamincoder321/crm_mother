@@ -215,7 +215,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/sale-return">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-arrow-return-left"></i>
@@ -225,7 +225,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/sale-return-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-text"></i>
@@ -298,7 +298,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/purchase-return">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-arrow-return-left"></i>
@@ -308,7 +308,7 @@ $panel = session('panel');
                 </a>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                <a href="/purchase-return-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-text"></i>
@@ -429,6 +429,16 @@ $panel = session('panel');
                         <div class="card-body p-3">
                             <i class="bi bi-journal-text"></i>
                             <span>Profit/Loss</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="/cashLedger">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-list"></i>
+                            <span>Cash Ledger</span>
                         </div>
                     </div>
                 </a>

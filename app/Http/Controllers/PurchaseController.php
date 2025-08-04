@@ -11,6 +11,7 @@ use App\Models\PurchaseDetail;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PurchaseRequest;
+use App\Models\PurchaseReturn;
 
 class PurchaseController extends Controller
 {
@@ -248,12 +249,16 @@ class PurchaseController extends Controller
             ->leftJoin('products as p', 'p.id', '=', 'pd.product_id')
             ->where('pd.purchase_id', $request->id)->get();
         //check stock
-        foreach ($carts as $key => $item) {
+        foreach ($carts as $item) {
             $stock = Product::stock(['productId' => $item->product_id])[0]->stock;
             if ($item->quantity > $stock) {
                 return send_error("Stock unavailable this product: {$item->name} - {$item->code}", null, 422);
             }
         }
+        //check return
+        $checkReturn = PurchaseReturn::where('purchase_id', $request->id)->first();
+        if (!empty($checkReturn)) return send_error("Purchase return found. You can not delete purchase", null, 422);
+
         try {
             $data = Purchase::find($request->id);
             $data->deleted_by = $this->userId;

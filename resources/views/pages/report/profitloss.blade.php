@@ -21,7 +21,7 @@
 </style>
 @endpush
 @section('content')
-<div id="customerDue">
+<div id="profitLoss">
     <div class="row">
         <div class="col-12 col-md-12">
             <div class="card m-0">
@@ -84,7 +84,7 @@
                             <tbody>
                                 <template v-for="(sale, index) in sales">
                                     <tr>
-                                        <td style="background: #fff6d4; padding: 5px !important;" colspan="8">
+                                        <td style="background: #9fe7dd47; padding: 5px !important;" colspan="8">
                                             <strong>Invoice No: </strong>
                                             <span v-html="sale.invoice"></span> |
                                             <strong>Date: </strong>
@@ -181,7 +181,7 @@
 @push('js')
 <script>
     new Vue({
-        el: '#customerDue',
+        el: '#profitLoss',
         data: {
             searchType: '',
             dateFrom: moment().format('YYYY-MM-DD'),
