@@ -174,7 +174,7 @@ class DamageController extends Controller
                 $data->supplier_phone = $supplier->phone;
                 $data->supplier_address = $supplier->address;
             } else {
-                $data->supplier_type = $damage->damage_type;
+                $data->supplier_type = 'retail';
                 $data->supplier_id = $supplierId;
             }
             $data->update();
