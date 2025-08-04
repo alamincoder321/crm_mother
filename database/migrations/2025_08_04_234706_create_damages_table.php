@@ -18,6 +18,10 @@ class CreateDamagesTable extends Migration
             $table->string('invoice')->index();
             $table->date('date');
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers', 'id');
+            $table->string('supplier_type')->default('general');
+            $table->string('supplier_name')->nullable();
+            $table->string('supplier_phone')->nullable();
+            $table->string('supplier_address')->nullable();
             $table->decimal('total')->default(0);
             $table->text('note')->nullable();
             $table->char('status', 1)->default('a');
