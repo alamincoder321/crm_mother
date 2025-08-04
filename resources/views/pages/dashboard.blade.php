@@ -317,6 +317,26 @@ $panel = session('panel');
                     </div>
                 </a>
             </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="/damage">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-virus"></i>
+                            <span>Damage Entry</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <a href="/damage-record">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-file-text"></i>
+                            <span>Damage Record</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 

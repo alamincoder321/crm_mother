@@ -152,6 +152,18 @@ $panel = session('panel');
                 <span>Return Record</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/damage">
+                <i class="bi bi-virus"></i>
+                <span>Damage Entry</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/damage-record">
+                <i class="bi bi-file-text"></i>
+                <span>Damage Record</span>
+            </a>
+        </li>
 
         @elseif($panel == 'AccountPanel')
         <li class="nav-item">

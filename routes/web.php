@@ -21,6 +21,7 @@ use App\Http\Controllers\AccountHeadController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DesignationtController;
 use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\DamageController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\QuotationController;
@@ -226,6 +227,14 @@ Route::match(['get', 'post'], '/get-purchase-return', [PurchaseReturnController:
 Route::post('/purchase-return', [PurchaseReturnController::class, 'store'])->name('purchase.return.store');
 Route::get('/purchase-return-record', [PurchaseReturnController::class, 'purchaseReturnRecord'])->name('purchase.return.record');
 Route::post('/delete-purchase-return', [PurchaseReturnController::class, 'destroy'])->name('purchase.return.delete');
+
+// damage route
+Route::get('/damage/{id?}', [DamageController::class, 'create'])->name('damage.create');
+Route::get('/damage-record', [DamageController::class, 'damageRecord'])->name('damage.record');
+Route::match(['get', 'post'], '/get-damage', [DamageController::class, 'index'])->name('damage.index');
+Route::post('/damage', [DamageController::class, 'store'])->name('damage.store');
+Route::post('/update-damage', [DamageController::class, 'update'])->name('damage.update');
+Route::post('/delete-damage', [DamageController::class, 'destroy'])->name('damage.delete');
 
 
 // ============================= Sale Panel Route ==============================
