@@ -425,7 +425,7 @@
                 banks: [],
                 selectedBank: {
                     id: '',
-                    display_name: 'select product',
+                    display_name: 'select bank',
                     last_digit: '',
                     amount: ''
                 },
@@ -825,9 +825,13 @@
                     vat: 0,
                     transport_cost: 0,
                     total: 0,
+                    cashPaid: 0,
+                    bankPaid: 0,
                     paid: 0,
+                    returnAmount: 0,
                     due: 0,
                     previous_due: 0,
+                    note: ''
                 };
                 this.onProgress = false;
                 this.discountPercent = 0;
