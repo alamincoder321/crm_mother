@@ -126,7 +126,7 @@ class SaleController extends Controller
 
             $invoice = Sale::where('invoice', $sale->invoice)->first();
             if (empty($invoice)) {
-                $invoice = invoiceGenerate('Sale');
+                $invoice = invoiceGenerate('Sale', '', $this->branchId);
             }
             if (!empty($customer) && $customer->type == 'new') {
                 $checkSupp = Customer::where('phone', $customer->phone)->where('branch_id', $this->branchId)->first();
@@ -206,7 +206,7 @@ class SaleController extends Controller
 
             DB::commit();
             $msg = "Sale has created successfully";
-            return response()->json(['status' => true, 'message' => $msg, 'saleId' => $data->id, 'invoice' => invoiceGenerate('Sale')]);
+            return response()->json(['status' => true, 'message' => $msg, 'saleId' => $data->id, 'invoice' => invoiceGenerate('Sale', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return send_error('Something went worng', $th->getMessage());
@@ -357,5 +357,10 @@ class SaleController extends Controller
     public function saleRecord()
     {
         return view("pages.sale.index");
+    }
+    
+    public function saleInvoice($id)
+    {
+        return view("pages.sale.saleInvoice", compact('id'));
     }
 }

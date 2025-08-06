@@ -114,6 +114,7 @@
                                     <th>Name</th>
                                     <th>Purchase Qty</th>
                                     <th>Purchase Return Qty</th>
+                                    <th>Damage Qty</th>
                                     <th>Sale Qty</th>
                                     <th>Sale Return Qty</th>
                                     <th>Stock</th>
@@ -128,6 +129,7 @@
                                     <td v-html="item.name"></td>
                                     <td v-html="item.purchase_quantity" class="text-center"></td>
                                     <td v-html="item.purchase_return_quantity" class="text-center"></td>
+                                    <td v-html="item.damage_quantity" class="text-center"></td>
                                     <td v-html="item.sale_quantity" class="text-center"></td>
                                     <td v-html="item.sale_return_quantity" class="text-center"></td>
                                     <td v-html="`${item.stock} ${item.unit_name}`" class="text-center"></td>
@@ -138,6 +140,7 @@
                                     <td class="text-end bg-light" style="font-weight: 700;" colspan="3">Total</td>
                                     <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.purchase_quantity)}, 0) }}</td>
                                     <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.purchase_return_quantity)}, 0) }}</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.damage_quantity)}, 0) }}</td>
                                     <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.sale_quantity)}, 0) }}</td>
                                     <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.sale_return_quantity)}, 0) }}</td>
                                     <td class="text-center bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock)}, 0) }}</td>
@@ -145,7 +148,7 @@
                                     <td class="text-end bg-light" style="font-weight: 700;">@{{ stocks.reduce((pre, cur) => {return pre + parseFloat(cur.stock_value)}, 0).toFixed(2) }}</td>
                                 </tr>
                                 <tr :class="stocks.length == 0 ? '' : 'd-none'" v-if="stocks.length == 0">
-                                    <td colspan="6" class="text-center">Not Found Data</td>
+                                    <td colspan="9" class="text-center">Not Found Data</td>
                                 </tr>
                             </tbody>
                         </table>

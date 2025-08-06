@@ -352,6 +352,7 @@
     </div>
     <invoice-preview
         :visible="showInvoice"
+        :showable="showInvoice"
         :cart="carts"
         :customer="selectedCustomer"
         :sale="sale"
@@ -362,7 +363,7 @@
 @endsection
 
 @push("js")
-<script src="{{asset('component')}}/InvoicePreview.js"></script>
+<script src="{{asset('component')}}/SaleInvoicePreview.js"></script>
 <script>
     new Vue({
         el: "#sale",
@@ -386,8 +387,7 @@
                     due: 0,
                     previous_due: 0,
                     note: ''
-                },
-                showInvoice: false,
+                },                
                 discountPercent: 0,
                 vatPercent: 0,
                 customers: [],
@@ -424,6 +424,7 @@
                 stock: 0,
                 barcodeInput: '',
                 username: "{{ auth()->user()->username }}",
+                showInvoice: false,
                 onProgress: false
             }
         },

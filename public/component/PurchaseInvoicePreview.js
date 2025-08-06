@@ -1,10 +1,10 @@
 Vue.component('invoice-preview', {
-  props: ['visible', 'cart', 'customer', 'sale', 'username'],
+  props: ['visible', 'showable', 'cart', 'supplier', 'purchase', 'username'],
   template: `
-  <div v-if="visible" class="invoice-overlay">
-      <div class="row ms-0 me-0 py-1 px-1" style="border-radius: 8px;">
+  <div v-if="visible || showable" class="invoice-overlay">
+      <div class="row ms-0 me-0 py-1 d-none print-visible" style="border-radius: 8px;">
         <div class="col-2 ps-0">
-            <img src="/noImage.jpg" class="w-100 h-75" style="box-shadow:1px 1px 1px 1px #d9d9d9;border-radius:5px;">
+            <img src="/noImage.jpg" class="w-100 h-100" style="box-shadow:1px 1px 1px 1px #d9d9d9;border-radius:5px;">
         </div>
         <div class="col-10 pe-0">
             <h4 class="m-0">{{company.title}}</h4>
@@ -12,20 +12,23 @@ Vue.component('invoice-preview', {
             <address class="m-0" v-html="company.address"></address>
         </div>
       </div>
+
+      <div class="text-center my-2 py-1" style="font-size:20px;border: 2px dashed #ccc;font-weight: 700;">Purchase Invoice</div>
+
       <div class="row mb-2 border border-2 mx-0" style="border-radius: 5px;">
         <div class="col-8">
-          <strong>Customer ID: </strong> <span v-text="customer.code ? customer.code : 'Walk-In Customer'"></span><br>
-          <strong>Name: </strong> <span v-text="customer.name"></span><br>
-          <strong>Phone: </strong> <span v-text="customer.phone"></span><br>
-          <strong>Address: </strong> <span v-text="customer.address"></span>
+          <strong style="font-size: 14px;">Supplier ID: </strong> <span style="font-size: 13px;" v-text="supplier.code ? supplier.code : 'Walk-In supplier'"></span><br>
+          <strong style="font-size: 14px;">Name: </strong> <span style="font-size: 13px;" v-text="supplier.name"></span><br>
+          <strong style="font-size: 14px;">Phone: </strong> <span style="font-size: 13px;" v-text="supplier.phone"></span><br>
+          <strong style="font-size: 14px;">Address: </strong> <span style="font-size: 13px;" v-text="supplier.address"></span>
         </div>
         <div class="col-4 text-end">
-          <strong>InvoiceNo: </strong> <span v-text="sale.invoice"></span><br>
-          <strong>Added By: </strong> <span v-text="username"></span><br>
-          <strong>Phone: </strong> <span v-text="sale.date"></span>
+          <strong style="font-size: 13px;">InvoiceNo: </strong> <span style="font-size: 13px;" v-text="purchase.invoice"></span><br>
+          <strong style="font-size: 13px;">Added By: </strong> <span style="font-size: 13px;" v-text="username"></span><br>
+          <strong style="font-size: 13px;">Phone: </strong> <span style="font-size: 13px;" v-text="purchase.date"></span>
         </div>
       </div>
-      <div class="mt-3">
+      <div class="mt-2">
         <table class="table table-bordered" style="border-radius: 5px;border-collapse: collapse;">
           <thead>
             <tr>
@@ -39,20 +42,20 @@ Vue.component('invoice-preview', {
           <tbody>
             <tr v-for="(item, index) in cart" :key="index">
               <td class="text-center">{{ index + 1 }}</td>
-              <td>{{ item.name }}</td>
+              <td>{{ item.name }}-{{ item.code }} </td>
               <td class="text-center">{{ item.quantity }} {{item.unit_name }}</td>
-              <td class="text-end">{{ item.sale_rate }}</td>
+              <td class="text-end">{{ item.purchase_rate }}</td>
               <td class="text-end">{{ item.total }}</td>
             </tr>
             <tr>
-              <td colspan="2" rowspan="7" class="border-0" style="vertical-align: top !important;">
+              <td colspan="2" rowspan="6" class="border-0" style="vertical-align: top !important;">
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-12">
-                        <strong>In Word: </strong> {{ withDecimal(sale.total) }}
+                        <strong>In Word: </strong> {{ withDecimal(purchase.total) }}
                     </div>
                     <div class="col-12" style="margin-top: 5px;display:flex;align-items:center;gap: 5px;">
                         <strong>Note: </strong>
-                        <p style="white-space: pre-line;margin:0;">{{ sale.note }}</p>
+                        <p style="white-space: pre-line;margin:0;">{{ purchase.note }}</p>
                     </div>
                 </div>
 
@@ -61,27 +64,23 @@ Vue.component('invoice-preview', {
             </tr>
             <tr>
               <td style="font-weight: 700;text-align:right;">SubTotal</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.subtotal"></td>
+              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="purchase.subtotal"></td>
             </tr>
             <tr>
               <td style="font-weight: 700;text-align:right;">Discount (-)</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.discount"></td>
+              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="purchase.discount"></td>
             </tr>
             <tr>
               <td style="font-weight: 700;text-align:right;">Vat (+)</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.vat"></td>
+              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="purchase.vat"></td>
             </tr>
             <tr>
               <td style="font-weight: 700;text-align:right;">Total</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.total"></td>
-            </tr>
-            <tr>
-              <td style="font-weight: 700;text-align:right;">CashPaid</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.cashPaid"></td>
+              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="purchase.total"></td>
             </tr>
             <tr style="border-bottom: none;">
-              <td style="font-weight: 700;text-align:right;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:">BankPaid</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:border-right: 1px solid #ccc;" v-text="sale.bankPaid"></td>
+              <td style="font-weight: 700;text-align:right;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:">Paid</td>
+              <td colspan="2" class="text-end" style="font-weight: 700;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:border-right: 1px solid #ccc;" v-text="purchase.paid"></td>
             </tr>
           </tbody>
         </table>
@@ -89,7 +88,7 @@ Vue.component('invoice-preview', {
     </div>
   `,
   watch: {
-    visible(newVal) {
+    visible(newVal) {      
       if (newVal) {
         this.$nextTick(() => {
           this.autoPrint();
@@ -222,7 +221,7 @@ Vue.component('invoice-preview', {
     autoPrint() {
       const selfThis = this;
       const oldTitle = window.document.title;
-      window.document.title = "Sale Invoice"
+      window.document.title = "purchase Invoice"
       const printWindow = document.createElement('iframe');
       document.body.appendChild(printWindow);
       printWindow.srcdoc = `
@@ -236,6 +235,11 @@ Vue.component('invoice-preview', {
                               }
                               tr td, tr th{
                                 vertical-align: middle !important;
+                              }
+                              @media print{
+                                .print-visible{
+                                  display: flex !important;
+                                }
                               }                                        
                           </style>
                     </head>
@@ -248,7 +252,7 @@ Vue.component('invoice-preview', {
                           </div>
                           <div class="row" style="${this.cart.length > 20 ? 'margin-top: 70px;' : 'position: fixed;bottom:0;left:8px;width:100%;'}">
                             <div class="col-6">
-                              <span style="text-decoration:overline;">Customer Signature</span>
+                              <span style="text-decoration:overline;">supplier Signature</span>
                             </div>
                             <div class="col-6 text-end">
                               <span style="text-decoration:overline;">Authorized Signature</span>

@@ -219,6 +219,7 @@ Route::match(['get', 'post'], '/get-purchase', [PurchaseController::class, 'inde
 Route::post('/purchase', [PurchaseController::class, 'store'])->name('purchase.store');
 Route::post('/update-purchase', [PurchaseController::class, 'update'])->name('purchase.update');
 Route::post('/delete-purchase', [PurchaseController::class, 'destroy'])->name('purchase.delete');
+Route::get('/purchaseInvoice/{id}', [PurchaseController::class, 'purchaseInvoice'])->name('purchase.invoice');
 
 // purchase return route
 Route::post('/get-purchase-detailforreturns', [PurchaseReturnController::class, 'getDetailForReturns'])->name('get.purchase.detailforreturns');
@@ -245,6 +246,7 @@ Route::match(['get', 'post'], '/get-sale', [SaleController::class, 'index'])->na
 Route::post('/sale', [SaleController::class, 'store'])->name('sale.store');
 Route::post('/update-sale', [SaleController::class, 'update'])->name('sale.update');
 Route::post('/delete-sale', [SaleController::class, 'destroy'])->name('sale.delete');
+Route::get('/saleInvoice/{id}', [SaleController::class, 'saleInvoice'])->name('sale.invoice');
 
 // sale return route
 Route::post('/get-sale-detailforreturns', [SaleReturnController::class, 'getDetailForReturns'])->name('get.sale.detailforreturns');

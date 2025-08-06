@@ -140,16 +140,6 @@
                                     <v-select :options="products" id="product" v-model="selectedProduct" label="display_name" @input="onChangeProduct" @search="onSearchProduct"></v-select>
                                 </div>
                             </div>
-                            <!-- <div class="form-group row mb-1">
-                                <label for="" class="col-4 col-md-3 form-label">Rate:</label>
-                                <div class="col-8 col-md-4">
-                                    <input type="number" min="0" step="any" class="form-control" v-model="selectedProduct.sale_rate" @input="productTotal" />
-                                </div>
-                                <label for="" class="col-4 col-md-2 pe-md-0 form-label">Qty:</label>
-                                <div class="col-8 col-md-3 ps-md-0">
-                                    <input type="number" min="0" step="any" ref="quantity" class="form-control" v-model="selectedProduct.quantity" @input="productTotal" />
-                                </div>
-                            </div> -->
                             <div class="form-group row mb-1">
                                 <label for="" class="col-4 col-md-3 form-label">Rate:</label>
                                 <div class="col-8 col-md-9">
@@ -790,7 +780,7 @@
                         history.pushState(null, '', '/sale');
                         this.sale.invoice = res.data.invoice;
                         if (confirm('Do you want to go to the invoice page?')) {
-                            window.open(`/sale-invoice/${res.data.saleId}`, '_blank');
+                            window.open(`/saleInvoice/${res.data.saleId}`, '_blank');
                         }
                     })
                     .catch(err => {

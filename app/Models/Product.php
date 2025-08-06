@@ -87,8 +87,15 @@ class Product extends Model
                             and srd.status = 'a'
                             ".($date == null ? "" : " and srm.date <= '$date'")."
                             ".($branchId == null ? "" : " and srd.branch_id = '$branchId'" ).") as sale_return_quantity,
+                            
+                            (select ifnull(sum(dd.quantity), 0) from damage_details dd
+                            join damages d on d.id = dd.damage_id
+                            where dd.product_id = p.id
+                            and dd.status = 'a'
+                            ".($date == null ? "" : " and d.date <= '$date'")."
+                            ".($branchId == null ? "" : " and dd.branch_id = '$branchId'" ).") as damage_quantity,
 
-                            (select (purchase_quantity + sale_return_quantity) - (sale_quantity + purchase_return_quantity)) as stock,
+                            (select (purchase_quantity + sale_return_quantity) - (sale_quantity + purchase_return_quantity + damage_quantity)) as stock,
                             (select stock * p.purchase_rate) as stock_value
                             from products p
                             left join units u on u.id = p.unit_id

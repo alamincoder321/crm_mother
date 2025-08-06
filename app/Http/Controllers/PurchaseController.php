@@ -63,7 +63,7 @@ class PurchaseController extends Controller
                 ->where('pd.branch_id', $this->branchId)
                 ->get();
             $supplier = Supplier::where('id', $purchase->supplier_id)->where('branch_id', $this->branchId)->withTrashed()->first();
-            $purchase->supplier_code = $supplier->code ?? 'WalkIn Supplier';
+            $purchase->supplier_code = $supplier->code ?? 'Walk-In Supplier';
             $purchase->supplier_name = $supplier->name ?? $purchase->supplier_name;
             $purchase->supplier_phone = $supplier->phone ?? $purchase->supplier_phone;
             $purchase->supplier_address = $supplier->address ?? $purchase->supplier_address;
@@ -285,5 +285,10 @@ class PurchaseController extends Controller
     public function purchaseRecord()
     {
         return view("pages.purchase.index");
+    }
+
+    public function purchaseInvoice($id)
+    {
+        return view("pages.purchase.purchaseInvoice", compact('id'));
     }
 }

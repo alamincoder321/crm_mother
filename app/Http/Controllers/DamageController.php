@@ -68,7 +68,7 @@ class DamageController extends Controller
                 ->get();
 
             $supplier                 = Supplier::where('id', $damage->supplier_id)->where('branch_id', $this->branchId)->withTrashed()->first();
-            $damage->supplier_code    = $supplier->code ?? 'WalkIn Supplier';
+            $damage->supplier_code    = $supplier->code ?? 'Walk In Supplier';
             $damage->supplier_name    = $supplier->name ?? $damage->supplier_name;
             $damage->supplier_phone   = $supplier->phone ?? $damage->supplier_phone;
             $damage->supplier_address = $supplier->address ?? $damage->supplier_address;
@@ -120,7 +120,7 @@ class DamageController extends Controller
                 $data->supplier_phone = $supplier->phone;
                 $data->supplier_address = $supplier->address;
             } else {
-                $data->supplier_type = 'retail';
+                $data->supplier_type = 'regular';
                 $data->supplier_id = $supplierId;
             }
             $data->save();
@@ -161,7 +161,6 @@ class DamageController extends Controller
             $dataKey = $damage;
             unset($dataKey->invoice);
             $data = Damage::find($damage->id);
-            $data->employee_id = $damage->employee_id ?? NULL;
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
             }
@@ -174,7 +173,7 @@ class DamageController extends Controller
                 $data->supplier_phone = $supplier->phone;
                 $data->supplier_address = $supplier->address;
             } else {
-                $data->supplier_type = 'retail';
+                $data->supplier_type = 'regular';
                 $data->supplier_id = $supplierId;
             }
             $data->update();
@@ -199,7 +198,9 @@ class DamageController extends Controller
                     'discount'      => $cart['discount'] ?? 0,
                     'total'         => $cart['total'],
                     'created_by'    => $data->created_by,
+                    'created_at'    => Carbon::now(),
                     'updated_by'    => $this->userId,
+                    'updated_at'    => Carbon::now(),
                     'ipAddress'     => request()->ip(),
                     'branch_id'     => $this->branchId,
                 ];

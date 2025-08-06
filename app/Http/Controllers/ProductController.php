@@ -261,6 +261,21 @@ class ProductController extends Controller
                 " . (empty($request->productId) ? "" : " and prd.product_id = '$request->productId'") . "
                 " . ($branchId == null ? "" : " and prd.branch_id = '$branchId'") . "
                 
+                UNION
+                select
+                'e' as sequence,
+                dd.id,
+                d.date,
+                concat_ws(' - ', 'Damage Invoice', d.invoice) as description,
+                0 as in_stock,
+                dd.quantity as out_stock,
+                0 as stock
+                from damage_details dd
+                left join damages d on d.id = dd.damage_id
+                where dd.status = 'a'
+                " . (empty($request->productId) ? "" : " and dd.product_id = '$request->productId'") . "
+                " . ($branchId == null ? "" : " and dd.branch_id = '$branchId'") . "
+                
                 order by date, sequence asc";
 
         $ledgers = DB::select($query);
