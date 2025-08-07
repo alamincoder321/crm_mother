@@ -4,7 +4,7 @@
 @section('breadcrumb', 'Business Info')
 
 @push('style')
-<style>
+<style scoped>
     .card {
         border: 1px solid #959595;
     }

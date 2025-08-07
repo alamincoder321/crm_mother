@@ -12,7 +12,7 @@ $panel = session('panel');
 @endsection
 
 @push('style')
-<style>
+<style scoped>
     .displayFlex {
         transition: 1ms ease-in-out;
         height: 115px;
@@ -45,6 +45,15 @@ $panel = session('panel');
         justify-content: center;
         border-radius: 3px;
     }
+
+    .textColor {
+        padding: 0 15px;
+        font-size: 50px;
+        font-weight: 700;
+        background: linear-gradient(90deg, #ff0080, #7928ca);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 </style>
 @endpush
 
@@ -55,9 +64,18 @@ $panel = session('panel');
         <img class="w-75" src="{{asset('backend')}}/img/header.png" alt="header logo" style="border-radius: 20px;border: 1px solid rgb(0, 126, 187);box-shadow: rgb(0, 126, 187) 0px 5px 0px 0px;">
     </div>
 
-    <div class="col-md-12 my-3"></div>
+    <div class="col-md-12 mb-3 mt-5">
+        <div style="display: flex; align-items: center; text-align: center; margin: 0;">
+            <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+            <div class="textColor">
+                Welcome To Dashboard
+            </div>
+            <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+        </div>
+    </div>
 
-    <div class="col-md-12">
+
+    <!-- <div class="col-md-12">
         <div class="row">
             <div class="col-6 col-md-3">
                 <a href="/panel/SalePanel">
@@ -156,7 +174,7 @@ $panel = session('panel');
                 </a>
             </div>
         </div>
-    </div>
+    </div> -->
 
     @elseif($panel == 'SalePanel')
     <div class="col-md-12">
