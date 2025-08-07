@@ -59,32 +59,6 @@ $panel = session('panel');
 
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body p-3 text-center">
-                        <h2 class="m-0">Cash Balance</h2>
-                        <h3 class="m-0">{{number_format($cashBalance->cashbalance, 2)}}</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body p-3 text-center">
-                        <h2 class="m-0">Bank Balance</h2>
-                        <h3 class="m-0">{{number_format($bankBalance, 2)}}</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body p-3 text-center">
-                        <h2 class="m-0">Total Balance</h2>
-                        <h3 class="m-0">{{number_format($cashBalance->cashbalance + $bankBalance, 2)}}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-6 col-md-3">
                 <a href="/panel/SalePanel">
                     <div class="card mb-3 panel" style="background: #a7ecfb;" onmouseover="this.style.background = '#7de6ff'" onmouseout="this.style.background = '#a7ecfb'">

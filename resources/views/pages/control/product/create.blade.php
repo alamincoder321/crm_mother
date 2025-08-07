@@ -210,7 +210,7 @@
                 ],
                 product: {
                     id: '',
-                    code: "{{generateCode('Product', 'P')}}",
+                    code: "{{generateCode('Product', 'PI')}}",
                     brand_id: '',
                     category_id: '',
                     unit_id: '',
@@ -348,7 +348,7 @@
             clearData() {
                 this.product = {
                     id: '',
-                    code: "{{generateCode('Product', 'P')}}",
+                    code: "{{generateCode('Product', 'PI')}}",
                     brand_id: '',
                     category_id: '',
                     unit_id: '',

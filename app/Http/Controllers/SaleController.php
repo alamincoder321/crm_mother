@@ -134,7 +134,7 @@ class SaleController extends Controller
                     $customerId = $checkSupp->id;
                 } else {
                     $cus             = new Customer();
-                    $cus->code       = generateCode('Customer', 'C');
+                    $cus->code       = generateCode('Customer', 'CI');
                     $cus->name       = $customer->name;
                     $cus->owner      = $customer->name;
                     $cus->phone      = $customer->phone;
@@ -227,7 +227,7 @@ class SaleController extends Controller
                     $customerId = $checkSupp->id;
                 } else {
                     $cus             = new Customer();
-                    $cus->code       = generateCode('Customer', 'C');
+                    $cus->code       = generateCode('Customer', 'CI');
                     $cus->name       = $customer->name;
                     $cus->owner      = $customer->name;
                     $cus->phone      = $customer->phone;

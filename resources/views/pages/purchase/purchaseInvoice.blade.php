@@ -65,10 +65,10 @@
                         this.selectedSupplier = {
                             id: this.purchase.customer_id ?? '',
                             code: this.purchase.supplier_code,
-                            name: this.purchase.customer_name,
-                            phone: this.purchase.customer_phone,
-                            address: this.purchase.customer_address,
-                            type: this.purchase.customer_type
+                            name: this.purchase.supplier_name,
+                            phone: this.purchase.supplier_phone,
+                            address: this.purchase.supplier_address,
+                            type: this.purchase.supplier_type
                         }
                         this.showInvoice = true;
                     })

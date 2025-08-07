@@ -13,9 +13,13 @@ Vue.component('invoice-preview', {
         </div>
       </div>
 
-      <div class="text-center my-2 py-1" style="font-size:20px;border: 2px dashed #ccc;font-weight: 700;">Purchase Invoice</div>
+      <div style="display: flex; align-items: center; text-align: center; margin: 0;">
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+        <div style="padding: 0 15px; font-size: 18px; font-weight: 700;">Purchase Invoice</div>
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+      </div>
 
-      <div class="row mb-2 border border-2 mx-0" style="border-radius: 5px;">
+      <div class="row border border-2 mx-0" style="border-radius: 5px;">
         <div class="col-8">
           <strong style="font-size: 14px;">Supplier ID: </strong> <span style="font-size: 13px;" v-text="supplier.code ? supplier.code : 'Walk-In supplier'"></span><br>
           <strong style="font-size: 14px;">Name: </strong> <span style="font-size: 13px;" v-text="supplier.name"></span><br>
@@ -28,7 +32,12 @@ Vue.component('invoice-preview', {
           <strong style="font-size: 13px;">Phone: </strong> <span style="font-size: 13px;" v-text="purchase.date"></span>
         </div>
       </div>
-      <div class="mt-2">
+      <div style="display: flex; align-items: center; text-align: center; margin: 0;">
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+        <div style="padding: 0 15px; font-size: 14px; font-weight: 700;">******</div>
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+      </div>
+      <div class="mt-0">
         <table class="table table-bordered" style="border-radius: 5px;border-collapse: collapse;">
           <thead>
             <tr>
@@ -252,7 +261,7 @@ Vue.component('invoice-preview', {
                           </div>
                           <div class="row" style="${this.cart.length > 20 ? 'margin-top: 70px;' : 'position: fixed;bottom:0;left:8px;width:100%;'}">
                             <div class="col-6">
-                              <span style="text-decoration:overline;">supplier Signature</span>
+                              <span style="text-decoration:overline;">Supplier Signature</span>
                             </div>
                             <div class="col-6 text-end">
                               <span style="text-decoration:overline;">Authorized Signature</span>

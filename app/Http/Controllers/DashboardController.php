@@ -29,26 +29,25 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
-        $bankAccounts = Bank::getBankBalance((object)[], date('Y-m-d'));
-        $data['bankBalance'] = collect($bankAccounts)->reduce(function ($pre, $cur) {
-            return $pre + $cur->currentbalance;
-        }, 0);
         Session::forget('panel');
         Session::put('panel', 'dashboard');
-        return view('pages.dashboard', $data);
+        return view('pages.dashboard');
     }
 
     public function panel($panel)
     {
+        Session::forget('panel');
+        Session::put('panel', $panel);
+        return view('pages.dashboard');
+    }
+
+    public function businessInfo(){
         $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
         $bankAccounts = Bank::getBankBalance((object)[], date('Y-m-d'));
         $data['bankBalance'] = collect($bankAccounts)->reduce(function ($pre, $cur) {
             return $pre + $cur->currentbalance;
         }, 0);
-        Session::forget('panel');
-        Session::put('panel', $panel);
-        return view('pages.dashboard', $data);
+        return view('pages.businessInfo', $data);
     }
 
     // admin logout

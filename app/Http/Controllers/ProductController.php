@@ -93,7 +93,7 @@ class ProductController extends Controller
                 $check->update();
             } else {
                 $data = new Product();
-                $data->code = generateCode('Supplier', 'P');
+                $data->code = generateCode('Supplier', 'PI');
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
@@ -107,7 +107,7 @@ class ProductController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Product has created successfully", 'code' => generateCode('Supplier', 'P')]);
+            return response()->json(['status' => true, 'message' => "Product has created successfully", 'code' => generateCode('Product', 'PI')]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -151,7 +151,7 @@ class ProductController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Product has updated successfully", 'code' => generateCode('Supplier', 'P')]);
+            return response()->json(['status' => true, 'message' => "Product has updated successfully", 'code' => generateCode('Product', 'PI')]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }

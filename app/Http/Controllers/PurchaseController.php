@@ -103,7 +103,7 @@ class PurchaseController extends Controller
                     $supplierId = $checkSupp->id;
                 } else {
                     $supp = new Supplier();
-                    $supp->code = generateCode('Supplier', 'S');
+                    $supp->code = generateCode('Supplier', 'SI');
                     $supp->name = $supplier->name;
                     $supp->owner = $supplier->name;
                     $supp->phone = $supplier->phone;
@@ -178,7 +178,7 @@ class PurchaseController extends Controller
                     $supplierId = $checkSupp->id;
                 } else {
                     $supp = new Supplier();
-                    $supp->code = generateCode('Supplier', 'S');
+                    $supp->code = generateCode('Supplier', 'SI');
                     $supp->name = $supplier->name;
                     $supp->owner = $supplier->name;
                     $supp->phone = $supplier->phone;

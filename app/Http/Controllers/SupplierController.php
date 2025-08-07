@@ -86,7 +86,7 @@ class SupplierController extends Controller
                 $check->update();
             } else {
                 $data = new Supplier();
-                $data->code = generateCode('Supplier', 'S');
+                $data->code = generateCode('Supplier', 'SI');
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;

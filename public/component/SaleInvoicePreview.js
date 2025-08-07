@@ -13,9 +13,13 @@ Vue.component('invoice-preview', {
         </div>
       </div>
 
-      <div class="text-center my-2 py-1" style="font-size:20px;border: 2px dashed #ccc;font-weight: 700;">Sale Invoice</div>
+      <div style="display: flex; align-items: center; text-align: center; margin: 0;">
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+        <div style="padding: 0 15px; font-size: 18px; font-weight: 700;">Sale Invoice</div>
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+      </div>
 
-      <div class="row mb-2 border border-2 mx-0" style="border-radius: 5px;">
+      <div class="row border border-2 mx-0" style="border-radius: 5px;">
         <div class="col-8">
           <strong style="font-size: 14px;">Customer ID: </strong> <span style="font-size: 13px;" v-text="customer.code ? customer.code : 'Walk-In Customer'"></span><br>
           <strong style="font-size: 14px;">Name: </strong> <span style="font-size: 13px;" v-text="customer.name"></span><br>
@@ -28,7 +32,12 @@ Vue.component('invoice-preview', {
           <strong style="font-size: 13px;">Phone: </strong> <span style="font-size: 13px;" v-text="sale.date"></span>
         </div>
       </div>
-      <div class="mt-2">
+      <div style="display: flex; align-items: center; text-align: center; margin: 0;">
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+        <div style="padding: 0 15px; font-size: 14px; font-weight: 700;">******</div>
+        <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+      </div>
+      <div class="mt-0">
         <table class="table table-bordered" style="border-radius: 5px;border-collapse: collapse;">
           <thead>
             <tr>

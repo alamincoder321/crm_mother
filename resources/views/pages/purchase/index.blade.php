@@ -112,8 +112,8 @@
                                     <td v-html="item.due" class="text-end"></td>
                                     <td v-html="item.note" class="text-center"></td>
                                     <td class="text-center">
-                                        <i class="bi bi-file-earmark-medical-fill text-secondary" style="cursor: pointer;font-size:14px"></i>
-                                        <i @click="openPurchase(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
+                                        <i @click="openInvoice(item.id)" class="bi bi-file-earmark-medical-fill text-secondary" style="cursor: pointer;font-size:14px"></i>
+                                        <i @click="editPurchase(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
                                         <i @click="deleteData(item.id)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
                                     </td>
                                 </tr>
@@ -162,8 +162,8 @@
                                         <td v-html="item.details[0].purchase_rate" class="text-end"></td>
                                         <td v-html="item.details[0].total" class="text-end"></td>
                                         <td class="text-center">
-                                            <i class="bi bi-file-earmark-medical-fill text-secondary" style="cursor: pointer;font-size:14px"></i>
-                                            <i @click="openPurchase(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
+                                            <i @click="openInvoice(item.id)" class="bi bi-file-earmark-medical-fill text-secondary" style="cursor: pointer;font-size:14px"></i>
+                                            <i @click="editPurchase(item.id)" class="bi bi-pencil-square text-info" style="cursor: pointer;"></i>
                                             <i @click="deleteData(item.id)" class="bi bi-trash3 text-danger" style="cursor: pointer;"></i>
                                         </td>
                                     </tr>
@@ -219,7 +219,12 @@
         },
 
         methods: {
-            openPurchase(id) {
+            openInvoice(id) {
+                if (typeof window !== 'undefined') {
+                    window.open(`/purchaseInvoice/${id}`, '_blank');
+                }
+            },
+            editPurchase(id) {
                 if (typeof window !== 'undefined') {
                     window.open('/purchase/' + id, '_blank');
                 }
