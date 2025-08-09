@@ -57,7 +57,7 @@ $panel = session('panel');
         <li class="nav-item">
             <a class="nav-link" href="/business-info">
                 <i class="bi bi-graph-up-arrow"></i>
-                <span>Business Panel</span>
+                <span>Business Info</span>
             </a>
         </li>
 

@@ -52,6 +52,7 @@ Route::group(['prefix' => 'panel'], function () {
     Route::get('/{panel}', [DashboardController::class, 'panel'])->name('panel.access');
 });
 Route::get('/business-info', [DashboardController::class, 'businessInfo'])->name('business.info');
+Route::match(['get', 'post'],'get-business-info', [DashboardController::class, 'getBusinessInfo'])->name('get.business.info');
 
 // ============================= Control Panel Route ==============================
 

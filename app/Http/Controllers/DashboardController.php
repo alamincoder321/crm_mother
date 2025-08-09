@@ -7,8 +7,14 @@ use App\Models\Bank;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\CompanyProfile;
+use App\Models\Customer;
+use App\Models\Product;
+use App\Models\Sale;
+use App\Models\Supplier;
+use App\Models\Transaction;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 
@@ -41,13 +47,68 @@ class DashboardController extends Controller
         return view('pages.dashboard');
     }
 
-    public function businessInfo(){
+    public function businessInfo()
+    {
         $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
         $bankAccounts = Bank::getBankBalance((object)[], date('Y-m-d'));
         $data['bankBalance'] = collect($bankAccounts)->reduce(function ($pre, $cur) {
             return $pre + $cur->currentbalance;
         }, 0);
         return view('pages.businessInfo', $data);
+    }
+
+    public function getBusinessInfo(Request $request)
+    {
+        $data['todaySale'] = Sale::where('branch_id', $this->branchId)
+            ->where('date', date('Y-m-d'))
+            ->where('status', 'a')
+            ->sum('total');
+        $data['monthlySale'] = Sale::where('branch_id', $this->branchId)
+            ->where(DB::raw("DATE_FORMAT(date, '%Y-%m')"), date('Y-m'))
+            ->where('status', 'a')
+            ->sum('total');
+        $data['yearlySale'] = Sale::where('branch_id', $this->branchId)
+            ->where(DB::raw("DATE_FORMAT(date, '%Y')"), date('Y'))
+            ->where('status', 'a')
+            ->sum('total');
+        $data['totalSale'] = Sale::where('branch_id', $this->branchId)
+            ->where('status', 'a')
+            ->sum('total');
+
+        //collection
+        $today = date("Y-m-d");
+        $data['collection'] = DB::select("select
+                                (select ifnull(sum(sm.paid), 0) from sales sm
+                                where sm.status = 'a'
+                                and sm.branch_id = '$this->branchId'
+                                and DATE_FORMAT(sm.date, '%Y-%m-%d') = '$today') as salePaid,
+
+                                (select ifnull(sum(cr.amount), 0) from receives cr
+                                where cr.status = 'a'
+                                and cr.type = 'customer'
+                                and cr.branch_id = '$this->branchId'
+                                and DATE_FORMAT(cr.date, '%Y-%m-%d') = '$today') as customerReceive,
+
+                                (select ifnull(sum(tr.amount), 0) from transactions tr
+                                where tr.status = 'a'
+                                and tr.type = 'income'
+                                and tr.branch_id = '$this->branchId'
+                                and DATE_FORMAT(tr.date, '%Y-%m-%d') = '$today') as income,
+                                (select salePaid + customerReceive + income) as collection")[0]->collection;
+
+        $data['customerDue'] = collect(Customer::customerDue([]))->sum('due');
+        $data['supplierDue'] = collect(Supplier::supplierDue([]))->sum('due');
+        $data['stockBalance'] = collect(Product::stock([]))->sum('stock_value');
+        $data['expense'] = Transaction::where('branch_id', $this->branchId)
+            ->where('type', 'expense')
+            ->where('status', 'a')
+            ->sum('amount');
+        $data['income'] = Transaction::where('branch_id', $this->branchId)
+            ->where('type', 'income')
+            ->where('status', 'a')
+            ->sum('amount');
+
+        return response()->json($data);
     }
 
     // admin logout
