@@ -216,11 +216,11 @@
                 <div class="card p-3 mb-3">
                     <div class="card-body p-0 d-flex gap-3 align-items-center">
                         <div class="w-25 text-center" style="font-size: 30px;background: #ffeec7;border-radius: 50%;">
-                            <i class="bi bi-cart-plus"></i>
+                            <i class="bi bi-cash"></i>
                         </div>
                         <div class="w-75">
-                            <strong class="m-0">Monthly ProfitLoss</strong>
-                            <p class="m-0">৳ {{number_format(0, 2)}}</p>
+                            <strong class="m-0">Investment</strong>
+                            <p class="m-0">@{{0 | formatCurrency}}</p>
                         </div>
                     </div>
                 </div>
@@ -232,8 +232,8 @@
                             <i class="bi bi-graph-up-arrow"></i>
                         </div>
                         <div class="w-75">
-                            <strong class="m-0">Yearly ProfitLoss</strong>
-                            <p class="m-0">@{{200 | formatCurrency}}</p>
+                            <strong class="m-0">ProfitLoss</strong>
+                            <p class="m-0">@{{monthlyProfitLoss | formatCurrency}}</p>
                         </div>
                     </div>
                 </div>
@@ -243,13 +243,13 @@
 
     <div class="col-md-12">
         <div class="row m-0">
-            <div class="col-12 col-md-8 px-0" style="border: 1px solid #959595; padding: 10px;">
+            <div class="col-12 col-md-7 px-0" style="border: 1px solid #959595; padding: 10px;">
                 <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Monthly Sales Overview</h6>
-                <apexchart type="area" height="250" :options="chartOptions" :series="series"></apexchart>
+                <apexchart type="area" height="200" :options="chartOptions" :series="series"></apexchart>
             </div>
-            <div class="col-12 col-md-4 d-flex align-items-center justify-content-center" style="flex-direction: column;border: 1px solid #959595; padding: 10px;">
-                <h6>Top Products</h6>
-                <apexchart type="pie" width="100%" :options="piechartOptions" :series="pieseries"></apexchart>
+            <div class="col-12 col-md-5 px-0" style="border: 1px solid #959595; padding: 10px;">
+                <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Top Sale Products</h6>
+                <apexchart type="pie" height="215" :options="piechartOptions" :series="pieseries"></apexchart>
             </div>
         </div>
     </div>
@@ -266,7 +266,7 @@
             return {
                 series: [{
                     name: 'Sales Amount',
-                    data: [31, 40, 28, 51, 42, 109, 100]
+                    data: []
                 }],
                 chartOptions: {
                     chart: {
@@ -281,22 +281,24 @@
                     },
                     xaxis: {
                         type: 'text',
-                        categories: ["30", "50", "0", "36", "51", "65", "60"]
+                        categories: []
                     },
                 },
 
                 pieseries: [],
                 piechartOptions: {
                     chart: {
-                        width: 380,
+                        width: 300,
+                        height: 200,
                         type: 'pie',
                     },
-                    labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+                    labels: [],
                     responsive: [{
                         breakpoint: 480,
                         options: {
                             chart: {
-                                width: 200
+                                width: 400,
+                                height: 250
                             },
                             legend: {
                                 position: 'bottom'
@@ -332,15 +334,15 @@
             }
         },
         created() {
-            this.pieseries = [44, 55, 13, 43, 22];
             this.getBusinessInfo();
+            this.getTopBusinessInfo();
         },
         methods: {
             getBusinessInfo() {
                 axios.post("/get-business-info", {})
                     .then(response => {
                         const data = response.data;
-                        this.totalSale = data.todaySale;
+                        this.todaySale = data.todaySale;
                         this.monthlySale = data.monthlySale;
                         this.yearlySale = data.yearlySale;
                         this.totalSale = data.totalSale;
@@ -350,8 +352,26 @@
                         this.stockBalance = data.stockBalance;
                         this.expense = data.expense;
                         this.income = data.income;
-                        // this.series[0].data = data.monthlySales;
-                        // this.pieseries = data.topProducts;
+                        this.monthlyProfitLoss = data.monthlyProfitLoss;
+                        this.yearlyProfitLoss = data.yearlyProfitLoss;
+                    })
+            },
+            getTopBusinessInfo() {
+                axios.post("/get-top-business-info", {})
+                    .then(response => {
+                        const data = response.data;
+                        
+                        let monthlySale = data.monthlySaleData;
+                        monthlySale.forEach(sale => {
+                            this.chartOptions.xaxis.categories.push(sale.date);
+                            this.series[0].data.push(sale.total);
+                        });
+                        
+                        let topProducts = data.topProducts;
+                        topProducts.forEach(product => {
+                            this.pieseries.push(product.total_quantity);
+                            this.piechartOptions.labels.push(product.name);
+                        });
                     })
             }
         },

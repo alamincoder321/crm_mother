@@ -108,6 +108,87 @@ class DashboardController extends Controller
             ->where('status', 'a')
             ->sum('amount');
 
+        $dateFrom = date('Y-m-01');
+        $dateTo = date('Y-m-t');
+        $sales = Sale::where('branch_id', $this->branchId)
+            ->where('status', 'a')
+            ->whereBetween('date', [$dateFrom, $dateTo])
+            ->latest()
+            ->get();
+        $sales = $sales->map(function ($sale) {
+            $sale->details = DB::table('sale_details as sd')
+                ->select(
+                    'p.name',
+                    'p.code',
+                    'u.name as unit_name',
+                    'c.name as category_name',
+                    'sd.*',
+                    DB::raw('(sd.purchase_rate * sd.quantity) as purchase_total'),
+                    DB::raw('(sd.total - (sd.purchase_rate * sd.quantity)) as profitLoss')
+                )
+                ->leftJoin('products as p', 'p.id', '=', 'sd.product_id')
+                ->leftJoin('units as u', 'u.id', '=', 'p.unit_id')
+                ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
+                ->where('sale_id', $sale->id)
+                ->where('sd.status', 'a')
+                ->where('sd.branch_id', $this->branchId)
+                ->get();
+            return $sale;
+        }, $sales);
+        $grossProfitLoss = $sales->sum(function ($sale) {
+            return $sale->details->sum('profitLoss');
+        });
+        $saleDiscount = $sales->sum('discount');
+        $saleVat = $sales->sum('vat');
+        $saleTransportCost = $sales->sum('transport_cost');
+        $otherExpInc = AccountHead::getOtherExpenseIncome(['dateFrom' => $dateFrom, 'dateTo' => $dateTo]);
+        $netProfitLoss =
+            ($grossProfitLoss +
+                $otherExpInc->income +
+                $saleDiscount +
+                $saleVat +
+                $saleTransportCost +
+                $otherExpInc->purchase_discount)
+            -
+            ($otherExpInc->expense +
+                $otherExpInc->purchase_vat +
+                $otherExpInc->purchase_transport_cost +
+                $otherExpInc->salary_payment +
+                $otherExpInc->sale_return_amount);
+        $data['monthlyProfitLoss'] = $netProfitLoss;
+
+        return response()->json($data);
+    }
+
+    public function getTopBusinessInfo(Request $request)
+    {
+        $data['topProducts'] = DB::table('sale_details as sd')
+            ->select(
+                'p.name',
+                'p.code',
+                DB::raw('SUM(sd.quantity) as total_quantity'),
+                DB::raw('SUM(sd.total) as total_amount')
+            )
+            ->leftJoin('products as p', 'p.id', '=', 'sd.product_id')
+            ->where('sd.status', 'a')
+            ->where('sd.branch_id', $this->branchId)
+            ->groupBy('sd.product_id')
+            ->orderByDesc('total_quantity')
+            ->limit(5)
+            ->get();
+
+        $totalDaysInMonth = date('t');
+        for ($i = 1; $i <= $totalDaysInMonth; $i++) {
+            $date = date('Y-m-' . str_pad($i, 2, '0', STR_PAD_LEFT));
+            $data['monthlySaleData'][] = [
+                'date' => $i,
+                'total' => Sale::where('branch_id', $this->branchId)
+                    ->where('status', 'a')
+                    ->whereDate('date', $date)
+                    ->sum('total')
+            ];
+        }
+
         return response()->json($data);
     }
 

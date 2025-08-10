@@ -205,10 +205,23 @@ class AccountHeadController extends Controller
                 from purchase_returns pr
                 where pr.status = 'a'
                 " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . "
-                
+
                 UNION
                 select
                 'f' as sequence,
+                dm.id,
+                dm.date,
+                concat('Damage Invoice - ', dm.invoice) as description,
+                dm.total as in_amount,
+                0 as out_amount,
+                0 as balance
+                from damages dm
+                where dm.status = 'a'
+                " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . "
+                
+                UNION
+                select
+                'g' as sequence,
                 inc.id,
                 inc.date,
                 concat('Income Invoice - ', inc.invoice) as description,
@@ -223,7 +236,7 @@ class AccountHeadController extends Controller
                 /*================= Out Amount =======================*/
                 UNION
                 select
-                'g' as sequence,
+                'h' as sequence,
                 pm.id,
                 pm.date,
                 concat('Purchase Invoice - ', pm.invoice) as description,
@@ -236,7 +249,7 @@ class AccountHeadController extends Controller
 
                 UNION
                 select
-                'h' as sequence,
+                'i' as sequence,
                 spp.id,
                 spp.date,
                 concat('Supplier Payment - ', spp.invoice) as description,
@@ -251,7 +264,7 @@ class AccountHeadController extends Controller
                 
                 UNION
                 select
-                'h' as sequence,
+                'j' as sequence,
                 bt.id,
                 bt.date,
                 concat('Bank Deposit - ', bt.invoice) as description,
@@ -265,7 +278,7 @@ class AccountHeadController extends Controller
 
                 UNION
                 select
-                'i' as sequence,
+                'k' as sequence,
                 cpp.id,
                 cpp.date,
                 concat('Customer Payment - ', cpp.invoice) as description,
@@ -279,7 +292,7 @@ class AccountHeadController extends Controller
 
                 UNION
                 select
-                'j' as sequence,
+                'l' as sequence,
                 exp.id,
                 exp.date,
                 concat('Income Invoice - ', exp.invoice) as description,
@@ -293,7 +306,7 @@ class AccountHeadController extends Controller
                 
                 UNION
                 select
-                'k' as sequence,
+                'm' as sequence,
                 emp.id,
                 emp.date,
                 concat('Employee Payment - ', emp.invoice) as description,
@@ -304,7 +317,20 @@ class AccountHeadController extends Controller
                 where emp.status = 'a'
                 " . ($branchId == null ? "" : " and emp.branch_id = '$branchId'") . "
                 
-                order by date, sequence asc";
+                UNION
+                select
+                'n' as sequence,
+                sr.id,
+                sr.date,
+                concat('Sale Return - ', sr.invoice) as description,
+                0 as in_amount,
+                sr.total as out_amount,
+                0 as balance
+                from sale_returns sr
+                where sr.status = 'a'
+                " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . "
+                
+                order by date, sequence, id asc";
 
         $ledgers = DB::select($query);
 

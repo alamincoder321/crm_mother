@@ -58,19 +58,32 @@ $panel = session('panel');
 @endpush
 
 @section('content')
-<div class="row">
+<div class="row" id="dashboard">
     @if ($panel == 'dashboard' || $panel == '')
-    <div class="col-12 col-md-8 offset-md-2 text-center">
+    <!-- <div class="col-12 col-md-8 offset-md-2 text-center">
         <img class="w-75" src="{{asset('backend')}}/img/header.png" alt="header logo" style="border-radius: 20px;border: 1px solid rgb(0, 126, 187);box-shadow: rgb(0, 126, 187) 0px 5px 0px 0px;">
-    </div>
+    </div> -->
 
-    <div class="col-md-12 mb-3 mt-5">
-        <div style="display: flex; align-items: center; text-align: center; margin: 0;">
+    <div class="col-md-12 my-5">
+        <div style="display: flex; align-items: center; text-align: center; margin: 0;border: 1px solid #000;">
             <div style="flex: 1; border-bottom: 1px solid #000;"></div>
             <div class="textColor">
                 Welcome To Dashboard
             </div>
             <div style="flex: 1; border-bottom: 1px solid #000;"></div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row m-0">
+            <div class="col-12 col-md-7 px-0" style="border: 1px solid #959595; padding: 10px;">
+                <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Monthly Sales Overview</h6>
+                <apexchart type="area" height="200" :options="chartOptions" :series="series"></apexchart>
+            </div>
+            <div class="col-12 col-md-5 px-0" style="border: 1px solid #959595; padding: 10px;">
+                <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Top Sale Products</h6>
+                <apexchart type="pie" height="215" :options="piechartOptions" :series="pieseries"></apexchart>
+            </div>
         </div>
     </div>
 
@@ -716,3 +729,83 @@ $panel = session('panel');
     @endif
 </div>
 @endsection
+
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-apexcharts"></script>
+<script>
+    Vue.component('apexchart', VueApexCharts);
+    new Vue({
+        el: "#dashboard",
+        data() {
+            return {
+                series: [{
+                    name: 'Sales Amount',
+                    data: []
+                }],
+                chartOptions: {
+                    chart: {
+                        height: 350,
+                        type: 'area'
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        curve: 'smooth'
+                    },
+                    xaxis: {
+                        type: 'text',
+                        categories: []
+                    },
+                },
+
+                pieseries: [],
+                piechartOptions: {
+                    chart: {
+                        width: 300,
+                        height: 200,
+                        type: 'pie',
+                    },
+                    labels: [],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 400,
+                                height: 250
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                },
+            }
+        },
+        created() {
+            this.getTopBusinessInfo();
+        },
+        methods: {
+            getTopBusinessInfo() {
+                axios.post("/get-top-business-info", {})
+                    .then(response => {
+                        const data = response.data;
+                        
+                        let monthlySale = data.monthlySaleData;
+                        monthlySale.forEach(sale => {
+                            this.chartOptions.xaxis.categories.push(sale.date);
+                            this.series[0].data.push(sale.total);
+                        });
+                        
+                        let topProducts = data.topProducts;
+                        topProducts.forEach(product => {
+                            this.pieseries.push(product.total_quantity);
+                            this.piechartOptions.labels.push(product.name);
+                        });
+                    })
+            }
+        },
+    });
+</script>
+@endpush

@@ -81,7 +81,13 @@ class Supplier extends Model
                     " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . "
                     and pr.supplier_id = s.id) as return_amount,
                     
-                    (select (s.previous_due + purchase_total + received_amount + return_amount) - (purchase_paid + payment_amount)) as due
+                    (select ifnull(sum(dm.total), 0) from damages dm
+                    where dm.status = 'a'
+                    " . ($date == null ? "" : " and dm.date <= '$date'") . "
+                    " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . "
+                    and dm.supplier_id = s.id) as damage_amount,
+                    
+                    (select (s.previous_due + purchase_total + received_amount + return_amount + damage_amount) - (purchase_paid + payment_amount)) as due
 
                     from suppliers s
                     where s.status = 'a'

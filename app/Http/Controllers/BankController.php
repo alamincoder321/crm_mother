@@ -191,6 +191,7 @@ class BankController extends Controller
                 from receives spr
                 where spr.status = 'a'
                 and spr.type = 'supplier'
+                and spr.payment_method = 'bank'
                 " . (empty($request->bankId) ? "" : " and spr.bank_id = '$request->bankId'") . "
                 " . ($branchId == null ? "" : " and spr.branch_id = '$branchId'") . "
 
@@ -221,6 +222,7 @@ class BankController extends Controller
                 from payments spp
                 where spp.status = 'a'
                 and spp.type = 'supplier'
+                and spp.payment_method = 'bank'
                 " . (empty($request->bankId) ? "" : " and spp.bank_id = '$request->bankId'") . "
                 " . ($branchId == null ? "" : " and spp.branch_id = '$branchId'") . "
 
@@ -236,10 +238,11 @@ class BankController extends Controller
                 from payments cpp
                 where cpp.status = 'a'
                 and cpp.type = 'customer'
+                and cpp.payment_method = 'bank'
                 " . (empty($request->bankId) ? "" : " and cpp.bank_id = '$request->bankId'") . "
                 " . ($branchId == null ? "" : " and cpp.branch_id = '$branchId'") . "
                 
-                order by date, sequence asc";
+                order by date, sequence, id asc";
 
         $ledgers = DB::select($query);
 

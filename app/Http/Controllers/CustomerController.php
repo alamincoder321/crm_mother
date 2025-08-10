@@ -264,7 +264,7 @@ class CustomerController extends Controller
                 " . (empty($request->customerId) ? "" : " and cp.customer_id = '$request->customerId'") . "
                 " . ($branchId == null ? "" : " and cp.branch_id = '$branchId'") . "
                 
-                order by date, sequence asc";
+                order by date, sequence, id asc";
 
         $ledgers = DB::select($query);
 

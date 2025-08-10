@@ -85,7 +85,7 @@
                                     <td v-html="parseFloat(item.due).toFixed(2)" class="text-end"></td>
                                 </tr>
                                 <tr :class="dues.length > 0 ? '' : 'd-none'" v-if="dues.length > 0">
-                                    <td class="text-center bg-light" colspan="5">Total</td>
+                                    <td class="text-center bg-light" style="font-weight: 700;" colspan="5">Total</td>
                                     <td class="text-end bg-light" style="font-weight: 700;">@{{ dues.reduce((pre, cur) => {return pre + parseFloat(cur.due)}, 0).toFixed(2) }}</td>
                                 </tr>
                                 <tr :class="dues.length == 0 ? '' : 'd-none'" v-if="dues.length == 0">
@@ -144,7 +144,7 @@
                         if (this.searchType == 'customer' && this.selectedCustomer) {
                             this.dues = res.data;
                         } else {
-                            this.dues = res.data.filter(item => parseFloat(item.due) > 0);
+                            this.dues = res.data.filter(item => parseFloat(item.due) != 0);
                         }
                         this.isLoading = true;
                     })

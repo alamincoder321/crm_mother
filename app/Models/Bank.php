@@ -64,6 +64,7 @@ class Bank extends Model
                     (select ifnull(sum(cpp.amount), 0) from payments cpp
                     where cpp.status = 'a'
                     and cpp.type = 'customer'
+                    and cpp.payment_method = 'bank'
                     and cpp.bank_id = ba.id
                     " . ($date == null ? "" : " and cpp.date <= '$date'") . "
                     " . ($branchId == null ? "" : " and cpp.branch_id = '$branchId'") . ") as total_paid_customer,
@@ -71,6 +72,7 @@ class Bank extends Model
                     (select ifnull(sum(cpr.amount), 0) from receives cpr
                     where cpr.status = 'a'
                     and cpr.type = 'customer'
+                    and cpr.payment_method = 'bank'
                     and cpr.bank_id = ba.id
                     " . ($date == null ? "" : " and cpr.date <= '$date'") . "
                     " . ($branchId == null ? "" : " and cpr.branch_id = '$branchId'") . ") as total_receive_customer,
@@ -78,6 +80,7 @@ class Bank extends Model
                     (select ifnull(sum(spp.amount), 0) from payments spp
                     where spp.status = 'a'
                     and spp.type = 'supplier'
+                    and spp.payment_method = 'bank'
                     and spp.bank_id = ba.id
                     " . ($date == null ? "" : " and spp.date <= '$date'") . "
                     " . ($branchId == null ? "" : " and spp.branch_id = '$branchId'") . ") as total_paid_supplier,
@@ -85,6 +88,7 @@ class Bank extends Model
                     (select ifnull(sum(spr.amount), 0) from receives spr
                     where spr.status = 'a'
                     and spr.type = 'customer'
+                    and spr.payment_method = 'bank'
                     and spr.bank_id = ba.id
                     " . ($date == null ? "" : " and spr.date <= '$date'") . "
                     " . ($branchId == null ? "" : " and spr.branch_id = '$branchId'") . ") as total_receive_supplier,

@@ -74,6 +74,11 @@ class AccountHead extends Model
                 " . ($date == null ? "" : " and pr.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . ") as purchase_return_amount,
                 
+                (select ifnull(sum(dm.total), 0) from damages dm
+                where dm.status = 'a'
+                " . ($date == null ? "" : " and dm.date <= '$date'") . "
+                " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . ") as damage_amount,
+                
                 /* Payment */
                 
                 (select ifnull(sum(pm.paid), 0) from purchases pm
@@ -112,12 +117,12 @@ class AccountHead extends Model
                 " . ($date == null ? "" : " and emp.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and emp.branch_id = '$branchId'") . ") as salary_payment,
 
-                (select ifnull(sum(sr.total), 0) from purchase_returns sr
+                (select ifnull(sum(sr.total), 0) from sale_returns sr
                 where sr.status = 'a'
                 " . ($date == null ? "" : " and sr.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . ") as sale_return_amount,
                 
-                (select receive_sale + purchase_return_amount + receive_customer + receive_supplier + income + bank_debit) as total_in_amount,
+                (select receive_sale + purchase_return_amount + damage_amount + receive_customer + receive_supplier + income + bank_debit) as total_in_amount,
                 (select purchase_paid + sale_return_amount + payment_customer + payment_supplier + expense + bank_credit + salary_payment) as total_out_amount,
                 (select total_in_amount - total_out_amount) as cashbalance";
 

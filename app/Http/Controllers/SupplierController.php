@@ -225,22 +225,21 @@ class SupplierController extends Controller
                 UNION
                 select
                 'c' as sequence,
-                sp.id,
-                sp.date,
-                concat('Supplier Payment - ', sp.invoice) as description,
+                dm.id,
+                dm.date,
+                concat('Damage Invoice - ', dm.invoice) as description,
                 0 as bill,
                 0 as paid,
                 0 as due,
-                sp.amount as cash_payment,
+                0 as cash_payment,
                 0 as cash_receive,
-                0 as return_amount,
+                dm.total as return_amount,
                 0 as balance
-                from payments sp
-                left join suppliers s on s.id = sp.supplier_id
-                where sp.status = 'a'
-                and sp.type = 'supplier'
-                " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
-                " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
+                from damages dm
+                left join suppliers s on s.id = dm.supplier_id
+                where dm.status = 'a'
+                " . (empty($request->supplierId) ? "" : " and dm.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . "
 
                 UNION
                 select
@@ -261,8 +260,28 @@ class SupplierController extends Controller
                 and sp.type = 'supplier'
                 " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
                 " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'e' as sequence,
+                sp.id,
+                sp.date,
+                concat('Supplier Payment - ', sp.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                sp.amount as cash_payment,
+                0 as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from payments sp
+                left join suppliers s on s.id = sp.supplier_id
+                where sp.status = 'a'
+                and sp.type = 'supplier'
+                " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
                 
-                order by date, sequence asc";
+                order by date, sequence, id asc";
 
         $ledgers = DB::select($query);
 
