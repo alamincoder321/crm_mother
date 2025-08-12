@@ -14,13 +14,13 @@
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="invoice">Invoice:</label>
                                 <div class="col-8 col-md-9">
-                                    <input type="text" class="form-control" autocomplete="off" id="invoice" name="invoice" v-model="transaction.invoice" readonly/>
+                                    <input type="text" class="form-control" autocomplete="off" id="invoice" name="invoice" v-model="transaction.invoice" readonly />
                                 </div>
                             </div>
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="account_id">Account:</label>
                                 <div class="col-8 col-md-9">
-                                    <v-select :options="banks" v-model="selectedBank" label="display_name"></v-select>
+                                    <v-select :options="banks" v-model="selectedBank" label="display_name" @input="onChangeBank"></v-select>
                                 </div>
                             </div>
                             <div class="mb-1 row">
@@ -40,9 +40,9 @@
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="note">Type:</label>
                                 <div class="col-8 col-md-9">
-                                    <select name="type" class="form-control" v-model="transaction.type">
-                                        <option value="debit">Debit</option>
-                                        <option value="credit">Credit</option>
+                                    <select name="type" class="form-select" v-model="transaction.type">
+                                        <option value="debit">Withdraw</option>
+                                        <option value="credit">Deposit</option>
                                     </select>
                                 </div>
                             </div>
@@ -110,7 +110,7 @@
                     },
                     {
                         label: "Bank",
-                        field: 'bank.name'
+                        field: 'name'
                     },
                     {
                         label: "AccountType",
@@ -179,10 +179,23 @@
                     .then(res => {
                         this.transactions = res.data.map((item, index) => {
                             item.sl = index + 1;
+                            item.name = `${item.bank?.name} - ${item.bank?.number} - ${item.bank?.bank_name}`;
                             return item;
                         });
                         this.loading = false;
                     })
+            },
+            async onChangeBank() {
+                if (this.selectedBank == null) {
+                    return;
+                }
+                if (this.selectedBank.id != '') {
+                    await axios.post(`/get-bankBalance`, {
+                        bankId: this.selectedBank.id
+                    }).then(res => {
+                        this.transaction.previous_balance = res.data[0].currentbalance;
+                    })
+                }
             },
             saveData(event) {
                 let formdata = new FormData(event.target);
@@ -223,6 +236,9 @@
                     this.transaction[item] = row[item];
                 })
                 this.selectedBank = this.banks.find(item => item.id == row.bank_id);
+                setTimeout(() => {
+                    this.transaction.previous_balance = row.previous_balance;
+                }, 1500);
             },
 
             deleteData(rowId) {
@@ -253,6 +269,7 @@
                     note: ''
                 }
                 this.onProgress = false;
+                this.selectedBank = null;
             }
         },
     })

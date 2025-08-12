@@ -184,6 +184,7 @@ Route::post('/update-bank', [BankController::class, 'update'])->name('bank.updat
 Route::post('/delete-bank', [BankController::class, 'destroy'])->name('bank.delete');
 Route::get('/bankLedger', [BankController::class, 'bankLedger'])->name('bank.ledger');
 Route::post('/get-bank-ledger', [BankController::class, 'getBankLedger'])->name('get.bank.ledger');
+Route::post('/get-bankBalance', [BankController::class, 'getBankBalance'])->name('get.bank.balance');
 
 // expense route
 Route::get('/expense', [TransactionController::class, 'expense'])->name('expense.create');

@@ -125,6 +125,13 @@ class BankController extends Controller
         }
     }
 
+    public function getBankBalance(Request $request)
+    {
+        $dues = Bank::getBankBalance($request);
+
+        return response()->json($dues);
+    }
+
     public function bankLedger()
     {
         return view('pages.report.bankLedger');

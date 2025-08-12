@@ -495,7 +495,7 @@
                 }
             },
 
-            onChangeCustomer() {
+            async onChangeCustomer() {
                 if (this.selectedCustomer == null) {
                     this.selectedCustomer = {
                         id: '',
@@ -507,7 +507,13 @@
                     }
                     return;
                 }
-
+                if (this.selectedCustomer.id != '') {
+                    await axios.post(`/get-customerDue`, {
+                        customerId: this.selectedCustomer.id
+                    }).then(res => {
+                        this.sale.previous_due = res.data[0].due;
+                    })
+                }
             },
 
             onChangeSaleType() {
@@ -885,7 +891,8 @@
 
                     setTimeout(() => {
                         this.selectedEmployee = this.employees.find(item => item.id == sale.employee_id);
-                    }, 1000);
+                        this.sale.previous_due = sale.previous_due;
+                    }, 1500);
                 })
             }
         },

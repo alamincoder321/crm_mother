@@ -20,7 +20,7 @@
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="account_id">Type:</label>
                                 <div class="col-8 col-md-9">
-                                    <select name="type" @change="onChangeType" class="form-control" v-model="receive.type">
+                                    <select name="type" @change="onChangeType" class="form-select" v-model="receive.type">
                                         <option :disabled="receive.id != '' ? true : false" value="customer">Customer</option>
                                         <option :disabled="receive.id != '' ? true : false" value="supplier">Supplier</option>
                                     </select>
@@ -29,7 +29,7 @@
                             <div class="mb-1 row">
                                 <label class="form-label col-4 col-md-3" for="account_id">Method:</label>
                                 <div class="col-8 col-md-9">
-                                    <select name="payment_method" class="form-control form-control-sm" v-model="receive.payment_method">
+                                    <select name="payment_method" class="form-select" v-model="receive.payment_method">
                                         <option value="cash">Cash</option>
                                         <option value="bank">Bank</option>
                                     </select>
@@ -44,13 +44,13 @@
                             <div class="mb-1 row" v-if="receive.type == 'customer'" :class="receive.type == 'customer' ? '' : 'd-none'">
                                 <label class="form-label col-4 col-md-3" for="customer_id">Customer:</label>
                                 <div class="col-8 col-md-9">
-                                    <v-select :options="customers" v-model="selectedCustomer" label="display_name"></v-select>
+                                    <v-select :options="customers" v-model="selectedCustomer" label="display_name" @input="onChangeCustomer"></v-select>
                                 </div>
                             </div>
                             <div class="mb-1 row" v-if="receive.type == 'supplier'" :class="receive.type == 'supplier' ? '' : 'd-none'">
                                 <label class="form-label col-4 col-md-3" for="supplier_id">Supplier:</label>
                                 <div class="col-8 col-md-9">
-                                    <v-select :options="suppliers" v-model="selectedSupplier" label="display_name"></v-select>
+                                    <v-select :options="suppliers" v-model="selectedSupplier" label="display_name" @input="onChangeSupplier"></v-select>
                                 </div>
                             </div>
                         </div>
@@ -121,13 +121,43 @@
         el: "#receive",
         data() {
             return {
-                columns: [{
+                receive: {
+                    id: '',
+                    invoice: "",
+                    date: moment().format('YYYY-MM-DD'),
+                    type: 'customer',
+                    payment_method: 'cash',
+                    amount: 0,
+                    previous_due: 0,
+                    note: ''
+                },
+                receives: [],
+                banks: [],
+                selectedBank: null,
+                customers: [],
+                selectedCustomer: null,
+                suppliers: [],
+                selectedSupplier: null,
+
+                role: "{{auth()->user()->role}}",
+                loading: true,
+                onProgress: false,
+            }
+        },
+
+        computed: {
+            columns() {
+                return [{
                         label: "Invoice",
                         field: 'invoice'
                     },
                     {
                         label: "Date",
                         field: 'date'
+                    },
+                    {
+                        label: this.receive.type === 'customer' ? 'Customer' : 'Supplier',
+                        field: "name"
                     },
                     {
                         label: "Payment Method",
@@ -153,28 +183,7 @@
                         label: "Action",
                         field: "before"
                     }
-                ],
-                receive: {
-                    id: '',
-                    invoice: "",
-                    date: moment().format('YYYY-MM-DD'),
-                    type: 'customer',
-                    payment_method: 'cash',
-                    amount: 0,
-                    previous_due: 0,
-                    note: ''
-                },
-                receives: [],
-                banks: [],
-                selectedBank: null,
-                customers: [],
-                selectedCustomer: null,
-                suppliers: [],
-                selectedSupplier: null,
-
-                role: "{{auth()->user()->role}}",
-                loading: true,
-                onProgress: false,
+                ];
             }
         },
 
@@ -214,6 +223,7 @@
                     .then(res => {
                         this.receives = res.data.map((item, index) => {
                             item.sl = index + 1;
+                            item.name = item.type == 'customer' ? `${item.customer?.name} - ${item.customer?.code}` : `${item.supplier?.name} - ${item.supplier?.code}`;
                             return item;
                         });
                         this.loading = false;
@@ -228,6 +238,30 @@
                     this.getSupplier();
                 }
                 this.getReceive();
+            },
+            async onChangeSupplier() {
+                if (this.selectedSupplier == null) {
+                    return;
+                }
+                if (this.selectedSupplier.id != '') {
+                    await axios.post(`/get-supplierDue`, {
+                        supplierId: this.selectedSupplier.id
+                    }).then(res => {
+                        this.receive.previous_due = res.data[0].due;
+                    })
+                }
+            },
+            async onChangeCustomer() {
+                if (this.selectedCustomer == null) {
+                    return;
+                }
+                if (this.selectedCustomer.id != '') {
+                    await axios.post(`/get-customerDue`, {
+                        customerId: this.selectedCustomer.id
+                    }).then(res => {
+                        this.receive.previous_due = res.data[0].due;
+                    })
+                }
             },
             saveData(event) {
                 let formdata = new FormData(event.target);
@@ -279,6 +313,9 @@
                 this.selectedCustomer = this.customers.find(item => item.id == row.customer_id);
                 this.selectedSupplier = this.suppliers.find(item => item.id == row.supplier_id);
                 this.selectedBank = this.banks.find(item => item.id == row.bank_id);
+                setTimeout(() => {
+                    this.payment.previous_due = row.previous_due;
+                }, 1500);
             },
 
             deleteData(row) {

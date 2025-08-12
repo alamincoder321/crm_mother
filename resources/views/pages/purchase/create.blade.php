@@ -364,7 +364,7 @@
                 }
             },
 
-            onChangeSupplier() {
+            async onChangeSupplier() {
                 if (this.selectedSupplier == null) {
                     this.selectedSupplier = {
                         id: '',
@@ -376,7 +376,13 @@
                     }
                     return;
                 }
-
+                if (this.selectedSupplier.id != '') {
+                    await axios.post(`/get-supplierDue`, {
+                        supplierId: this.selectedSupplier.id
+                    }).then(res => {
+                        this.purchase.previous_due = res.data[0].due;
+                    })
+                }
             },
 
             getProduct() {
@@ -464,7 +470,7 @@
                     }).then(res => {
                         return res.data[0].stock;
                     })
-                    if(parseFloat(product.quantity) > parseFloat(productStock)){
+                    if (parseFloat(product.quantity) > parseFloat(productStock)) {
                         toastr.error("Product Stock unavailable");
                         return;
                     }
@@ -613,7 +619,8 @@
 
                     setTimeout(() => {
                         this.selectedEmployee = this.employees.find(item => item.id == purchase.employee_id);
-                    }, 1000);
+                        this.purchase.previous_due = purchase.previous_due;
+                    }, 1500);
                 })
             }
         },
