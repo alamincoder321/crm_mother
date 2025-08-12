@@ -67,15 +67,17 @@ class AccountHead extends Model
                 where bt.status = 'a'
                 and bt.type = 'debit'
                 " . ($date == null ? "" : " and bt.date <= '$date'") . "
-                " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . ") as bank_debit,
+                " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . ") as bank_withdraw,
                 
                 (select ifnull(sum(pr.total), 0) from purchase_returns pr
                 where pr.status = 'a'
+                and pr.supplier_id is null
                 " . ($date == null ? "" : " and pr.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . ") as purchase_return_amount,
                 
                 (select ifnull(sum(dm.total), 0) from damages dm
                 where dm.status = 'a'
+                and dm.supplier_id is null
                 " . ($date == null ? "" : " and dm.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . ") as damage_amount,
                 
@@ -110,7 +112,7 @@ class AccountHead extends Model
                 where bt.status = 'a'
                 and bt.type = 'credit'
                 " . ($date == null ? "" : " and bt.date <= '$date'") . "
-                " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . ") as bank_credit,
+                " . ($branchId == null ? "" : " and bt.branch_id = '$branchId'") . ") as bank_deposit,
                 
                 (select ifnull(sum(emp.amount), 0) from salary_masters emp
                 where emp.status = 'a'
@@ -119,11 +121,12 @@ class AccountHead extends Model
 
                 (select ifnull(sum(sr.total), 0) from sale_returns sr
                 where sr.status = 'a'
+                and sr.customer_id is null
                 " . ($date == null ? "" : " and sr.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . ") as sale_return_amount,
                 
-                (select receive_sale + purchase_return_amount + damage_amount + receive_customer + receive_supplier + income + bank_debit) as total_in_amount,
-                (select purchase_paid + sale_return_amount + payment_customer + payment_supplier + expense + bank_credit + salary_payment) as total_out_amount,
+                (select receive_sale + purchase_return_amount + damage_amount + receive_customer + receive_supplier + income + bank_withdraw) as total_in_amount,
+                (select purchase_paid + sale_return_amount + payment_customer + payment_supplier + expense + bank_deposit + salary_payment) as total_out_amount,
                 (select total_in_amount - total_out_amount) as cashbalance";
 
         return DB::select($query)[0];

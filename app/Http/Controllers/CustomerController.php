@@ -229,7 +229,7 @@ class CustomerController extends Controller
                 'c' as sequence,
                 cp.id,
                 cp.date,
-                concat('customer Payment - ', cp.invoice) as description,
+                concat('Customer Payment - ', cp.invoice) as description,
                 0 as bill,
                 0 as paid,
                 0 as due,
@@ -275,7 +275,7 @@ class CustomerController extends Controller
 
         $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($previousBalance, $ledgers) {
             $lastBalance = $key == 0 ? $previousBalance : $ledgers[$key - 1]->balance;
-            $ledger->balance = ($lastBalance + $ledger->bill + $ledger->cash_payment + $ledger->return_amount) - ($ledger->paid + $ledger->cash_receive);
+            $ledger->balance = ($lastBalance + $ledger->bill + $ledger->cash_payment) - ($ledger->paid + $ledger->cash_receive + $ledger->return_amount);
             return $ledger;
         });
 

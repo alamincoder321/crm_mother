@@ -206,6 +206,26 @@ class SupplierController extends Controller
                 UNION
                 select
                 'b' as sequence,
+                sp.id,
+                sp.date,
+                concat('Supplier Receive - ', sp.invoice) as description,
+                0 as bill,
+                0 as paid,
+                0 as due,
+                0 as cash_payment,
+                sp.amount as cash_receive,
+                0 as return_amount,
+                0 as balance
+                from receives sp
+                left join suppliers s on s.id = sp.supplier_id
+                where sp.status = 'a'
+                and sp.type = 'supplier'
+                " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
+                " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'c' as sequence,
                 pr.id,
                 pr.date,
                 concat('Purchase Return Invoice - ', pr.invoice) as description,
@@ -224,7 +244,7 @@ class SupplierController extends Controller
 
                 UNION
                 select
-                'c' as sequence,
+                'd' as sequence,
                 dm.id,
                 dm.date,
                 concat('Damage Invoice - ', dm.invoice) as description,
@@ -240,26 +260,6 @@ class SupplierController extends Controller
                 where dm.status = 'a'
                 " . (empty($request->supplierId) ? "" : " and dm.supplier_id = '$request->supplierId'") . "
                 " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . "
-
-                UNION
-                select
-                'd' as sequence,
-                sp.id,
-                sp.date,
-                concat('Supplier Receive - ', sp.invoice) as description,
-                0 as bill,
-                0 as paid,
-                0 as due,
-                0 as cash_payment,
-                sp.amount as cash_receive,
-                0 as return_amount,
-                0 as balance
-                from receives sp
-                left join suppliers s on s.id = sp.supplier_id
-                where sp.status = 'a'
-                and sp.type = 'supplier'
-                " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
-                " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
 
                 UNION
                 select
@@ -292,7 +292,7 @@ class SupplierController extends Controller
 
         $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($previousBalance, $ledgers) {
             $lastBalance = $key == 0 ? $previousBalance : $ledgers[$key - 1]->balance;
-            $ledger->balance = ($lastBalance + $ledger->bill + $ledger->cash_receive + $ledger->return_amount) - ($ledger->paid + $ledger->cash_payment);
+            $ledger->balance = ($lastBalance + $ledger->bill + $ledger->cash_receive) - ($ledger->paid + $ledger->cash_payment + $ledger->return_amount);
             return $ledger;
         });
 

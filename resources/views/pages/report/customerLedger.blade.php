@@ -66,7 +66,7 @@
                                     <th>Date</th>
                                     <th>Description</th>
                                     <th>Bill</th>
-                                    <th>Paid</th>
+                                    <th>Inv.Paid</th>
                                     <th>Inv.Due</th>
                                     <th>Payment</th>
                                     <th>Receive</th>

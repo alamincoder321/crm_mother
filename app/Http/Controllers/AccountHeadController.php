@@ -204,6 +204,7 @@ class AccountHeadController extends Controller
                 0 as balance
                 from purchase_returns pr
                 where pr.status = 'a'
+                and pr.supplier_id is null
                 " . ($branchId == null ? "" : " and pr.branch_id = '$branchId'") . "
 
                 UNION
@@ -217,6 +218,7 @@ class AccountHeadController extends Controller
                 0 as balance
                 from damages dm
                 where dm.status = 'a'
+                and dm.supplier_id is null
                 " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . "
                 
                 UNION
@@ -282,8 +284,8 @@ class AccountHeadController extends Controller
                 cpp.id,
                 cpp.date,
                 concat('Customer Payment - ', cpp.invoice) as description,
-                cpp.amount as in_amount,
-                0 as out_amount,
+                0 as in_amount,
+                cpp.amount as out_amount,
                 0 as balance
                 from payments cpp
                 where cpp.status = 'a'
@@ -295,7 +297,7 @@ class AccountHeadController extends Controller
                 'l' as sequence,
                 exp.id,
                 exp.date,
-                concat('Income Invoice - ', exp.invoice) as description,
+                concat('Expense Invoice - ', exp.invoice) as description,
                 0 as in_amount,
                 exp.amount as out_amount,
                 0 as balance
@@ -328,6 +330,7 @@ class AccountHeadController extends Controller
                 0 as balance
                 from sale_returns sr
                 where sr.status = 'a'
+                and sr.customer_id is null
                 " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . "
                 
                 order by date, sequence, id asc";
