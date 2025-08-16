@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -33,6 +34,9 @@ class UserController extends Controller
 
     public function create()
     {
+        if (!checkAccess('user')) {
+            return view('error.403');
+        }
         return view('pages.control.user.create');
     }
 
@@ -128,6 +132,51 @@ class UserController extends Controller
 
             $data->delete();
             return response()->json(['status' => true, 'message' => "User has deleted successfully"]);
+        } catch (\Throwable $th) {
+            return send_error("Something went wrong", $th->getMessage());
+        }
+    }
+
+    public function userAccess($id)
+    {
+        if (!checkAccess('userAccess')) {
+            return view('error.403');
+        }
+        $data['user'] = User::withTrashed()->find($id);
+        return view('pages.control.user.userAccess', $data);
+    }
+
+    public function getUserAccess(Request $request)
+    {
+        $userAccess = UserAccess::select('access')->where('user_id', $request->id)->first();
+        if (empty($userAccess)) {
+            $userAccess = [];
+        } else {
+            $userAccess = json_decode($userAccess->access, true);
+        }
+        return response()->json(['access' => $userAccess, 'action' => User::where('id', $request->id)->value('action')]);
+    }
+
+    public function saveUserAccess(Request $request)
+    {
+        try {
+            $userAccess = UserAccess::where('user_id', $request->id)->first();
+            if (empty($userAccess)) {
+                $userAccess = new UserAccess();
+                $userAccess->user_id = $request->id;
+            }
+            $userAccess->access = json_encode($request->access);
+            $userAccess->ipAddress = request()->ip();
+            $userAccess->created_by = $this->userId;
+            $userAccess->branch_id = $this->branchId;
+            $userAccess->save();
+
+            // update user action button
+            User::where('id', $request->id)->update([
+                'action' => count(json_decode($request->action)) > 0 ? implode(',', json_decode($request->action)) : NULL
+            ]);
+
+            return response()->json(['status' => true, 'message' => "User access has been created successfully"]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }

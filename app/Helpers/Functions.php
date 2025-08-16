@@ -1,6 +1,7 @@
 <?php
 // use App\Models\UserAccess;
 
+use App\Models\UserAccess;
 use App\Models\CompanyProfile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -142,19 +143,17 @@ function credentials($username, $password)
 function checkAccess($accessName)
 {
     $status = false;
-    // $userAccess = UserAccess::where('user_id', Auth::user()->id)->first();
-    if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'admin') {
+    $user = Auth::user();
+    $userAccess = UserAccess::where('user_id', $user->id)->first();
+
+    if ($user->role == 'Superadmin' || $user->role == 'admin') {
         $status = true;
     } else {
-        if (!empty($userAccess) && $userAccess->access != NULL) {
-            $access = json_decode($userAccess->access, true);
-            if (in_array($accessName, $access)) {
+        if (!empty($userAccess) && !empty($userAccess->access)) {
+            $access = json_decode(json_decode($userAccess->access, true), true);
+            if (is_array($access) && in_array($accessName, $access)) {
                 $status = true;
-            } else {
-                $status = false;
             }
-        } else {
-            $status = false;
         }
     }
 
@@ -162,7 +161,7 @@ function checkAccess($accessName)
 }
 
 // user action
-function userAction($action)
+function buttonAction($action)
 {
     $status = false;
     if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'admin') {
@@ -171,8 +170,6 @@ function userAction($action)
         $actionbtn = explode(",", Auth::user()->action);
         if (in_array($action, $actionbtn)) {
             $status = true;
-        } else {
-            $status = false;
         }
     }
 

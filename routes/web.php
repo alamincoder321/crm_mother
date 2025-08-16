@@ -64,6 +64,11 @@ Route::post('/user', [UserController::class, 'store'])->name('user.store');
 Route::post('/update-user', [UserController::class, 'update'])->name('user.update');
 Route::post('/delete-user', [UserController::class, 'destroy'])->name('user.delete');
 
+// user access route
+Route::get('/userAccess/{id}', [UserController::class, 'userAccess'])->name('userAccess.create');
+Route::post('/get-userAccess', [UserController::class, 'getUserAccess'])->name('userAccess.index');
+Route::post('/save-userAccess', [UserController::class, 'saveUserAccess'])->name('userAccess.index');
+
 // unit route
 Route::get('/unit', [UnitController::class, 'create'])->name('unit.create');
 Route::post('/get-unit', [UnitController::class, 'index'])->name('unit.index');

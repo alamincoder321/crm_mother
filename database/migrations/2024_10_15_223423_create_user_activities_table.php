@@ -15,15 +15,14 @@ class CreateUserActivitiesTable extends Migration
     {
         Schema::create('user_activities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users', 'id');
-            $table->ipAddress('ipAddress');
-            $table->text('page_name')->nullable();
-            $table->dateTime('loginTime');
-            $table->dateTime('logoutTime')->nullable();
-            $table->char('status', 1)->default('a');
-            $table->timestamps();
-            $table->foreignId('deleted_by')->nullable()->constrained('users', 'id');
+            $table->unsignedBigInteger('user_id');
+            $table->longText('access')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users', 'id');
+            $table->dateTime('created_at')->useCurrent()->nullable();
+            $table->foreignId('updated_by')->nullable()->constrained('users', 'id');
+            $table->dateTime('updated_at')->nullable();
             $table->softDeletes();
+            $table->ipAddress('ipAddress');
             $table->foreignId('branch_id')->constrained('branches', 'id');
         });
     }

@@ -8,7 +8,7 @@
         <div class="card mb-0">
             <div class="card-body">
                 <h5 class="card-title">User Entry Form</h5>
-                <form @submit.prevent="saveData($event)">
+                <form @submit.prevent="{{ buttonAction('entry') || buttonAction('update') ? 'saveData($event)' : null }}">
                     <div class="row">
                         <div class="col-12 col-md-5">
                             <div class="mb-1 row">
@@ -35,10 +35,11 @@
                                 <label class="form-label col-4 col-md-3" for="role">Role:</label>
                                 <div class="col-8 col-md-9">
                                     <select class="form-select" id="role" name="role" v-model="user.role">
-                                        <option value="">Select Role</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="manager">Manager</option>
-                                        <option value="user">User</option>
+                                        <option value="" v-if="user.role != 'Superadmin'">Select Role</option>
+                                        <option value="Superadmin" v-if="user.role == 'Superadmin'">Super Admin</option>
+                                        <option value="admin" v-if="user.role != 'Superadmin'">Admin</option>
+                                        <option value="manager" v-if="user.role != 'Superadmin'">Manager</option>
+                                        <option value="user" v-if="user.role != 'Superadmin'">User</option>
                                     </select>
                                 </div>
                             </div>
@@ -64,11 +65,13 @@
                                     </label>
                                 </div>
                                 <div class="col-md-6 col-12 text-end">
+                                    @if(buttonAction('entry') || buttonAction('update'))
                                     <button class="btn btn-danger" type="button">Reset</button>
                                     <button class="btn btn-primary" type="submit" :disabled="onProgress">
                                         <span v-if="user.id == ''">Save</span>
                                         <span v-if="user.id != ''">Update</span>
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -93,12 +96,19 @@
             }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
             <template #table-row="props">
                 <span class="d-flex gap-2 justify-content-end" v-if="props.column.field == 'before'">
+                    <a v-if="props.row.role == 'user' || props.row.role == 'manager'" :href="`/userAccess/${props.row.id}`" target="_blank" title="User Access">
+                        <i class="bi bi-people text-warning" style="font-size: 14px;"></i>
+                    </a>
+                    @if(buttonAction('update'))
                     <a href="" title="edit" @click.prevent="editData(props.row)">
                         <i class="bi bi-pen text-info" style="font-size: 14px;"></i>
                     </a>
-                    <a href="" title="delete" @click.prevent="deleteData(props.row.id)">
+                    @endif
+                    @if(buttonAction('delete'))
+                    <a v-if="props.row.role != 'Superadmin'" href="" title="delete" @click.prevent="deleteData(props.row.id)">
                         <i class="bi bi-trash text-danger" style="font-size: 14px;"></i>
                     </a>
+                    @endif
                 </span>
             </template>
         </vue-good-table>
