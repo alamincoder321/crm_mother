@@ -13,13 +13,14 @@
 </head>
 
 <body>
+    <h2 class="m-0" style="color: #fff;">Online ERP Software</h2>
     <div class="container">
         <div class="cover">
             <div class="front">
-                <img src="{{asset('auth')}}/images/login.webp" alt="">
+                <img src="{{asset('auth')}}/images/login.jpg" alt="">
                 <div class="text">
-                    <span class="text-1">Every new friend is a <br> new adventure</span>
-                    <span class="text-2">Let's get connected</span>
+                    <!-- <span class="text-1">Every new friend is a <br> new adventure</span> -->
+                    <span class="text-2">Design & Develop By <a target="_blank" href="https://bdsofttechnology.com/">BD Soft Technology</a></span>
                 </div>
             </div>
         </div>

@@ -1257,3 +1257,8 @@ h6 {
 iframe {
   display: none;
 }
+
+.active {
+    color: #fff !important;
+    background: #b3e6ff6b !important;
+}

@@ -89,7 +89,7 @@
             <nav class="d-flex justify-content-between">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item active">@yield('breadcrumb')</li>
+                    <li class="breadcrumb-item">@yield('breadcrumb')</li>
                 </ol>
                 <ol class="breadcrumb d-none d-md-block" style="margin-top: -16px; display: block; text-align: center; border: 4px solid #c1c1c1; border-bottom-left-radius: 40px;border-bottom-right-radius: 40px; margin-bottom: 0; padding-left: 15px; padding-right: 15px; padding-top: 2px;">
                     <li>
