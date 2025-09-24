@@ -78,6 +78,9 @@ class QuotationController extends Controller
 
     public function create($id = "")
     {
+        if (!checkAccess('quotation')) {
+            return view('error.403');
+        }
         $data['id'] = $id;
         $data['invoice'] = invoiceGenerate('Quotation', '', $this->branchId);
         return view('pages.quotation.create', $data);
@@ -251,6 +254,9 @@ class QuotationController extends Controller
 
     public function quotationRecord()
     {
+        if (!checkAccess('quotationRecord')) {
+            return view('error.403');
+        }
         return view("pages.quotation.index");
     }
 }

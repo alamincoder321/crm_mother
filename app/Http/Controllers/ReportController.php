@@ -22,6 +22,9 @@ class ReportController extends Controller
 
     public function profitLoss()
     {
+        if (!checkAccess('profitLost')) {
+            return view('error.403');
+        }
         return view('pages.report.profitloss');
     }
 

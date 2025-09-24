@@ -57,11 +57,17 @@ class SalaryController extends Controller
 
     public function create()
     {
+        if (!checkAccess('salary')) {
+            return view('error.403');
+        }
         return view('pages.hr.salary');
     }
 
     public function salaryList()
     {
+        if (!checkAccess('salaryList')) {
+            return view('error.403');
+        }
         return view('pages.hr.salaryList');
     }
 

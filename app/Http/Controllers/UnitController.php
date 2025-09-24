@@ -31,6 +31,9 @@ class UnitController extends Controller
 
     public function create()
     {
+        if (!checkAccess('unit')) {
+            return view('error.403');
+        }
         return view('pages.control.unit');
     }
 

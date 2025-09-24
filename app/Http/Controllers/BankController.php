@@ -37,6 +37,9 @@ class BankController extends Controller
 
     public function create()
     {
+        if (!checkAccess('bank')) {
+            return view('error.403');
+        }
         return view('pages.account.bank');
     }
 
@@ -134,6 +137,9 @@ class BankController extends Controller
 
     public function bankLedger()
     {
+        if (!checkAccess('bankLedger')) {
+            return view('error.403');
+        }
         return view('pages.report.bankLedger');
     }
 

@@ -60,11 +60,17 @@ class ProductController extends Controller
 
     public function create()
     {
+        if (!checkAccess('product')) {
+            return view('error.403');
+        }
         return view('pages.control.product.create');
     }
 
     public function productList()
     {
+        if (!checkAccess('productList')) {
+            return view('error.403');
+        }
         return view('pages.control.product.index');
     }
 

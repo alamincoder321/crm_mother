@@ -97,6 +97,9 @@ class SaleController extends Controller
 
     public function create($id = "")
     {
+        if (!checkAccess('sale')) {
+            return view('error.403');
+        }
         $data['id'] = $id;
         $data['invoice'] = invoiceGenerate('Sale', '', $this->branchId);
         if (Session::get('sale_page') == '3') {
@@ -356,9 +359,12 @@ class SaleController extends Controller
 
     public function saleRecord()
     {
+        if (!checkAccess('saleRecord')) {
+            return view('error.403');
+        }
         return view("pages.sale.index");
     }
-    
+
     public function saleInvoice($id)
     {
         return view("pages.sale.saleInvoice", compact('id'));

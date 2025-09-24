@@ -31,6 +31,9 @@ class BrandController extends Controller
 
     public function create()
     {
+        if (!checkAccess('brand')) {
+            return view('error.403');
+        }
         return view('pages.control.brand');
     }
 

@@ -31,6 +31,9 @@ class CategoryController extends Controller
 
     public function create()
     {
+        if (!checkAccess('category')) {
+            return view('error.403');
+        }
         return view('pages.control.category');
     }
 

@@ -33,6 +33,9 @@ class DesignationtController extends Controller
 
     public function create()
     {
+        if (!checkAccess('designation')) {
+            return view('error.403');
+        }
         return view('pages.hr.designation');
     }
 

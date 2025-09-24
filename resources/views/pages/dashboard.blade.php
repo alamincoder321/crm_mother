@@ -200,7 +200,8 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                @if(checkAccess('sale'))
+                <a href="/sale">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-cart-dash"></i>
@@ -208,9 +209,11 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                @if(checkAccess('saleRecord'))
+                <a href="/sale-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-text"></i>
@@ -218,8 +221,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('saleReturn'))
                 <a href="/sale-return">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -228,8 +233,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('saleReturnRecord'))
                 <a href="/sale-return-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -238,9 +245,11 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                @if(checkAccess('quotation'))
+                <a href="/quotation">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-plus"></i>
@@ -248,9 +257,11 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                @if(checkAccess('quotationRecord'))
+                <a href="/quotation-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-text"></i>
@@ -258,8 +269,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('stock'))
                 <a href="/stock">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -268,6 +281,7 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -283,7 +297,8 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                @if(checkAccess('purchase'))
+                <a href="/purchase">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-cart-plus"></i>
@@ -291,9 +306,11 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
-                <a href="">
+                @if(checkAccess('purchaseRecord'))
+                <a href="/purchase-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
                             <i class="bi bi-file-text"></i>
@@ -301,8 +318,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('purchaseReturn'))
                 <a href="/purchase-return">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -311,8 +330,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('purchaseReturnRecord'))
                 <a href="/purchase-return-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -321,8 +342,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('damage'))
                 <a href="/damage">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -331,8 +354,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('damageRecord'))
                 <a href="/damage-record">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -341,6 +366,7 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -356,6 +382,7 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('expense'))
                 <a href="/expense">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -364,8 +391,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('income'))
                 <a href="/income">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -374,8 +403,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('receive'))
                 <a href="/receive">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -384,8 +415,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('payment'))
                 <a href="/payment">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -394,8 +427,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('bankTransaction'))
                 <a href="/bankTransaction">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -404,8 +439,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('bankTransactionRecord'))
                 <a href="">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -414,8 +451,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('accounthead'))
                 <a href="/accounthead">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -424,8 +463,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('bank'))
                 <a href="/bank">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -434,6 +475,7 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -449,6 +491,7 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('profitLoss'))
                 <a href="/profitLoss">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -457,8 +500,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('cashLedger'))
                 <a href="/cashLedger">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -467,8 +512,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('bankLedger'))
                 <a href="/bankLedger">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -477,8 +524,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('supplierDue'))
                 <a href="/supplierDue">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -487,8 +536,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('supplierLedger'))
                 <a href="/supplierLedger">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -497,8 +548,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('customerDue'))
                 <a href="/customerDue">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -507,8 +560,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('customerLedger'))
                 <a href="/customerLedger">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -517,6 +572,7 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -532,6 +588,7 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('salary'))
                 <a href="/salary">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -540,8 +597,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('salaryList'))
                 <a href="/salaryList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -550,8 +609,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('employee'))
                 <a href="/employee">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -560,8 +621,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('employeeList'))
                 <a href="/employeeList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -570,8 +633,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('department'))
                 <a href="/department">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -580,8 +645,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('designation'))
                 <a href="/designation">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -590,6 +657,7 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -605,6 +673,7 @@ $panel = session('panel');
                 </div>
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('product'))
                 <a href="/product">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -613,8 +682,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('productList'))
                 <a href="/productList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -623,8 +694,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('supplier'))
                 <a href="/supplier">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -633,8 +706,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('supplierList'))
                 <a href="/supplierList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -643,8 +718,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('customer'))
                 <a href="/customer">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -653,8 +730,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('customerList'))
                 <a href="/customerList">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -663,8 +742,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('area'))
                 <a href="/area">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -673,8 +754,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('unit'))
                 <a href="/unit">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -683,8 +766,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('category'))
                 <a href="/category">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -693,8 +778,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('brand'))
                 <a href="/brand">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -703,8 +790,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('user'))
                 <a href="/user">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -713,8 +802,10 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
             <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('companyProfile'))
                 <a href="/companyProfile">
                     <div class="card mb-0 displayFlex">
                         <div class="card-body p-3">
@@ -723,6 +814,7 @@ $panel = session('panel');
                         </div>
                     </div>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -791,13 +883,13 @@ $panel = session('panel');
                 axios.post("/get-top-business-info", {})
                     .then(response => {
                         const data = response.data;
-                        
+
                         let monthlySale = data.monthlySaleData;
                         monthlySale.forEach(sale => {
                             this.chartOptions.xaxis.categories.push(sale.date);
                             this.series[0].data.push(sale.total);
                         });
-                        
+
                         let topProducts = data.topProducts;
                         topProducts.forEach(product => {
                             this.pieseries.push(product.total_quantity);

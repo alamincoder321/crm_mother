@@ -54,11 +54,17 @@ class SupplierController extends Controller
 
     public function create()
     {
+        if (!checkAccess('supplier')) {
+            return view('error.403');
+        }
         return view('pages.control.supplier.create');
     }
 
     public function supplierList()
     {
+        if (!checkAccess('supplierList')) {
+            return view('error.403');
+        }
         return view('pages.control.supplier.index');
     }
 
@@ -167,6 +173,9 @@ class SupplierController extends Controller
     // supplier due
     public function supplierDue()
     {
+        if (!checkAccess('supplierDue')) {
+            return view('error.403');
+        }
         return view('pages.report.supplierDue');
     }
 
@@ -179,6 +188,9 @@ class SupplierController extends Controller
 
     public function supplierLedger()
     {
+        if (!checkAccess('supplierLedger')) {
+            return view('error.403');
+        }
         return view('pages.report.supplierLedger');
     }
 

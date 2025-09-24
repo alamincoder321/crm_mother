@@ -36,6 +36,9 @@ class AccountHeadController extends Controller
 
     public function create()
     {
+        if (!checkAccess('accounthead')) {
+            return view('error.403');
+        }
         return view('pages.account.accounthead');
     }
 
@@ -129,6 +132,9 @@ class AccountHeadController extends Controller
 
     public function cashLedger()
     {
+        if (!checkAccess('cashLedger')) {
+            return view('error.403');
+        }
         return view('pages.report.cashLedger');
     }
 

@@ -51,11 +51,17 @@ class EmployeeController extends Controller
 
     public function create()
     {
+        if (!checkAccess('employee')) {
+            return view('error.403');
+        }
         return view('pages.hr.employee.create');
     }
 
     public function employeeList()
     {
+        if (!checkAccess('employeeList')) {
+            return view('error.403');
+        }
         return view('pages.hr.employee.index');
     }
 

@@ -33,6 +33,9 @@ class DepartmentController extends Controller
 
     public function create()
     {
+        if (!checkAccess('department')) {
+            return view('error.403');
+        }
         return view('pages.hr.department');
     }
 

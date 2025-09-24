@@ -43,6 +43,9 @@ class BankTransactionController extends Controller
 
     public function create()
     {
+        if (!checkAccess('bankTransaction')) {
+            return view('error.403');
+        }
         return view('pages.account.bankTransaction');
     }
 

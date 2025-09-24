@@ -49,6 +49,9 @@ class ReceiveController extends Controller
 
     public function create()
     {
+        if (!checkAccess('receive')) {
+            return view('error.403');
+        }
         return view('pages.account.receive');
     }
 

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class SaleReturnController extends Controller
 {
-protected $userId;
+    protected $userId;
     protected $branchId;
     public function __construct()
     {
@@ -90,6 +90,9 @@ protected $userId;
 
     public function create()
     {
+        if (!checkAccess('saleReturn')) {
+            return view('error.403');
+        }
         return view('pages.sale.saleReturn');
     }
 
@@ -164,6 +167,9 @@ protected $userId;
 
     public function saleReturnRecord()
     {
+        if (!checkAccess('saleReturnRecord')) {
+            return view('error.403');
+        }
         return view("pages.sale.saleReturnRecord");
     }
 }

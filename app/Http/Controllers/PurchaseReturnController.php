@@ -90,6 +90,9 @@ class PurchaseReturnController extends Controller
 
     public function create()
     {
+        if (!checkAccess('purchaseReturn')) {
+            return view('error.403');
+        }
         return view('pages.purchase.purchaseReturn');
     }
 
@@ -171,6 +174,9 @@ class PurchaseReturnController extends Controller
 
     public function purchaseReturnRecord()
     {
+        if (!checkAccess('purchaseReturnRecord')) {
+            return view('error.403');
+        }
         return view("pages.purchase.purchaseReturnRecord");
     }
 }

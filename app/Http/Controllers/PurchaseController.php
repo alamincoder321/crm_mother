@@ -79,6 +79,9 @@ class PurchaseController extends Controller
 
     public function create($id = "")
     {
+        if (!checkAccess('purchase')) {
+            return view('error.403');
+        }
         $data['id'] = $id;
         $data['invoice'] = invoiceGenerate('Purchase', '', $this->branchId);
         return view('pages.purchase.create', $data);
@@ -284,6 +287,9 @@ class PurchaseController extends Controller
 
     public function purchaseRecord()
     {
+        if (!checkAccess('purchaseRecord')) {
+            return view('error.403');
+        }
         return view("pages.purchase.index");
     }
 

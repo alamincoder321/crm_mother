@@ -79,6 +79,9 @@ class DamageController extends Controller
 
     public function create($id = "")
     {
+        if (!checkAccess('damage')) {
+            return view('error.403');
+        }
         $data['id'] = $id;
         $data['invoice'] = invoiceGenerate('Damage', '', $this->branchId);
         return view('pages.damage.create', $data);
@@ -244,6 +247,9 @@ class DamageController extends Controller
 
     public function damageRecord()
     {
+        if (!checkAccess('damageRecord')) {
+            return view('error.403');
+        }
         return view("pages.damage.index");
     }
 }

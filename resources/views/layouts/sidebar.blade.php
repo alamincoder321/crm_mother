@@ -53,13 +53,14 @@ $panel = session('panel');
                 <span>Control Panel</span>
             </a>
         </li>
-
+        @if(checkAccess('businessInfo'))
         <li class="nav-item">
             <a class="nav-link" href="/business-info">
                 <i class="bi bi-graph-up-arrow"></i>
                 <span>Business Info</span>
             </a>
         </li>
+        @endif
 
         @elseif($panel == 'SalePanel')
         <li class="nav-item">
@@ -533,7 +534,7 @@ $panel = session('panel');
             </a>
         </li>
         @endif
-    @endif
+        @endif
     </ul>
 
 </aside>

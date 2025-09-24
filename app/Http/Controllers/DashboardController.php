@@ -49,6 +49,9 @@ class DashboardController extends Controller
 
     public function businessInfo()
     {
+        if (!checkAccess('businessInfo')) {
+            return view('error.403');
+        }
         $data['cashBalance'] = AccountHead::getCashBalance((object)[], date('Y-m-d'));
         $bankAccounts = Bank::getBankBalance((object)[], date('Y-m-d'));
         $data['bankBalance'] = collect($bankAccounts)->reduce(function ($pre, $cur) {

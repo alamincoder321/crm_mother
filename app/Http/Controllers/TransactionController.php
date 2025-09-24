@@ -43,11 +43,17 @@ class TransactionController extends Controller
 
     public function expense()
     {
+        if (!checkAccess('expense')) {
+            return view('error.403');
+        }
         return view('pages.account.expense');
     }
 
     public function income()
     {
+        if (!checkAccess('income')) {
+            return view('error.403');
+        }
         return view('pages.account.income');
     }
 

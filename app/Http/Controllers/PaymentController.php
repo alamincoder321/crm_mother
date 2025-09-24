@@ -49,6 +49,9 @@ class PaymentController extends Controller
 
     public function create()
     {
+        if (!checkAccess('payment')) {
+            return view('error.403');
+        }
         return view('pages.account.payment');
     }
 

@@ -56,11 +56,17 @@ class CustomerController extends Controller
 
     public function create()
     {
+        if (!checkAccess('customer')) {
+            return view('error.403');
+        }
         return view('pages.control.customer.create');
     }
 
     public function customerList()
     {
+        if (!checkAccess('customerList')) {
+            return view('error.403');
+        }
         return view('pages.control.customer.index');
     }
 
@@ -169,6 +175,9 @@ class CustomerController extends Controller
     // customer due
     public function customerDue()
     {
+        if (!checkAccess('customerDue')) {
+            return view('error.403');
+        }
         return view('pages.report.customerDue');
     }
 
@@ -181,6 +190,9 @@ class CustomerController extends Controller
 
     public function customerLedger()
     {
+        if (!checkAccess('customerLedger')) {
+            return view('error.403');
+        }
         return view('pages.report.customerLedger');
     }
 
