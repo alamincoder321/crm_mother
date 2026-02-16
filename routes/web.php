@@ -59,6 +59,7 @@ Route::match(['get', 'post'], 'get-top-business-info', [DashboardController::cla
 
 // user route
 Route::get('/user', [UserController::class, 'create'])->name('user.create');
+Route::get('/user-profile', [UserController::class, 'profile'])->name('user.profile');
 Route::post('/get-user', [UserController::class, 'index'])->name('user.index');
 Route::post('/user', [UserController::class, 'store'])->name('user.store');
 Route::post('/update-user', [UserController::class, 'update'])->name('user.update');
@@ -124,6 +125,7 @@ Route::post('/get-customer-ledger', [CustomerController::class, 'getCustomerLedg
 // product route
 Route::get('/product', [ProductController::class, 'create'])->name('product.create');
 Route::get('/productList', [ProductController::class, 'productList'])->name('product.list');
+Route::get('/barcode/{id}', [ProductController::class, 'barcode'])->name('product.barcode');
 Route::match(['get', 'post'], '/get-product', [ProductController::class, 'index'])->name('product.index');
 Route::post('/product', [ProductController::class, 'store'])->name('product.store');
 Route::post('/update-product', [ProductController::class, 'update'])->name('product.update');

@@ -74,6 +74,22 @@ class ProductController extends Controller
         return view('pages.control.product.index');
     }
 
+    // barcode
+    public function barcode($id)
+    {
+        if (!checkAccess('barcode')) {
+            return view('error.unauthorize');
+        }
+
+        $product = Product::where('id', $id)->where('branch_id', $this->branchId)->first();
+        if (empty($product)) {
+            return redirect()->route('product.create');
+        }
+
+        DB::disconnect('mysql');
+        return view('pages.control.product.barcode', compact('product'));
+    }
+
 
     public function store(Request $request)
     {

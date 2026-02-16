@@ -40,6 +40,10 @@ class UserController extends Controller
         return view('pages.control.user.create');
     }
 
+    public function profile()
+    {
+        return view('pages.control.user.profile');
+    }
 
     public function store(Request $request)
     {

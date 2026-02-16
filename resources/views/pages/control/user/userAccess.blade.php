@@ -582,6 +582,18 @@
                 } else {
                     this.useraccess = this.useraccess.filter(val => !values.includes(val));
                 }
+                this.$nextTick(() => {
+                    const groupCheckboxes = Array.from(document.querySelectorAll(`tr.${group} input[type="checkbox"]`))
+                        .filter(cb => !['entry', 'update', 'delete'].includes(cb.id));
+                    groupCheckboxes.forEach(cb => {
+                        cb.checked = this.useraccess.includes(cb.value);
+                    });
+                    const groupCheckbox = document.getElementById(group);
+                    groupCheckbox.checked = groupCheckboxes.every(cb => cb.checked);
+                    const allCheckboxes = Array.from(document.querySelectorAll('input[type="checkbox"]:not(#checkAll)'))
+                        .filter(cb => !['entry', 'update', 'delete'].includes(cb.id));
+                    document.getElementById('checkAll').checked = allCheckboxes.every(cb => cb.checked);
+                });
             },
             checkAll(event) {
                 const checked = event.target.checked;

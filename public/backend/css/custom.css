@@ -177,6 +177,16 @@
     padding: 0 !important;
 }
 
+.v-select .vs__selected-options {
+    display: flex;
+    flex-basis: 100%;
+    flex-grow: 1;
+    flex-wrap: nowrap !important;
+    padding: 0 2px;
+    position: relative;
+    overflow: hidden !important;
+}
+
 .v-select input[type=search],
 .v-select input[type=search]:focus {
     font-size: 13px !important;
@@ -196,8 +206,12 @@
 }
 
 .v-select .selected-tag {
+    display: inline-block !important;
     margin: 0px 2px 0 !important;
     font-size: 13px;
+    line-height: 1.7 !important;
+    white-space: nowrap !important;    
+    padding: 0 !important;
 }
 
 .v-select li>a {
@@ -222,15 +236,6 @@
 
 .v-select .vs__actions {
     padding: 0 0px 0 3px !important;
-}
-
-.v-select .vs__selected-options {
-    padding: 0 !important;
-}
-
-.v-select .vs__selected-options {
-    overflow: hidden;
-    margin-top: 2px;
 }
 
 

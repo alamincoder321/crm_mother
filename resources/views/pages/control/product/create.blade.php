@@ -131,6 +131,9 @@
             }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" :row-style-class="rowStyleClass" max-height="550px">
             <template #table-row="props">
                 <span class="d-flex gap-2 justify-content-end" v-if="props.column.field == 'before'">
+                    <a :href="`/barcode/${props.row.id}`" title="barcode">
+                        <i class="bi bi-upc text-warning" style="font-size: 18px;"></i>
+                    </a>
                     <a href="" title="edit" @click.prevent="editData(props.row)">
                         <i class="bi bi-pen text-info" style="font-size: 14px;"></i>
                     </a>

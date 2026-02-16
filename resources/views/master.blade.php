@@ -22,7 +22,7 @@
 
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
-                <li class="nav-item dropdown">
+                <!-- <li class="nav-item dropdown">
                     <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                         <i class="bi bi-chat-left-text"></i>
                         <span class="badge bg-light text-black badge-number">3</span>
@@ -38,7 +38,7 @@
                         </li>
                     </ul>
 
-                </li>
+                </li> -->
 
                 <li class="nav-item dropdown pe-3">
 
@@ -57,7 +57,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="">
+                            <a class="dropdown-item d-flex align-items-center" href="/user-profile">
                                 <i class="bi bi-person"></i>
                                 <span>My Profile</span>
                             </a>
