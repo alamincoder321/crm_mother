@@ -26,14 +26,6 @@ class DatabaseSeeder extends Seeder
                 'phone' => '017########',
                 'created_by' => 1,
                 'ipAddress' => request()->ip()
-            ],
-            [
-                'code' => 'B00002',
-                'name' => 'Second Branch',
-                'title' => 'Second Branch',
-                'phone' => '017########',
-                'created_by' => 1,
-                'ipAddress' => request()->ip()
             ]
         ]);
 
@@ -47,17 +39,6 @@ class DatabaseSeeder extends Seeder
                 'phone' => '019########',
                 'role' => 'Superadmin',
                 'branch_id' => 1,
-                'ipAddress' => request()->ip()
-            ],
-            [
-                'code' => 'U00002',
-                'name' => 'Al Amin Islam',
-                'username' => 'alamin',
-                'email' => 'alamin@gmail.com',
-                'password' => Hash::make(1),
-                'phone' => '017########',
-                'role' => 'admin',
-                'branch_id' => 2,
                 'ipAddress' => request()->ip()
             ]
         ]);

@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\AccountHead;
 use App\Models\Bank;
 use App\Models\Branch;
-use Illuminate\Http\Request;
 use App\Models\CompanyProfile;
 use App\Models\Customer;
+use App\Models\InvestAccount;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Supplier;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -102,6 +103,7 @@ class DashboardController extends Controller
         $data['customerDue'] = collect(Customer::customerDue([]))->sum('due');
         $data['supplierDue'] = collect(Supplier::supplierDue([]))->sum('due');
         $data['stockBalance'] = collect(Product::stock([]))->sum('stock_value');
+        $data['investBalance'] = collect(InvestAccount::getInvestBalance([]))->sum('balance');
         $data['expense'] = Transaction::where('branch_id', $this->branchId)
             ->where('type', 'expense')
             ->where('status', 'a')

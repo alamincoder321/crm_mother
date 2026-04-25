@@ -274,6 +274,33 @@ $panel = session('panel');
         </li>
         @endif
 
+        @if(checkAccess('investTransaction'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('invest-transaction') ? 'active' : ''}}" href="/invest-transaction">
+                <i class="bi bi-plus-circle"></i>
+                <span>InvestTransaction</span>
+            </a>
+        </li>
+        @endif
+        
+        @if(checkAccess('investTransactionList'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('invest-transaction-list') ? 'active' : ''}}" href="/invest-transaction-list">
+                <i class="bi bi-list"></i>
+                <span>InvestTransaction List</span>
+            </a>
+        </li>
+        @endif
+
+        @if(checkAccess('invest'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('invest') ? 'active' : ''}}" href="/invest">
+                <i class="bi bi-plus-circle"></i>
+                <span>InvestAccount Entry</span>
+            </a>
+        </li>
+        @endif
+
         @elseif($panel == 'ReportPanel')
         <li class="nav-item">
             <a class="nav-link" href="/">

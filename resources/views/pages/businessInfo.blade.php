@@ -220,7 +220,7 @@
                         </div>
                         <div class="w-75">
                             <strong class="m-0">Investment</strong>
-                            <p class="m-0">@{{0 | formatCurrency}}</p>
+                            <p class="m-0">@{{investBalance | formatCurrency}}</p>
                         </div>
                     </div>
                 </div>
@@ -319,6 +319,7 @@
                 income: 0,
                 monthlyProfitLoss: 0,
                 yearlyProfitLoss: 0,
+                investBalance: 0,
             }
         },
         filters: {
@@ -354,6 +355,7 @@
                         this.income = data.income;
                         this.monthlyProfitLoss = data.monthlyProfitLoss;
                         this.yearlyProfitLoss = data.yearlyProfitLoss;
+                        this.investBalance = data.investBalance;
                     })
             },
             getTopBusinessInfo() {

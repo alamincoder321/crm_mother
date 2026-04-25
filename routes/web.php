@@ -1,33 +1,35 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AccountHeadController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankController;
-use App\Http\Controllers\UnitController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\BrandController;
-use App\Http\Controllers\SalaryController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ReceiveController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\AccountHeadController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\DesignationtController;
-use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\DamageController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationtController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\InvestController;
+use App\Http\Controllers\InvestTransactionController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\ReceiveController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleReturnController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
 Route::fallback(function () {
@@ -221,6 +223,22 @@ Route::match(['get', 'post'], '/get-payment', [PaymentController::class, 'index'
 Route::post('/payment', [PaymentController::class, 'store'])->name('payment.store');
 Route::post('/update-payment', [PaymentController::class, 'update'])->name('payment.update');
 Route::post('/delete-payment', [PaymentController::class, 'destroy'])->name('payment.delete');
+
+// ================================ Investment Panel Route =================================
+// invest route
+Route::get('/invest', [InvestController::class, 'create'])->name('invest.create');
+Route::match(['get', 'post'], '/get-invest', [InvestController::class, 'index'])->name('invest.index');
+Route::post('/invest', [InvestController::class, 'store'])->name('invest.store');
+Route::post('/update-invest', [InvestController::class, 'update'])->name('invest.update');
+Route::post('/delete-invest', [InvestController::class, 'destroy'])->name('invest.delete');
+
+// invest transaction route
+Route::get('/invest-transaction', [InvestTransactionController::class, 'create'])->name('invest.transaction.create');
+Route::get('/invest-transaction-list', [InvestTransactionController::class, 'list'])->name('invest.transaction.list');
+Route::match(['get', 'post'], '/get-invest-transaction', [InvestTransactionController::class, 'index'])->name('invest.transaction.index');
+Route::post('/invest-transaction', [InvestTransactionController::class, 'store'])->name('invest.transaction.store');
+Route::post('/update-invest-transaction', [InvestTransactionController::class, 'update'])->name('invest.transaction.update');
+Route::post('/delete-invest-transaction', [InvestTransactionController::class, 'destroy'])->name('invest.transaction.delete');
 
 // ============================= Purchase Panel Route ==============================
 // purchase route

@@ -241,10 +241,24 @@ class AccountHeadController extends Controller
                 and inc.type = 'income'
                 " . ($branchId == null ? "" : " and inc.branch_id = '$branchId'") . "
 
-                /*================= Out Amount =======================*/
                 UNION
                 select
                 'h' as sequence,
+                it.id,
+                it.date,
+                concat('Investment Deposit - ', ia.name) as description,
+                it.amount as in_amount,
+                0 as out_amount,
+                0 as balance
+                from invest_transactions it
+                left join invest_accounts ia on ia.id = it.invest_account_id
+                where it.status = 'a'
+                " . ($branchId == null ? "" : " and it.branch_id = '$branchId'") . "
+
+                /*================= Out Amount =======================*/
+                UNION
+                select
+                'i' as sequence,
                 pm.id,
                 pm.date,
                 concat('Purchase Invoice - ', pm.invoice) as description,
@@ -257,7 +271,7 @@ class AccountHeadController extends Controller
 
                 UNION
                 select
-                'i' as sequence,
+                'j' as sequence,
                 spp.id,
                 spp.date,
                 concat('Supplier Payment - ', spp.invoice) as description,
@@ -272,7 +286,7 @@ class AccountHeadController extends Controller
                 
                 UNION
                 select
-                'j' as sequence,
+                'k' as sequence,
                 bt.id,
                 bt.date,
                 concat('Bank Deposit - ', bt.invoice) as description,
@@ -286,7 +300,7 @@ class AccountHeadController extends Controller
 
                 UNION
                 select
-                'k' as sequence,
+                'l' as sequence,
                 cpp.id,
                 cpp.date,
                 concat('Customer Payment - ', cpp.invoice) as description,
@@ -300,7 +314,7 @@ class AccountHeadController extends Controller
 
                 UNION
                 select
-                'l' as sequence,
+                'm' as sequence,
                 exp.id,
                 exp.date,
                 concat('Expense Invoice - ', exp.invoice) as description,
@@ -314,7 +328,7 @@ class AccountHeadController extends Controller
                 
                 UNION
                 select
-                'm' as sequence,
+                'n' as sequence,
                 emp.id,
                 emp.date,
                 concat('Employee Payment - ', emp.invoice) as description,
@@ -327,7 +341,7 @@ class AccountHeadController extends Controller
                 
                 UNION
                 select
-                'n' as sequence,
+                'o' as sequence,
                 sr.id,
                 sr.date,
                 concat('Sale Return - ', sr.invoice) as description,
@@ -338,6 +352,21 @@ class AccountHeadController extends Controller
                 where sr.status = 'a'
                 and sr.customer_id is null
                 " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . "
+
+                UNION
+                select
+                'p' as sequence,
+                it.id,
+                it.date,
+                concat('Investment Withdrawal - ', ia.name) as description,
+                0 as in_amount,
+                it.amount as out_amount,
+                0 as balance
+                from invest_transactions it
+                left join invest_accounts ia on ia.id = it.invest_account_id
+                where it.status = 'a'
+                and it.type = 'withdraw'
+                " . ($branchId == null ? "" : " and it.branch_id = '$branchId'") . "
                 
                 order by date, sequence, id asc";
 

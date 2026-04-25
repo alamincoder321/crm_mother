@@ -307,6 +307,30 @@
                         </label>
                     </td>
                 </tr>
+                <tr class="accounts">
+                    <td>
+                        <label for="investTransaction">
+                            <input type="checkbox" id="investTransaction" value="investTransaction" v-model="useraccess" />
+                            <span>InvestTransaction</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="accounts">
+                    <td>
+                        <label for="investTransactionList">
+                            <input type="checkbox" id="investTransactionList" value="investTransactionList" v-model="useraccess" />
+                            <span>InvestTransaction List</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="accounts">
+                    <td>
+                        <label for="invest">
+                            <input type="checkbox" id="invest" value="invest" v-model="useraccess" />
+                            <span>InvestAccount Entry</span>
+                        </label>
+                    </td>
+                </tr>
             </table>
         </div>
         <div class="col-12 col-md-3">

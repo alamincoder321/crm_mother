@@ -80,6 +80,12 @@ class AccountHead extends Model
                 and dm.supplier_id is null
                 " . ($date == null ? "" : " and dm.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . ") as damage_amount,
+
+                (select ifnull(sum(it.amount), 0) from invest_transactions it
+                where it.status = 'a'
+                and it.type = 'deposit'
+                " . ($date == null ? "" : " and it.date <= '$date'") . "
+                " . ($branchId == null ? "" : " and it.branch_id = '$branchId'") . ") as investment_transaction_deposit,
                 
                 /* Payment */
                 
@@ -124,9 +130,15 @@ class AccountHead extends Model
                 and sr.customer_id is null
                 " . ($date == null ? "" : " and sr.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and sr.branch_id = '$branchId'") . ") as sale_return_amount,
+
+                (select ifnull(sum(it.amount), 0) from invest_transactions it
+                where it.status = 'a'
+                and it.type = 'withdraw'
+                " . ($date == null ? "" : " and it.date <= '$date'") . "
+                " . ($branchId == null ? "" : " and it.branch_id = '$branchId'") . ") as investment_transaction_withdraw,
                 
-                (select receive_sale + purchase_return_amount + damage_amount + receive_customer + receive_supplier + income + bank_withdraw) as total_in_amount,
-                (select purchase_paid + sale_return_amount + payment_customer + payment_supplier + expense + bank_deposit + salary_payment) as total_out_amount,
+                (select receive_sale + purchase_return_amount + damage_amount + investment_transaction_deposit + receive_customer + receive_supplier + income + bank_withdraw) as total_in_amount,
+                (select purchase_paid + sale_return_amount + payment_customer + investment_transaction_withdraw + payment_supplier + expense + bank_deposit + salary_payment) as total_out_amount,
                 (select total_in_amount - total_out_amount) as cashbalance";
 
         return DB::select($query)[0];
