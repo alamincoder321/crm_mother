@@ -42,13 +42,22 @@ class SupplierController extends Controller
             });
         }
         if (!empty($request->forSearch)) {
-            $suppliers = $suppliers->limit(50);
+            $suppliers = $suppliers->limit(50)->latest()->get();
+        } else {
+            if (!empty($request->per_page)) {
+                $suppliers = $suppliers->latest()->paginate($request->per_page ?? 20);
+            } else {
+                $suppliers = $suppliers->latest()->get();
+            }
         }
-        $suppliers = $suppliers->latest()->get()->map(function ($item) {
-            $item->type = 'regular';
-            $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
-            return $item;
-        });
+
+        if (empty($request->per_page)) {
+            $suppliers = $suppliers->map(function ($item) {
+                $item->type = 'regular';
+                $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
+                return $item;
+            });
+        }
         return response()->json($suppliers);
     }
 

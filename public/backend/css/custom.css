@@ -86,6 +86,7 @@
     .form-inline {
         display: block;
     }
+
     .form-inline .form-group {
         margin-bottom: 4px;
     }
@@ -210,7 +211,7 @@
     margin: 0px 2px 0 !important;
     font-size: 13px;
     line-height: 1.7 !important;
-    white-space: nowrap !important;    
+    white-space: nowrap !important;
     padding: 0 !important;
 }
 
@@ -271,6 +272,16 @@
 input[readonly] {
     background-color: #fafafa;
 }
+
 input[readonly]:focus {
-    background-color:#fafafa;
+    background-color: #fafafa;
+}
+
+.filterBtn {
+    border: 1px solid #c1c1c1;
+    padding: 1px 5px;
+    height: 25px;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
 }

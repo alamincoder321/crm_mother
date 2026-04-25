@@ -44,13 +44,24 @@ class CustomerController extends Controller
                     ->orWhere('code', 'like', '%' . $request->search . '%');
             });
         }
+        
         if (!empty($request->forSearch)) {
-            $customers = $customers->limit(50);
+            $customers = $customers->limit(50)->latest()->get();
+        } else {
+            if (!empty($request->per_page)) {
+                $customers = $customers->latest()->paginate($request->per_page ?? 20);
+            } else {
+                $customers = $customers->latest()->get();
+            }
         }
-        $customers = $customers->latest()->get()->map(function ($item) {
-            $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
-            return $item;
-        });
+
+        if (empty($request->per_page)) {
+            $customers = $customers->map(function ($item) {
+                $item->display_name = $item->name . ' - ' . $item->phone . ' - ' . $item->code;
+                return $item;
+            });
+        }
+
         return response()->json($customers);
     }
 

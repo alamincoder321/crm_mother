@@ -111,6 +111,16 @@ class SaleController extends Controller
         }
     }
 
+    public function pos($id = "")
+    {
+        if (!checkAccess('sale')) {
+            return view('error.403');
+        }
+        $data['id'] = $id;
+        $data['invoice'] = invoiceGenerate('Sale', '', $this->branchId);
+        return view('pages.sale.possale', $data);
+    }
+
 
     public function store(SaleRequest $request)
     {

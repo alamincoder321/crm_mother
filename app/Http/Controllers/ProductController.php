@@ -47,14 +47,25 @@ class ProductController extends Controller
                     });
             });
         }
+
         if (!empty($request->forSearch)) {
-            $products = $products->limit(50);
+            $products = $products->limit(50)->latest()->get();
+        } else {
+            if (!empty($request->per_page)) {
+                $products = $products->latest()->paginate($request->per_page ?? 20);
+            } else {
+                $products = $products->latest()->get();
+            }
         }
 
-        $products = $products->latest()->get()->map(function ($item) {
-            $item->display_name = $item->name . ' - ' . $item->category->name . ' - ' . $item->code;
-            return $item;
-        });
+        if (empty($request->per_page)) {
+            $products = $products->map(function ($item) {
+                $item->display_name = $item->name . ' - ' . $item->category->name . ' - ' . $item->code;
+                return $item;
+            });
+        }
+
+
         return response()->json($products);
     }
 
@@ -115,7 +126,7 @@ class ProductController extends Controller
                 $check->update();
             } else {
                 $data = new Product();
-                $data->code = generateCode('Supplier', 'PI');
+                $data->code = generateCode('Product', 'PI');
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;

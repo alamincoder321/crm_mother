@@ -4,8 +4,16 @@
 @section('breadcrumb', 'Product Entry')
 @push('style')
 <style>
-    .textDanger {
-        background-color: #ffc80082 !important;
+    .table>thead>tr>th {
+        text-align: center !important;
+        background-color: gray;
+        color: #fff;
+    }
+
+    tr td,
+    tr th {
+        vertical-align: middle !important;
+        text-align: center !important;
     }
 </style>
 @endpush
@@ -125,24 +133,70 @@
     </div>
 
     <div class="col-12 col-md-12 mt-1">
-        <vue-good-table :columns="columns" :rows="products" :fixed-header="false" :pagination-options="{
-                enabled: true,
-                perPage: 100,
-            }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" :row-style-class="rowStyleClass" max-height="550px">
-            <template #table-row="props">
-                <span class="d-flex gap-2 justify-content-end" v-if="props.column.field == 'before'">
-                    <a :href="`/barcode/${props.row.id}`" title="barcode">
-                        <i class="bi bi-upc text-warning" style="font-size: 18px;"></i>
-                    </a>
-                    <a href="" title="edit" @click.prevent="editData(props.row)">
-                        <i class="bi bi-pen text-info" style="font-size: 14px;"></i>
-                    </a>
-                    <a href="" title="delete" @click.prevent="deleteData(props.row.id)">
-                        <i class="bi bi-trash text-danger" style="font-size: 14px;"></i>
-                    </a>
-                </span>
-            </template>
-        </vue-good-table>
+        <!-- FILTER -->
+        <input type="text" class="form-control w-25 rounded-0 mb-1" v-model="filter" placeholder="Search..." @input="getProduct">
+        <div style="overflow-x: auto;">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Sl</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Purchase Rate</th>
+                        <th>Sale Rate</th>
+                        <th>Unit</th>
+                        <th>IsProduct</th>
+                        <th>Status</th>
+                        <th>Added_By</th>
+                        <th>Updated_By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="(row, index) in products" :key="row.id">
+                        <td>@{{ row.sl }}</td>
+                        <td>@{{ row.code }}</td>
+                        <td>@{{ row.name }}</td>
+                        <td>@{{ row.brand?.name }}</td>
+                        <td>@{{ row.category?.name }}</td>
+                        <td>@{{ row.purchase_rate }}</td>
+                        <td>@{{ row.sale_rate }}</td>
+                        <td>@{{ row.unit?.name }}</td>
+                        <td v-html="row.isService"></td>
+                        <td v-html="row.statusTxt"></td>
+                        <td>@{{ row.ad_user?.name }}</td>
+                        <td>@{{ row.up_user?.name }}</td>
+                        <td>
+                            <a :href="`/barcode/${row.id}`" title="barcode">
+                                <i class="bi bi-upc-scan text-warning" style="font-size: 14px;margin-right: 5px;"></i>
+                            </a>
+                            <a href="" title="edit" @click.prevent="editData(row)">
+                                <i class="bi bi-pen text-info" style="font-size: 14px;"></i>
+                            </a>
+                            <a href="" title="delete" @click.prevent="deleteData(row.id)">
+                                <i class="bi bi-trash text-danger" style="font-size: 14px;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="text-left mt-2">
+            <button type="button" class="filterBtn" @click="changePage(page - 1)" :disabled="page == 1"> Prev </button>
+
+            <button
+                type="button"
+                v-for="p in pageNumbers"
+                :key="p" @click="changePage(p)" :class="['filterBtn', p === page ? 'bg-primary text-white' : '']"> @{{ p }}
+            </button>
+
+            <button type="button" class="filterBtn" @click="changePage(page + 1)" :disabled="page == total_page"> Next </button>
+        </div>
     </div>
 </div>
 @endsection
@@ -153,64 +207,11 @@
         el: "#product",
         data() {
             return {
-                columns: [{
-                        label: "Image",
-                        field: 'imgSrc',
-                        html: true
-                    },
-                    {
-                        label: "Code",
-                        field: 'code'
-                    },
-                    {
-                        label: "Name",
-                        field: 'name'
-                    },
-                    {
-                        label: "Brand",
-                        field: 'brand.name'
-                    },
-                    {
-                        label: "Category",
-                        field: 'category.name'
-                    },
-                    {
-                        label: "Purchase_Rate",
-                        field: 'purchase_rate'
-                    },
-                    {
-                        label: "Sale_Rate",
-                        field: 'sale_rate'
-                    },
-                    {
-                        label: "Unit",
-                        field: 'unit.name'
-                    },
-                    {
-                        label: "IsProduct",
-                        field: 'isService',
-                        html: true,
-                    },
-                    {
-                        label: "Status",
-                        field: 'statusTxt',
-                        html: true,
-                    },
-                    {
-                        label: "Added_By",
-                        field: 'ad_user.username',
-                        html: true,
-                    },
-                    {
-                        label: "Updated_By",
-                        field: 'up_user.username',
-                        html: true,
-                    },
-                    {
-                        label: "Action",
-                        field: "before"
-                    }
-                ],
+                page: 1,
+                per_page: 10,
+                total_page: 0,
+                filter: '',
+
                 product: {
                     id: '',
                     code: "{{generateCode('Product', 'PI')}}",
@@ -242,6 +243,31 @@
             }
         },
 
+        computed: {
+            pageNumbers() {
+                let pages = [];
+
+                let total = this.total_page;
+                let current = this.page;
+
+                if (total <= 7) {
+                    for (let i = 1; i <= total; i++) {
+                        pages.push(i);
+                    }
+                } else {
+                    if (current <= 4) {
+                        pages = [1, 2, 3, 4, 5, '...', total];
+                    } else if (current >= total - 3) {
+                        pages = [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+                    } else {
+                        pages = [1, '...', current - 1, current, current + 1, '...', total];
+                    }
+                }
+
+                return pages;
+            }
+        },
+
         created() {
             this.getBrand();
             this.getCategory();
@@ -250,9 +276,6 @@
         },
 
         methods: {
-            rowStyleClass(row) {
-                return row.status == 'p' ? 'textDanger' : ''
-            },
             getBrand() {
                 axios.post('/get-brand')
                     .then(res => {
@@ -271,17 +294,29 @@
                         this.units = res.data;
                     })
             },
+
             getProduct() {
-                axios.post('/get-product')
+                axios.post(`/get-product?page=${this.page}&per_page=${this.per_page}&search=${this.filter}`)
                     .then(res => {
-                        this.products = res.data.map((item, index) => {
+                        this.total_page = res.data.last_page;
+                        this.products = res.data.data.map((item, index) => {
+                            item.sl = ((res.data.current_page - 1) * this.per_page) + index + 1;
                             item.statusTxt = item.status == 'a' ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-warning'>Deactive</span>";
                             item.imgSrc = `<a href="${item.image ? '/'+item.image : '/noImage.jpg'}"><img src="${item.image ? '/'+item.image : '/noImage.jpg'}" style="width:30px;height:30px;" class="rounded"/></a>`;
                             item.isService = item.is_service == 0 ? "<span class='badge bg-success'>Yes</span>" : "<span class='badge bg-warning'>No</span>";
                             return item;
                         });
-                    })
+                    });
             },
+
+            changePage(p) {
+                if (p === '...') return;
+                if (p < 1 || p > this.total_page) return;
+
+                this.page = p;
+                this.getProduct();
+            },
+
             saveData(event) {
                 let formdata = new FormData(event.target);
                 formdata.append('id', this.product.id);

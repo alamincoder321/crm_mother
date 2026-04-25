@@ -2,6 +2,21 @@
 
 @section('title', 'Customer Entry')
 @section('breadcrumb', 'Customer Entry')
+@push('style')
+<style>
+    .table>thead>tr>th {
+        text-align: center !important;
+        background-color: gray;
+        color: #fff;
+    }
+
+    tr td,
+    tr th {
+        vertical-align: middle !important;
+        text-align: center !important;
+    }
+</style>
+@endpush
 @section('content')
 <div class="row" id="customer">
     <div class="col-12 col-md-12">
@@ -105,6 +120,66 @@
     </div>
 
     <div class="col-12 col-md-12 mt-1">
+        <!-- FILTER -->
+        <input type="text" class="form-control w-25 rounded-0 mb-1" v-model="filter" placeholder="Search..." @input="getCustomer">
+        <div style="overflow-x: auto;">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Sl</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Owner</th>
+                        <th>CustomerType</th>
+                        <th>Mobile</th>
+                        <th>Area</th>
+                        <th>Previous_Balance</th>
+                        <th>Credit_Limit</th>
+                        <th>Status</th>
+                        <th>Added_By</th>
+                        <th>Updated_By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="(row, index) in customers" :key="row.id">
+                        <td>@{{ row.sl }}</td>
+                        <td>@{{ row.code }}</td>
+                        <td>@{{ row.name }}</td>
+                        <td>@{{ row.owner }}</td>
+                        <td>@{{ row.customer_type }}</td>
+                        <td>@{{ row.phone }}</td>
+                        <td>@{{ row.area?.name }}</td>
+                        <td>@{{ row.previous_due }}</td>
+                        <td>@{{ row.credit_limit }}</td>
+                        <td v-html="row.statusTxt"></td>
+                        <td>@{{ row.ad_user?.name }}</td>
+                        <td>@{{ row.up_user?.name }}</td>
+                        <td>
+                            <a href="" title="edit" @click.prevent="editData(row)">
+                                <i class="bi bi-pen text-info" style="font-size: 14px;"></i>
+                            </a>
+                            <a href="" title="delete" @click.prevent="deleteData(row.id)">
+                                <i class="bi bi-trash text-danger" style="font-size: 14px;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="text-left mt-2">
+            <button type="button" class="filterBtn" @click="changePage(page - 1)" :disabled="page == 1"> Prev </button>
+            <button
+                type="button"
+                v-for="p in pageNumbers"
+                :key="p" @click="changePage(p)" :class="['filterBtn', p === page ? 'bg-primary text-white' : '']"> @{{ p }}
+            </button>
+            <button type="button" class="filterBtn" @click="changePage(page + 1)" :disabled="page == total_page"> Next </button>
+        </div>
+
         <vue-good-table :columns="columns" :rows="customers" :fixed-header="false" :pagination-options="{
                 enabled: true,
                 perPage: 100,
@@ -130,63 +205,11 @@
         el: "#customer",
         data() {
             return {
-                columns: [{
-                        label: "Image",
-                        field: 'imgSrc',
-                        html: true
-                    },
-                    {
-                        label: "Code",
-                        field: 'code'
-                    },
-                    {
-                        label: "Name",
-                        field: 'name'
-                    },
-                    {
-                        label: "Owner",
-                        field: 'owner'
-                    },
-                    {
-                        label: "Customer Type",
-                        field: 'type'
-                    },
-                    {
-                        label: "Mobile",
-                        field: 'phone'
-                    },
-                    {
-                        label: "Area",
-                        field: 'area.name'
-                    },
-                    {
-                        label: "Prev_Balance",
-                        field: 'previous_due'
-                    },
-                    {
-                        label: "Credit_Limit",
-                        field: 'credit_limit'
-                    },
-                    {
-                        label: "Status",
-                        field: 'statusTxt',
-                        html: true,
-                    },
-                    {
-                        label: "Added_By",
-                        field: 'ad_user.username',
-                        html: true,
-                    },
-                    {
-                        label: "Updated_By",
-                        field: 'up_user.username',
-                        html: true,
-                    },
-                    {
-                        label: "Action",
-                        field: "before"
-                    }
-                ],
+                page: 1,
+                per_page: 10,
+                total_page: 0,
+                filter: '',
+
                 customer: {
                     id: '',
                     name: '',
@@ -210,6 +233,31 @@
             }
         },
 
+        computed: {
+            pageNumbers() {
+                let pages = [];
+
+                let total = this.total_page;
+                let current = this.page;
+
+                if (total <= 7) {
+                    for (let i = 1; i <= total; i++) {
+                        pages.push(i);
+                    }
+                } else {
+                    if (current <= 4) {
+                        pages = [1, 2, 3, 4, 5, '...', total];
+                    } else if (current >= total - 3) {
+                        pages = [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+                    } else {
+                        pages = [1, '...', current - 1, current, current + 1, '...', total];
+                    }
+                }
+
+                return pages;
+            }
+        },
+
         created() {
             this.getArea();
             this.getCustomer();
@@ -223,14 +271,23 @@
                     })
             },
             getCustomer() {
-                axios.post('/get-customer')
+                axios.post(`/get-customer?page=${this.page}&per_page=${this.per_page}&search=${this.filter}`)
                     .then(res => {
-                        this.customers = res.data.map((item, index) => {
+                        this.total_page = res.data.last_page;
+                        this.customers = res.data.data.map((item, index) => {
+                            item.sl = ((res.data.current_page - 1) * this.per_page) + index + 1;
                             item.statusTxt = item.status == 'a' ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-warning'>Deactive</span>";
                             item.imgSrc = `<a href="${item.image ? '/'+item.image : '/noImage.jpg'}"><img src="${item.image ? '/'+item.image : '/noImage.jpg'}" style="width:30px;height:30px;" class="rounded"/></a>`;
                             return item;
                         });
                     })
+            },
+            changePage(p) {
+                if (p === '...') return;
+                if (p < 1 || p > this.total_page) return;
+
+                this.page = p;
+                this.getCustomer();
             },
             saveData(event) {
                 let formdata = new FormData(event.target);
