@@ -151,7 +151,7 @@
                     </div>
                     <div class="col-12 col-md-12 mt-2">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="barcodeScan" placeholder="Scan Barcode" v-model="barcodeInput" @keyup.enter="onBarcodeEnter">
+                            <input type="text" class="form-control" id="barcodeScan" placeholder="Scan Barcode" v-model="barcodeInput" @change.enter="onBarcodeEnter">
                             <button class="btn btn-primary" type="button" style="font-size: 15px;"><i class="bi bi-upc"></i></button>
                         </div>
                     </div>
