@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brand;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
-class BrandController extends Controller
+class BranchController extends Controller
 {
     protected $userId;
     protected $branchId;
@@ -25,16 +25,16 @@ class BrandController extends Controller
 
     public function index(Request $request)
     {
-        $branch = Brand::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
+        $branch = Branch::with('adUser', 'upUser', 'deUser')->latest()->get();
         return response()->json($branch);
     }
 
     public function create()
     {
-        if (!checkAccess('brand')) {
+        if (!checkAccess('branch')) {
             return view('error.403');
         }
-        return view('pages.control.brand');
+        return view('pages.control.branch');
     }
 
     public function store(Request $request)
@@ -43,7 +43,7 @@ class BrandController extends Controller
         $validator = Validator::make($request->all(), [
             'name'     => [
                 'required',
-                Rule::unique('brands')
+                Rule::unique('branches')
                 ->where(function ($query) use ($branchId) {
                     $query->where('branch_id', $branchId);
                 })
@@ -52,14 +52,14 @@ class BrandController extends Controller
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $check = Brand::where('name', $request->name)->withTrashed()->first();
+            $check = Branch::where('name', $request->name)->withTrashed()->first();
             if (!empty($check) && $check->deleted_at != NULL) {
                 $check->status = 'a';
                 $check->deleted_by = NULL;
                 $check->deleted_at = NULL;
                 $check->update();
             } else {
-                $data = new Brand();
+                $data = new Branch();
                 $dataKey = $request->except('id');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
@@ -70,7 +70,7 @@ class BrandController extends Controller
                 $data->save();
             }
 
-            return response()->json(['status' => true, 'message' => "Brand has created successfully"]);
+            return response()->json(['status' => true, 'message' => "Branch has created successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -82,7 +82,7 @@ class BrandController extends Controller
         $validator = Validator::make($request->all(), [
             'name'     => [
                 'required',
-                Rule::unique('brands')
+                Rule::unique('branches')
                     ->ignore($request->id)
                     ->where(function ($query) use ($branchId) {
                         $query->where('branch_id', $branchId);
@@ -92,7 +92,7 @@ class BrandController extends Controller
         ]);
         if ($validator->fails()) return send_error("Validation Error", $validator->errors(), 422);
         try {
-            $data = Brand::find($request->id);
+            $data = Branch::find($request->id);
             $dataKey = $request->except('id');
             foreach ($dataKey as $key => $value) {
                 $data[$key] = $value;
@@ -103,7 +103,7 @@ class BrandController extends Controller
             $data->branch_id = $this->branchId;
             $data->update();
 
-            return response()->json(['status' => true, 'message' => "Brand has updated successfully"]);
+            return response()->json(['status' => true, 'message' => "Branch has updated successfully"]);
         } catch (\Throwable $th) {
             return send_error('Something went worng', $th->getMessage());
         }
@@ -112,14 +112,14 @@ class BrandController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $data = Brand::find($request->id);
+            $data = Branch::find($request->id);
             $data->deleted_by = $this->userId;
             $data->status = 'd';
             $data->ipAddress = request()->ip();
             $data->update();
 
             $data->delete();
-            return response()->json(['status' => true, 'message' => "Brand has deleted successfully"]);
+            return response()->json(['status' => true, 'message' => "Branch has deleted successfully"]);
         } catch (\Throwable $th) {
             return send_error("Something went wrong", $th->getMessage());
         }

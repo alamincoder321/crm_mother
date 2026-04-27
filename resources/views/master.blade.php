@@ -24,23 +24,16 @@
 
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
-                <!-- <li class="nav-item dropdown">
-                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-chat-left-text"></i>
-                        <span class="badge bg-light text-black badge-number">3</span>
-                    </a>
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-                        <li class="dropdown-header">
-                            You have 3 new messages
-                            <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                    </ul>
-
-                </li> -->
+                <li class="nav-item dropdown pe-3">
+                    <select class="form-select form-select-sm ms-3" onchange="window.location.href= '/branchset/'+this.value">
+                        <option value="">Select Branch</option>
+                        @foreach ($branches as $branch)
+                        <option value="{{$branch->id}}" {{session('branch')->id == $branch->id ? 'selected' : ''}}>
+                            {{$branch->name}}
+                        </option>
+                        @endforeach
+                    </select>
+                </li>
 
                 <li class="nav-item dropdown pe-3">
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
@@ -58,6 +59,13 @@ Route::match(['get', 'post'], 'get-business-info', [DashboardController::class, 
 Route::match(['get', 'post'], 'get-top-business-info', [DashboardController::class, 'getTopBusinessInfo'])->name('get.top.business.info');
 
 // ============================= Control Panel Route ==============================
+Route::get('/branchset/{id}', [DashboardController::class, 'branchset'])->name('set.branch');
+// branch route
+Route::get('/branch', [BranchController::class, 'create'])->name('branch.create');
+Route::match(['get', 'post'], '/get-branch', [BranchController::class, 'index'])->name('branch.index');
+Route::post('/branch', [BranchController::class, 'store'])->name('branch.store');
+Route::post('/update-branch', [BranchController::class, 'update'])->name('branch.update');
+Route::post('/delete-branch', [BranchController::class, 'destroy'])->name('branch.delete');
 
 // user route
 Route::get('/user', [UserController::class, 'create'])->name('user.create');

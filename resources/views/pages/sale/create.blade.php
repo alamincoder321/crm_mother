@@ -896,6 +896,22 @@
                 })
             }
         },
+
+        mounted() {
+            let vm = this;
+            document.addEventListener('keydown', function(e) {
+                if (e.altKey && e.key == 'c') {
+                    e.preventDefault();
+                    document.querySelector("#customer [type='search']").focus();
+                }else if (e.altKey && e.key == 'z') {
+                    e.preventDefault();
+                    document.querySelector("#product [type='search']").focus();
+                } else if (e.ctrlKey && e.key == 'Enter') {
+                    e.preventDefault();
+                    vm.saveData(event);
+                }
+            });
+        }
     })
 </script>
 @endpush

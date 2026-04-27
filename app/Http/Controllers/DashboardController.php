@@ -231,7 +231,7 @@ class DashboardController extends Controller
     {
         $branch = Branch::find($id);
         Session::put('branch', $branch);
-        return true;
+        return back();
     }
 
     public function companyProfile()
