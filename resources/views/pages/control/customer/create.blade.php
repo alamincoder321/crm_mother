@@ -148,7 +148,7 @@
                         <td>@{{ row.code }}</td>
                         <td>@{{ row.name }}</td>
                         <td>@{{ row.owner }}</td>
-                        <td>@{{ row.customer_type }}</td>
+                        <td>@{{ row.type }}</td>
                         <td>@{{ row.phone }}</td>
                         <td>@{{ row.area?.name }}</td>
                         <td>@{{ row.previous_due }}</td>
@@ -179,22 +179,6 @@
             </button>
             <button type="button" class="filterBtn" @click="changePage(page + 1)" :disabled="page == total_page"> Next </button>
         </div>
-
-        <vue-good-table :columns="columns" :rows="customers" :fixed-header="false" :pagination-options="{
-                enabled: true,
-                perPage: 100,
-            }" :search-options="{ enabled: true }" :line-numbers="true" styleClass="vgt-table condensed" max-height="550px">
-            <template #table-row="props">
-                <span class="d-flex gap-2 justify-content-end" v-if="props.column.field == 'before'">
-                    <a href="" title="edit" @click.prevent="editData(props.row)">
-                        <i class="bi bi-pen text-info" style="font-size: 14px;"></i>
-                    </a>
-                    <a href="" title="delete" @click.prevent="deleteData(props.row.id)">
-                        <i class="bi bi-trash text-danger" style="font-size: 14px;"></i>
-                    </a>
-                </span>
-            </template>
-        </vue-good-table>
     </div>
 </div>
 @endsection

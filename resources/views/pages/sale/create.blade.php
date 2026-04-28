@@ -103,7 +103,7 @@
                         <div class="form-group row mb-1">
                             <label for="" class="col-4 col-md-4 form-label">Customer:</label>
                             <div class="col-8 col-md-8">
-                                <v-select :options="customers" v-model="selectedCustomer" label="display_name" @input="onChangeCustomer" @search="onSearchCustomer"></v-select>
+                                <v-select :options="customers" id="customer" v-model="selectedCustomer" label="display_name" @input="onChangeCustomer" @search="onSearchCustomer"></v-select>
                             </div>
                         </div>
                         <div class="form-group row mb-1">
@@ -900,10 +900,10 @@
         mounted() {
             let vm = this;
             document.addEventListener('keydown', function(e) {
-                if (e.altKey && e.key == 'c') {
+                if (e.ctrlKey && e.key == 'c') {
                     e.preventDefault();
                     document.querySelector("#customer [type='search']").focus();
-                }else if (e.altKey && e.key == 'z') {
+                }else if (e.key == 'F1') {
                     e.preventDefault();
                     document.querySelector("#product [type='search']").focus();
                 } else if (e.ctrlKey && e.key == 'Enter') {
