@@ -25,7 +25,7 @@ class BrandController extends Controller
 
     public function index(Request $request)
     {
-        $branch = Brand::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
+        $branch = Brand::with('adUser', 'upUser', 'deUser')->latest()->get();
         return response()->json($branch);
     }
 

@@ -25,7 +25,7 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        $unit = Category::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
+        $unit = Category::with('adUser', 'upUser', 'deUser')->latest()->get();
         return response()->json($unit);
     }
 

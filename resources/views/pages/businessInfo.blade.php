@@ -245,11 +245,11 @@
         <div class="row m-0">
             <div class="col-12 col-md-7 px-0" style="border: 1px solid #959595; padding: 10px;">
                 <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Monthly Sales Overview</h6>
-                <apexchart type="area" height="200" :options="chartOptions" :series="series"></apexchart>
+                <apexchart v-if="showChart" type="area" height="200" :options="chartOptions" :series="series"></apexchart>
             </div>
             <div class="col-12 col-md-5 px-0" style="border: 1px solid #959595; padding: 10px;">
                 <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Top Sale Products</h6>
-                <apexchart type="pie" height="215" :options="piechartOptions" :series="pieseries"></apexchart>
+                <apexchart v-if="showChart" type="pie" height="200" :options="piechartOptions" :series="pieseries"></apexchart>
             </div>
         </div>
     </div>
@@ -284,6 +284,8 @@
                         categories: []
                     },
                 },
+
+                showChart: false,
 
                 pieseries: [],
                 piechartOptions: {
@@ -362,17 +364,37 @@
                 axios.post("/get-top-business-info", {})
                     .then(response => {
                         const data = response.data;
-                        
                         let monthlySale = data.monthlySaleData;
-                        monthlySale.forEach(sale => {
-                            this.chartOptions.xaxis.categories.push(sale.date);
-                            this.series[0].data.push(sale.total);
-                        });
-                        
+
+                        this.series = [{
+                            name: 'Sales',
+                            data: monthlySale.map(s => Number(s.total))
+                        }];
+
+                        this.chartOptions = {
+                            chart: {
+                                type: 'line',
+                                height: 200,
+                                animations: {
+                                    enabled: true
+                                }
+                            },
+                            xaxis: {
+                                type: 'category',
+                                categories: monthlySale.map(s => s.date)
+                            }
+                        };
+
                         let topProducts = data.topProducts;
                         topProducts.forEach(product => {
                             this.pieseries.push(product.total_quantity);
                             this.piechartOptions.labels.push(product.name);
+                        });
+
+                        this.showChart = false;
+
+                        this.$nextTick(() => {
+                            this.showChart = true;
                         });
                     })
             }

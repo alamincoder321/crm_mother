@@ -25,7 +25,7 @@ class UnitController extends Controller
 
     public function index(Request $request)
     {
-        $unit = Unit::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
+        $unit = Unit::with('adUser', 'upUser', 'deUser')->latest()->get();
         return response()->json($unit);
     }
 

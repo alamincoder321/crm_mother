@@ -26,7 +26,6 @@ class BankController extends Controller
     public function index(Request $request)
     {
         $bank = Bank::with('adUser', 'upUser', 'deUser')
-            ->where('branch_id', $this->branchId)
             ->latest()->get()->map(function ($item) {
                 $item->display_name = $item->name . ' - ' . $item->number . ' - ' . $item->bank_name;
                 return $item;

@@ -25,7 +25,7 @@ class DesignationtController extends Controller
 
     public function index(Request $request)
     {
-        $designation = Designation::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)
+        $designation = Designation::with('adUser', 'upUser', 'deUser')
             ->latest()
             ->get();
         return response()->json($designation);

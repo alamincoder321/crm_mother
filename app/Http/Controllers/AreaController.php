@@ -25,7 +25,7 @@ class AreaController extends Controller
 
     public function index(Request $request)
     {
-        $unit = Area::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)->latest()->get();
+        $unit = Area::with('adUser', 'upUser', 'deUser')->latest()->get();
         return response()->json($unit);
     }
 

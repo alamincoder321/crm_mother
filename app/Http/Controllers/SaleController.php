@@ -140,6 +140,8 @@ class SaleController extends Controller
             $invoice = Sale::where('invoice', $sale->invoice)->first();
             if (empty($invoice)) {
                 $invoice = invoiceGenerate('Sale', '', $this->branchId);
+            }else{
+                $invoice = $invoice->invoice;
             }
             if (!empty($customer) && $customer->type == 'new') {
                 $checkSupp = Customer::where('phone', $customer->phone)->where('branch_id', $this->branchId)->first();

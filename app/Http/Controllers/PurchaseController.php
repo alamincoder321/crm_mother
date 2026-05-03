@@ -99,6 +99,8 @@ class PurchaseController extends Controller
             $invoice = Purchase::where('invoice', $purchase->invoice)->first();
             if (empty($invoice)) {
                 $invoice = invoiceGenerate('Purchase', '', $this->branchId);
+            }else{
+                $invoice = $invoice->invoice;
             }
             if (!empty($supplier) && $supplier->type == 'new') {
                 $checkSupp = Supplier::where('phone', $supplier->phone)->where('branch_id', $this->branchId)->first();

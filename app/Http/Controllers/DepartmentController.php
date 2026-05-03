@@ -25,7 +25,7 @@ class DepartmentController extends Controller
 
     public function index(Request $request)
     {
-        $department = Department::with('adUser', 'upUser', 'deUser')->where('branch_id', $this->branchId)
+        $department = Department::with('adUser', 'upUser', 'deUser')
             ->latest()
             ->get();
         return response()->json($department);
