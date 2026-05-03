@@ -72,11 +72,11 @@ $panel = session('panel');
 
     <div class="col-md-12">
         <div class="row m-0">
-            <div class="col-12 col-md-7 px-0" style="border: 1px solid #959595; padding: 10px;">
+            <div class="col-12 col-md-8 px-0" style="border: 1px solid #959595; padding: 10px;">
                 <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Monthly Sales Overview</h6>
                 <apexchart v-if="showChart" type="area" height="200" :options="chartOptions" :series="series"></apexchart>
             </div>
-            <div class="col-12 col-md-5 px-0" style="border: 1px solid #959595; padding: 10px;">
+            <div class="col-12 col-md-4 px-0" style="border: 1px solid #959595; padding: 10px;">
                 <h6 style="margin: 0;border-bottom: 2px solid #000;text-align:center;padding-bottom: 6px;">Top Sale Products</h6>
                 <apexchart v-if="showChart" type="pie" height="200" :options="piechartOptions" :series="pieseries"></apexchart>
             </div>
@@ -507,6 +507,32 @@ $panel = session('panel');
                 </a>
                 @endif
             </div>
+
+            <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('productLedger'))
+                <a href="/productLedger">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-list"></i>
+                            <span>Product Ledger</span>
+                        </div>
+                    </div>
+                </a>
+                @endif
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('stock'))
+                <a href="/stock">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-list"></i>
+                            <span>Stock Report</span>
+                        </div>
+                    </div>
+                </a>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -784,9 +810,7 @@ $panel = session('panel');
                         categories: []
                     },
                 },
-
                 showChart: false,
-
                 pieseries: [],
                 piechartOptions: {
                     chart: {
@@ -837,7 +861,7 @@ $panel = session('panel');
                                 type: 'category',
                                 categories: monthlySale.map(s => s.date)
                             }
-                        };
+                        };                      
 
                         let topProducts = data.topProducts;
                         topProducts.forEach(product => {
@@ -852,7 +876,7 @@ $panel = session('panel');
                         });
                     })
             }
-        },
+        }
     });
 </script>
 @endpush

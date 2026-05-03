@@ -376,6 +376,24 @@ $panel = session('panel');
             </a>
         </li>
         @endif
+        
+        @if(checkAccess('productLedger'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('productLedger') ? 'active' : ''}}" href="/productLedger">
+                <i class="bi bi-list"></i>
+                <span>Product Ledger</span>
+            </a>
+        </li>
+        @endif
+        
+        @if(checkAccess('stock'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('stock') ? 'active' : ''}}" href="/stock">
+                <i class="bi bi-list"></i>
+                <span>Stock Report</span>
+            </a>
+        </li>
+        @endif
 
         @elseif($panel == 'HRPanel')
         <li class="nav-item">
