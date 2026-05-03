@@ -15,8 +15,8 @@ use App\Models\PurchaseReturn;
 
 class PurchaseController extends Controller
 {
-    protected $userId;
-    protected $branchId;
+    protected int $userId;
+    protected int $branchId;
     public function __construct()
     {
         $this->middleware('auth');
@@ -30,7 +30,7 @@ class PurchaseController extends Controller
 
     public function index(Request $request)
     {
-        $purchases = Purchase::with('adUser', 'upUser')->where('branch_id', $this->branchId);
+        $purchases = Purchase::with(['adUser', 'upUser'])->where('branch_id', $this->branchId);
         if (!empty($request->purchaseId)) {
             $purchases->where('id', $request->purchaseId);
         }
@@ -54,7 +54,7 @@ class PurchaseController extends Controller
         }
         $purchases = $purchases->latest()->get()->map(function ($purchase) {
             $purchase->details = DB::table('purchase_details as pd')
-                ->select('p.name', 'p.code', 'u.name as unit_name', 'c.name as category_name', 'pd.*')
+                ->select(['p.name', 'p.code', 'u.name as unit_name', 'c.name as category_name', 'pd.*'])
                 ->leftJoin('products as p', 'p.id', '=', 'pd.product_id')
                 ->leftJoin('units as u', 'u.id', '=', 'p.unit_id')
                 ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
@@ -157,6 +157,20 @@ class PurchaseController extends Controller
                     'ipAddress'     => request()->ip(),
                     'branch_id'     => $this->branchId,
                 ];
+
+                $stock = Product::stock(['productId' => $cart['id']])[0];
+                if($stock->stock > 0){
+                    $product                = Product::find($cart['id']);
+                    $avg_rate               = ($stock->stock * $stock->purchase_rate + $cart['quantity'] * $cart['purchase_rate']) / ($stock->stock + $cart['quantity']);
+                    $product->purchase_rate = $avg_rate;
+                    $product->sale_rate     = $cart['sale_rate'] ;
+                    $product->update();
+                }else{
+                    Product::where('id', $cart['id'])->update([
+                        'purchase_rate' => $cart['purchase_rate'],
+                        'sale_rate'     => $cart['sale_rate'],
+                    ]);
+                }
             }
             PurchaseDetail::insert($cartDetails);
 
@@ -165,7 +179,7 @@ class PurchaseController extends Controller
             return response()->json(['status' => true, 'message' => $msg, 'purchaseId' => $data->id, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return send_error('Something went worng', $th->getMessage());
+            return send_error('Something went wrong', $th->getMessage());
         }
     }
 
@@ -235,6 +249,20 @@ class PurchaseController extends Controller
                     'ipAddress'     => request()->ip(),
                     'branch_id'     => $this->branchId,
                 ];
+
+                $stock = Product::stock(['productId' => $cart['id']])[0];
+                if($stock->stock > 0){
+                    $product                = Product::find($cart['id']);
+                    $avg_rate               = ($stock->stock * $stock->purchase_rate + $cart['quantity'] * $cart['purchase_rate']) / ($stock->stock + $cart['quantity']);
+                    $product->purchase_rate = $avg_rate;
+                    $product->sale_rate     = $cart['sale_rate'] ;
+                    $product->update();
+                }else{
+                    Product::where('id', $cart['id'])->update([
+                        'purchase_rate' => $cart['purchase_rate'],
+                        'sale_rate'     => $cart['sale_rate'],
+                    ]);
+                }
             }
             PurchaseDetail::insert($cartDetails);
 
@@ -243,7 +271,7 @@ class PurchaseController extends Controller
             return response()->json(['status' => true, 'message' => $msg, 'purchaseId' => $purchase->id, 'invoice' => invoiceGenerate('Purchase', '', $this->branchId)]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return send_error('Something went worng', $th->getMessage());
+            return send_error('Something went wrong', $th->getMessage());
         }
     }
 
