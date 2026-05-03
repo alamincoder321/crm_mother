@@ -28,7 +28,13 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $users = User::where('branch_id', $this->branchId)->latest()->get();
+        $users = User::with('branch');
+        if($this->branchId != 1){
+            $users = $users->where('branch_id', $this->branchId);
+        }
+        
+        $users = $users->latest()->get();
+        
         return response()->json($users);
     }
 
@@ -67,7 +73,7 @@ class UserController extends Controller
                 $check->update();
             } else {
                 $data = new User();
-                $data->code = generateCode('User', 'U', $this->branchId);
+                $data->code = generateCode('User', 'U', $request->branch_id);
                 $dataKey = $request->except('id', 'image');
                 foreach ($dataKey as $key => $value) {
                     $data[$key] = $value;
@@ -76,14 +82,14 @@ class UserController extends Controller
                     $data->image = imageUpload($request, 'image', 'uploads/user', $data->code . '_' . $this->branchId);
                 }
                 $data->password = Hash::make($request->password);
-                $data->branch_id = $this->branchId;
+                // $data->branch_id = $this->branchId;
                 $data->ipAddress = request()->ip();
                 $data->save();
             }
 
             return response()->json(['status' => true, 'message' => "User has created successfully"]);
         } catch (\Throwable $th) {
-            return send_error('Something went worng', $th->getMessage());
+            return send_error('Something went wrong', $th->getMessage());
         }
     }
 
@@ -115,14 +121,14 @@ class UserController extends Controller
             if (!empty($request->password)) {
                 $data->password = Hash::make($request->password);
             }
-            $data->branch_id = $this->branchId;
+            // $data->branch_id = $this->branchId;
             $data->ipAddress = request()->ip();
             $data->updated_at = Carbon::now();
             $data->update();
 
             return response()->json(['status' => true, 'message' => "User has updated successfully"]);
         } catch (\Throwable $th) {
-            return send_error('Something went worng', $th->getMessage());
+            return send_error('Something went wrong', $th->getMessage());
         }
     }
 

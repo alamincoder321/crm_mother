@@ -25,18 +25,6 @@
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
                 <li class="nav-item dropdown pe-3">
-                    <select class="form-select form-select-sm ms-3" onchange="window.location.href= '/branchset/'+this.value">
-                        <option value="">Select Branch</option>
-                        @foreach ($branches as $branch)
-                        <option value="{{$branch->id}}" {{session('branch')->id == $branch->id ? 'selected' : ''}}>
-                            {{$branch->name}}
-                        </option>
-                        @endforeach
-                    </select>
-                </li>
-
-                <li class="nav-item dropdown pe-3">
-
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                         <img src="{{asset(Auth::user()->image ? Auth::user()->image : 'nouser.png')}}" alt="Profile" class="rounded-circle">
                         <span class="d-none d-md-block dropdown-toggle ps-2">{{Auth::user()->name}}</span>
@@ -86,6 +74,17 @@
                     <li class="breadcrumb-item"><a href="/">Home</a></li>
                     <li class="breadcrumb-item">@yield('breadcrumb')</li>
                 </ol>
+                @if(session('branch')->id == 1 || auth()->user()->id == 1)
+                <ol>
+                    <select class="form-select form-select-sm ms-3 py-2" onchange="window.location.href= '/branchset/'+this.value">
+                        @foreach ($branches as $branch)
+                        <option value="{{$branch->id}}" {{session('branch')->id == $branch->id ? 'selected' : ''}}>
+                            {{$branch->name}}
+                        </option>
+                        @endforeach
+                    </select>
+                </ol>
+                @endif
                 <ol class="breadcrumb d-none d-md-block" style="margin-top: -16px; display: block; text-align: center; border: 4px solid #c1c1c1; border-bottom-left-radius: 40px;border-bottom-right-radius: 40px; margin-bottom: 0; padding-left: 15px; padding-right: 15px; padding-top: 2px;">
                     <li>
                         Today, {{date("d M Y")}} || {{dateBangla()}}

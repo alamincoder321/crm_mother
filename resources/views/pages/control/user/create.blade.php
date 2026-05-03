@@ -29,6 +29,18 @@
                                     <input type="text" class="form-control" autocomplete="off" id="phone" name="phone" v-model="user.phone" />
                                 </div>
                             </div>
+                            @if(session('branch')->id == 1)
+                            <div class="mb-1 row">
+                                <label class="form-label col-4 col-md-3" for="branch_id">Branch:</label>
+                                <div class="col-8 col-md-9">
+                                    <select class="form-select" id="branch_id" name="branch_id" v-model="user.branch_id">
+                                        @foreach($branches as $branch)
+                                        <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         <div class="col-12 col-md-5">
                             <div class="mb-1 row">
@@ -147,6 +159,10 @@
                         field: 'role'
                     },
                     {
+                        label: "Branch",
+                        field: 'branch.name'
+                    },
+                    {
                         label: "Status",
                         field: 'statusTxt',
                         html: true,
@@ -165,7 +181,8 @@
                     username: '',
                     password: '',
                     status: 'a',
-                    image: ''
+                    image: '',
+                    branch_id: "{{session('branch')->id}}",
                 },
                 users: [],
 
@@ -253,7 +270,8 @@
                     username: '',
                     password: '',
                     status: 'a',
-                    image: ''
+                    image: '',
+                    branch_id: "{{session('branch')->id}}"
                 }
                 this.imageSrc = "/noImage.jpg";
                 this.onProgress = false;
