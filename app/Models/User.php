@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Designation::class, 'designation_id', 'id')->select('id', 'name')->withTrashed();
     }
+    
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id')->select('id', 'name', 'title')->withTrashed();
+    }
 }
