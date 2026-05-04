@@ -37,7 +37,7 @@ class AccountHead extends Model
 
         $query = "select
                 /* Received */
-                (select ifnull(sum(sm.cashPaid), 0) from sales sm
+                (select ifnull(sum(sm.cashPaid - sm.returnAmount), 0) from sales sm
                 where sm.status = 'a'
                 and sm.cashPaid > 0
                 " . ($date == null ? "" : " and sm.date <= '$date'") . "

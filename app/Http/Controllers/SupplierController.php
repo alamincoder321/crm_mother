@@ -210,6 +210,7 @@ class SupplierController extends Controller
                 'a' as sequence,
                 pm.id,
                 pm.date,
+                pm.created_at,
                 concat('Purchase Invoice - ', pm.invoice, '(Supplier: ', ifnull(s.name, pm.supplier_name), ')') as description,
                 pm.total as bill,
                 pm.paid as paid,
@@ -229,6 +230,7 @@ class SupplierController extends Controller
                 'b' as sequence,
                 sp.id,
                 sp.date,
+                sp.created_at,
                 concat('Supplier Receive - ', sp.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -249,6 +251,7 @@ class SupplierController extends Controller
                 'c' as sequence,
                 pr.id,
                 pr.date,
+                pr.created_at,
                 concat('Purchase Return Invoice - ', pr.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -268,6 +271,7 @@ class SupplierController extends Controller
                 'd' as sequence,
                 dm.id,
                 dm.date,
+                dm.created_at,
                 concat('Damage Invoice - ', dm.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -287,6 +291,7 @@ class SupplierController extends Controller
                 'e' as sequence,
                 sp.id,
                 sp.date,
+                sp.created_at,
                 concat('Supplier Payment - ', sp.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -302,7 +307,7 @@ class SupplierController extends Controller
                 " . (empty($request->supplierId) ? "" : " and sp.supplier_id = '$request->supplierId'") . "
                 " . ($branchId == null ? "" : " and sp.branch_id = '$branchId'") . "
                 
-                order by date, sequence, id asc";
+                order by created_at asc";
 
         $ledgers = DB::select($query);
 

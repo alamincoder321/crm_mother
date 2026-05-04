@@ -214,6 +214,7 @@ class CustomerController extends Controller
                 'a' as sequence,
                 sm.id,
                 sm.date,
+                sm.created_at,
                 concat('Sale Invoice - ', sm.invoice, '(Customer: ', ifnull(c.name, sm.customer_name), ')') as description,
                 sm.total as bill,
                 sm.paid as paid,
@@ -233,6 +234,7 @@ class CustomerController extends Controller
                 'b' as sequence,
                 sr.id,
                 sr.date,
+                sr.created_at,
                 concat('Sale Return Invoice - ', sr.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -252,6 +254,7 @@ class CustomerController extends Controller
                 'c' as sequence,
                 cp.id,
                 cp.date,
+                cp.created_at,
                 concat('Customer Payment - ', cp.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -272,6 +275,7 @@ class CustomerController extends Controller
                 'd' as sequence,
                 cp.id,
                 cp.date,
+                cp.created_at,
                 concat('Customer Receive - ', cp.invoice) as description,
                 0 as bill,
                 0 as paid,
@@ -287,7 +291,7 @@ class CustomerController extends Controller
                 " . (empty($request->customerId) ? "" : " and cp.customer_id = '$request->customerId'") . "
                 " . ($branchId == null ? "" : " and cp.branch_id = '$branchId'") . "
                 
-                order by date, sequence, id asc";
+                order by created_at asc";
 
         $ledgers = DB::select($query);
 

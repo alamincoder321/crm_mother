@@ -150,6 +150,7 @@ class BankController extends Controller
                 'a' as sequence,
                 bt.id,
                 bt.date,
+                bt.created_at,
                 concat('Bank Deposit - ', bt.invoice) as description,
                 0 as withdraw,
                 bt.amount as deposit,
@@ -165,6 +166,7 @@ class BankController extends Controller
                 'b' as sequence,
                 sb.id,
                 sm.date,
+                sm.created_at,
                 concat('Sale Invoice - ', sm.invoice) as description,
                 0 as withdraw,
                 sb.amount as deposit,
@@ -180,6 +182,7 @@ class BankController extends Controller
                 'c' as sequence,
                 cpr.id,
                 cpr.date,
+                cpr.created_at,
                 concat('Customer Payment - ', cpr.invoice) as description,
                 0 as withdraw,
                 cpr.amount as deposit,
@@ -196,6 +199,7 @@ class BankController extends Controller
                 'd' as sequence,
                 spr.id,
                 spr.date,
+                spr.created_at,
                 concat('Supplier Receive - ', spr.invoice) as description,
                 0 as withdraw,
                 spr.amount as deposit,
@@ -212,6 +216,7 @@ class BankController extends Controller
                 'e' as sequence,
                 bt.id,
                 bt.date,
+                bt.created_at,
                 concat('Bank Withdraw - ', bt.invoice) as description,
                 bt.amount as withdraw,
                 0 as deposit,
@@ -227,6 +232,7 @@ class BankController extends Controller
                 'f' as sequence,
                 spp.id,
                 spp.date,
+                spp.created_at,
                 concat('Supplier Payment - ', spp.invoice) as description,
                 spp.amount as withdraw,
                 0 as deposit,
@@ -243,6 +249,7 @@ class BankController extends Controller
                 'g' as sequence,
                 cpp.id,
                 cpp.date,
+                cpp.created_at,
                 concat('Customer Payment - ', cpp.invoice) as description,
                 cpp.amount as withdraw,
                 0 as deposit,
@@ -254,7 +261,7 @@ class BankController extends Controller
                 " . (empty($request->bankId) ? "" : " and cpp.bank_id = '$request->bankId'") . "
                 " . ($branchId == null ? "" : " and cpp.branch_id = '$branchId'") . "
                 
-                order by date, sequence, id asc";
+                order by created_at asc";
 
         $ledgers = DB::select($query);
 

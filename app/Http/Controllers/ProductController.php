@@ -239,6 +239,7 @@ class ProductController extends Controller
                 'a' as sequence,
                 pd.id,
                 pm.date,
+                pm.created_at,
                 concat_ws(' - ', 'Purchase Invoice', pm.invoice) as description,
                 pd.quantity as in_stock,
                 0 as out_stock,
@@ -254,6 +255,7 @@ class ProductController extends Controller
                 'b' as sequence,
                 srd.id,
                 sr.date,
+                sr.created_at,
                 concat_ws(' - ', 'Sale Return Invoice', sr.invoice) as description,
                 srd.quantity as in_stock,
                 0 as out_stock,
@@ -269,6 +271,7 @@ class ProductController extends Controller
                 'c' as sequence,
                 sd.id,
                 sm.date,
+                sm.created_at,
                 concat_ws(' - ', 'Sale Invoice', ifnull(sm.invoice, '')) as description,
                 0 as in_stock,
                 sd.quantity as out_stock,
@@ -284,6 +287,7 @@ class ProductController extends Controller
                 'd' as sequence,
                 prd.id,
                 pr.date,
+                pr.created_at,
                 concat_ws(' - ', 'Purchase Return Invoice', pr.invoice) as description,
                 0 as in_stock,
                 prd.quantity as out_stock,
@@ -299,6 +303,7 @@ class ProductController extends Controller
                 'e' as sequence,
                 dd.id,
                 d.date,
+                d.created_at,
                 concat_ws(' - ', 'Damage Invoice', d.invoice) as description,
                 0 as in_stock,
                 dd.quantity as out_stock,
@@ -309,7 +314,7 @@ class ProductController extends Controller
                 " . (empty($request->productId) ? "" : " and dd.product_id = '$request->productId'") . "
                 " . ($branchId == null ? "" : " and dd.branch_id = '$branchId'") . "
                 
-                order by date, sequence asc";
+                order by created_at asc";
 
         $ledgers = DB::select($query);
         $ledgers = collect($ledgers)->map(function ($ledger, $key) use ($ledgers) {
