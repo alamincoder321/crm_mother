@@ -241,6 +241,118 @@
                 </tr>
             </table>
         </div>
+
+        <div class="col-12 col-md-3">
+            <table class="table table-bordered">
+                <tr>
+                    <td colspan="2" style="background: #ccc;padding: 5px 8px !important;">
+                        <label for="control">
+                            <input type="checkbox" id="control" value="control" @change="handleGroupCheck($event)" />
+                            <strong>Control Panel</strong>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="product">
+                            <input type="checkbox" id="product" value="product" v-model="useraccess" />
+                            <span>Product Entry</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="productList">
+                            <input type="checkbox" id="productList" value="productList" v-model="useraccess" />
+                            <span>Product List</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="supplier">
+                            <input type="checkbox" id="supplier" value="supplier" v-model="useraccess" />
+                            <span>Supplier Entry</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="supplierList">
+                            <input type="checkbox" id="supplierList" value="supplierList" v-model="useraccess" />
+                            <span>Supplier List</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="customer">
+                            <input type="checkbox" id="customer" value="customer" v-model="useraccess" />
+                            <span>Customer Entry</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="customerList">
+                            <input type="checkbox" id="customerList" value="customerList" v-model="useraccess" />
+                            <span>Customer List</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="area">
+                            <input type="checkbox" id="area" value="area" v-model="useraccess" />
+                            <span>Area Entry</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="unit">
+                            <input type="checkbox" id="unit" value="unit" v-model="useraccess" />
+                            <span>Unit Entry</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="category">
+                            <input type="checkbox" id="category" value="category" v-model="useraccess" />
+                            <span>Category Entry</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="brand">
+                            <input type="checkbox" id="brand" value="brand" v-model="useraccess" />
+                            <span>Brand Entry</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="user">
+                            <input type="checkbox" id="user" value="user" v-model="useraccess" />
+                            <span>User Entry</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="userAccess">
+                            <input type="checkbox" id="userAccess" value="userAccess" v-model="useraccess" />
+                            <span>User Access</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="control">
+                    <td>
+                        <label for="companyProfile">
+                            <input type="checkbox" id="companyProfile" value="companyProfile" v-model="useraccess" />
+                            <span>Company Profile</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="businessInfo">
+                            <input type="checkbox" id="businessInfo" value="businessInfo" v-model="useraccess" />
+                            <span>Business Info</span>
+                        </label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         <div class="col-12 col-md-3">
             <table class="table table-bordered">
                 <tr>
@@ -399,113 +511,30 @@
                         </label>
                     </td>
                 </tr>
-            </table>
-        </div>
-        <div class="col-12 col-md-4">
-            <table class="table table-bordered">
-                <tr>
-                    <td colspan="2" style="background: #ccc;padding: 5px 8px !important;">
-                        <label for="control">
-                            <input type="checkbox" id="control" value="control" @change="handleGroupCheck($event)" />
-                            <strong>Control Panel</strong>
+                
+                <tr class="reports">
+                    <td>
+                        <label for="productLedger">
+                            <input type="checkbox" id="productLedger" value="productLedger" v-model="useraccess" />
+                            <span>Product Ledger</span>
                         </label>
                     </td>
                 </tr>
-                <tr class="control">
+                
+                <tr class="reports">
                     <td>
-                        <label for="product">
-                            <input type="checkbox" id="product" value="product" v-model="useraccess" />
-                            <span>Product Entry</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="productList">
-                            <input type="checkbox" id="productList" value="productList" v-model="useraccess" />
-                            <span>Product List</span>
+                        <label for="stock">
+                            <input type="checkbox" id="stock" value="stock" v-model="useraccess" />
+                            <span>Stock Report</span>
                         </label>
                     </td>
                 </tr>
-                <tr class="control">
+                
+                <tr class="reports">
                     <td>
-                        <label for="supplier">
-                            <input type="checkbox" id="supplier" value="supplier" v-model="useraccess" />
-                            <span>Supplier Entry</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="supplierList">
-                            <input type="checkbox" id="supplierList" value="supplierList" v-model="useraccess" />
-                            <span>Supplier List</span>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="control">
-                    <td>
-                        <label for="customer">
-                            <input type="checkbox" id="customer" value="customer" v-model="useraccess" />
-                            <span>Customer Entry</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="customerList">
-                            <input type="checkbox" id="customerList" value="customerList" v-model="useraccess" />
-                            <span>Customer List</span>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="control">
-                    <td>
-                        <label for="area">
-                            <input type="checkbox" id="area" value="area" v-model="useraccess" />
-                            <span>Area Entry</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="unit">
-                            <input type="checkbox" id="unit" value="unit" v-model="useraccess" />
-                            <span>Unit Entry</span>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="control">
-                    <td>
-                        <label for="category">
-                            <input type="checkbox" id="category" value="category" v-model="useraccess" />
-                            <span>Category Entry</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="brand">
-                            <input type="checkbox" id="brand" value="brand" v-model="useraccess" />
-                            <span>Brand Entry</span>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="control">
-                    <td>
-                        <label for="user">
-                            <input type="checkbox" id="user" value="user" v-model="useraccess" />
-                            <span>User Entry</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="userAccess">
-                            <input type="checkbox" id="userAccess" value="userAccess" v-model="useraccess" />
-                            <span>User Access</span>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="control">
-                    <td>
-                        <label for="companyProfile">
-                            <input type="checkbox" id="companyProfile" value="companyProfile" v-model="useraccess" />
-                            <span>Company Profile</span>
-                        </label>
-                    </td>
-                    <td>
-                        <label for="businessInfo">
-                            <input type="checkbox" id="businessInfo" value="businessInfo" v-model="useraccess" />
-                            <span>Business Info</span>
+                        <label for="dailyReport">
+                            <input type="checkbox" id="dailyReport" value="dailyReport" v-model="useraccess" />
+                            <span>Daily Report</span>
                         </label>
                     </td>
                 </tr>

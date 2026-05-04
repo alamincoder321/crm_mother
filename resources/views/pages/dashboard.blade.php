@@ -177,6 +177,19 @@ $panel = session('panel');
                 </a>
                 @endif
             </div>
+
+            <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('dailyReport'))
+                <a href="/dailyReport">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-book"></i>
+                            <span>Daily Report</span>
+                        </div>
+                    </div>
+                </a>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -528,6 +541,19 @@ $panel = session('panel');
                         <div class="card-body p-3">
                             <i class="bi bi-list"></i>
                             <span>Stock Report</span>
+                        </div>
+                    </div>
+                </a>
+                @endif
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+                @if(checkAccess('dailyReport'))
+                <a href="/dailyReport">
+                    <div class="card mb-0 displayFlex">
+                        <div class="card-body p-3">
+                            <i class="bi bi-book"></i>
+                            <span>Daily Report</span>
                         </div>
                     </div>
                 </a>

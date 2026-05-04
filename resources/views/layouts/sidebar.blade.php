@@ -131,6 +131,15 @@ $panel = session('panel');
             </a>
         </li>
         @endif
+        
+        @if(checkAccess('dailyReport'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('dailyReport') ? 'active' : ''}}" href="/dailyReport">
+                <i class="bi bi-book"></i>
+                <span>Daily Report</span>
+            </a>
+        </li>
+        @endif
 
         @elseif($panel == 'PurchasePanel')
         <li class="nav-item">
@@ -391,6 +400,15 @@ $panel = session('panel');
             <a class="nav-link {{Request::is('stock') ? 'active' : ''}}" href="/stock">
                 <i class="bi bi-list"></i>
                 <span>Stock Report</span>
+            </a>
+        </li>
+        @endif
+
+        @if(checkAccess('dailyReport'))
+        <li class="nav-item">
+            <a class="nav-link {{Request::is('dailyReport') ? 'active' : ''}}" href="/dailyReport">
+                <i class="bi bi-book"></i>
+                <span>Daily Report</span>
             </a>
         </li>
         @endif

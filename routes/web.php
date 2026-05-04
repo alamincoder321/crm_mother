@@ -306,6 +306,10 @@ Route::post('/delete-quotation', [QuotationController::class, 'destroy'])->name(
 Route::get('/profitLoss', [ReportController::class, 'profitLoss'])->name('profitLoss');
 Route::post('/get-other-expense-income', [ReportController::class, 'getOtherExpenseIncome'])->name('get.other.expense.income');
 
+Route::get('/dailyReport', [ReportController::class, 'dailyReport'])->name('dailyReport');
+Route::post('/get-dailyReport', [ReportController::class, 'getDailyReport'])->name('get.dailyReport');
+
+
 Route::get('/pageSet/{page}', function ($page) {
     Session::put('sale_page', $page);
     return redirect()->route('sale.create');
