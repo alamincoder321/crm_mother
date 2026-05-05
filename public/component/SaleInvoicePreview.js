@@ -51,13 +51,13 @@ Vue.component('invoice-preview', {
           <tbody>
             <tr v-for="(item, index) in cart" :key="index">
               <td class="text-center">{{ index + 1 }}</td>
-              <td>{{ item.name }}-{{ item.code }} </td>
+              <td> {{ item.name }}-{{ item.code }} </td>
               <td class="text-center">{{ item.quantity }} {{item.unit_name }}</td>
               <td class="text-end">{{ item.sale_rate }}</td>
               <td class="text-end">{{ item.total }}</td>
             </tr>
             <tr>
-              <td colspan="2" rowspan="7" class="border-0" style="vertical-align: top !important;">
+              <td colspan="2" rowspan="8" class="border-0" style="vertical-align: top !important;">
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-12">
                         <strong>In Word: </strong> {{ withDecimal(sale.total) }}
@@ -91,9 +91,13 @@ Vue.component('invoice-preview', {
               <td style="font-weight: 700;text-align:right;">CashPaid</td>
               <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.cashPaid"></td>
             </tr>
+            <tr>
+              <td style="font-weight: 700;text-align:right;">BankPaid</td>
+              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="sale.bankPaid"></td>
+            </tr>
             <tr style="border-bottom: none;">
-              <td style="font-weight: 700;text-align:right;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:">BankPaid</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:border-right: 1px solid #ccc;" v-text="sale.bankPaid"></td>
+              <td style="font-weight: 700;text-align:right;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:">Due</td>
+              <td colspan="2" class="text-end" style="font-weight: 700;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:border-right: 1px solid #ccc;" v-text="sale.due"></td>
             </tr>
           </tbody>
         </table>

@@ -57,7 +57,7 @@ Vue.component('invoice-preview', {
               <td class="text-end">{{ item.total }}</td>
             </tr>
             <tr>
-              <td colspan="2" rowspan="6" class="border-0" style="vertical-align: top !important;">
+              <td colspan="2" rowspan="7" class="border-0" style="vertical-align: top !important;">
                 <div class="row" style="margin-top: 8px;">
                     <div class="col-12">
                         <strong>In Word: </strong> {{ withDecimal(purchase.total) }}
@@ -87,9 +87,13 @@ Vue.component('invoice-preview', {
               <td style="font-weight: 700;text-align:right;">Total</td>
               <td colspan="2" class="text-end" style="font-weight: 700;" v-text="purchase.total"></td>
             </tr>
+            <tr>
+              <td style="font-weight: 700;text-align:right;">Paid</td>
+              <td colspan="2" class="text-end" style="font-weight: 700;" v-text="purchase.paid"></td>
+            </tr>
             <tr style="border-bottom: none;">
-              <td style="font-weight: 700;text-align:right;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:">Paid</td>
-              <td colspan="2" class="text-end" style="font-weight: 700;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:border-right: 1px solid #ccc;" v-text="purchase.paid"></td>
+              <td style="font-weight: 700;text-align:right;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:">Due</td>
+              <td colspan="2" class="text-end" style="font-weight: 700;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc:border-right: 1px solid #ccc;" v-text="purchase.due"></td>
             </tr>
           </tbody>
         </table>
