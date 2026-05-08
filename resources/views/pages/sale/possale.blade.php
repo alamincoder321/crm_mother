@@ -327,11 +327,11 @@
                                 </div>
                             </div>
                             <div class="form-group row mt-1">
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-2 mb-md-0">
                                     <button type="submit" class="btn w-100 btn-success" style="height: 57px;">Save</button>
                                 </div>
                                 <div class="col-md-6">
-                                    <button type="button" @click="previewInvoice" class="btn w-100 btn-danger" style="height: 57px;">Save & Print</button>
+                                    <button type="button" @click="previewInvoice" class="btn w-100 btn-warning text-white" style="height: 57px;">Save & Print</button>
                                 </div>
                             </div>
                         </div>
