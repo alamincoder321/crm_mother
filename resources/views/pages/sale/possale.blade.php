@@ -102,7 +102,7 @@
             <div class="card-header" style="padding: 7px 15px;">
                 <div class="row">
                     <div class="col-md-12 col-12">
-                        <div style="border-top: 1px solid gray;height: 45px; padding-top: 5px; border-bottom: 1px solid gray; padding-bottom: 5px; overflow-x: auto;">
+                        <div style="border-top: 1px solid gray;height: 45px; padding-top: 5px; border-bottom: 1px solid gray; padding-bottom: 5px; overflow-x: auto; display: flex; align-items: center; white-space: nowrap;">
                             <label
                                 for="category_all"
                                 class="category-label me-2"
