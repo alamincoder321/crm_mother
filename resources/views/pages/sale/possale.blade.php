@@ -47,6 +47,28 @@
         background: #fff;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.07);
     }
+
+    .category-label {
+        cursor: pointer;
+    }
+
+    .category-box {
+        font-size: 13px;
+        border: 1px solid gray;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
+        transition: 0.3s;
+        background: #fff;
+        color: #333;
+    }
+
+    /* Active Design */
+    .category-label.active .category-box {
+        background: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd;
+    }
 </style>
 @endpush
 @section('content')
@@ -79,27 +101,45 @@
         <div class="card mb-0 shadow-none" style="padding-bottom:90px;height:560px;border: 1px solid gray;border-top-right-radius: 0 !important;border-bottom-right-radius: 0 !important;">
             <div class="card-header" style="padding: 7px 15px;">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-md-4" for="">Category</label>
-                            <div class="col-md-8">
-                                <v-select :options="categories" v-model="selectedCategory" label="name" @input="onChangeCategory"></v-select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-md-4" for="">Brand</label>
-                            <div class="col-md-8">
-                                <v-select :options="brands" v-model="selectedBrand" label="name" @input="onChangeBrand"></v-select>
-                            </div>
+                    <div class="col-md-12 col-12">
+                        <div style="border-top: 1px solid gray;height: 45px; padding-top: 5px; border-bottom: 1px solid gray; padding-bottom: 5px; overflow-x: auto;">
+                            <label
+                                for="category_all"
+                                class="category-label me-2"
+                                :class="{ active: selectedCategory == '' }">
+                                <input
+                                    type="radio"
+                                    id="category_all"
+                                    value=""
+                                    checked
+                                    v-model="selectedCategory"
+                                    @change="onChangeCategory"
+                                    class="d-none">
+
+                                <span class="category-box" v-text="`All`"></span>
+                            </label>
+                            <label
+                                :for="'category_' + index"
+                                v-for="(category, index) in categories"
+                                :key="category.id"
+                                class="category-label me-2"
+                                :class="{ active: selectedCategory == category.id }">
+                                <input
+                                    type="radio"
+                                    :id="'category_' + index"
+                                    :value="category.id"
+                                    v-model="selectedCategory"
+                                    @change="onChangeCategory"
+                                    class="d-none">
+
+                                <span class="category-box" v-text="category.name"></span>
+                            </label>
                         </div>
                     </div>
                     <div class="col-md-12 mt-2">
                         <div class="form-group row">
-                            <label for="" class="col-md-2">Product</label>
-                            <div class="col-md-10">
-                                <input type="text" id="productName" v-model="productName" @input="productSearch" class="form-control" placeholder="Search Product Or Code" />
+                            <div class="col-md-112">
+                                <input type="text" id="productName" v-model="productName" @input="productSearch" class="form-control p-2" placeholder="Search Product Or Code" />
                             </div>
                         </div>
                     </div>
@@ -387,7 +427,7 @@
                     due: 0,
                     previous_due: 0,
                     note: ''
-                },                
+                },
                 discountPercent: 0,
                 vatPercent: 0,
                 customers: [],
@@ -402,7 +442,7 @@
                 brands: [],
                 selectedBrand: null,
                 categories: [],
-                selectedCategory: null,
+                selectedCategory: '',
                 productName: '',
                 products: [],
                 selectedProduct: {
@@ -437,7 +477,11 @@
         },
 
         beforeCreate() {
-            $("body").addClass("toggle-sidebar");
+            const isDesktop = window.matchMedia("(min-width: 992px)").matches;
+
+            if (isDesktop) {
+                document.body.classList.add("toggle-sidebar");
+            }
         },
 
         async created() {
@@ -447,9 +491,6 @@
             this.getBank();
             this.getCustomer();
             this.getProduct();
-            if (this.sale.id != '') {
-                await this.getSale();
-            }
         },
 
         methods: {
@@ -585,7 +626,7 @@
             getProduct() {
                 axios.post('/get-product', {
                         brandId: this.selectedBrand ? this.selectedBrand.id : '',
-                        categoryId: this.selectedCategory ? this.selectedCategory.id : '',
+                        categoryId: this.selectedCategory,
                         forSearch: this.selectedBrand || this.selectedCategory ? '' : 'yes',
                         search: this.productName
                     })
@@ -600,8 +641,7 @@
                 if (val.length > 2) {
                     loading(true);
                     await axios.post("/get-product", {
-                            search: val,
-                            is_service: 'false'
+                            search: val
                         })
                         .then(res => {
                             this.products = res.data.map(item => {
@@ -678,7 +718,8 @@
                         purchase_rate: this.selectedProduct.purchase_rate,
                         sale_rate: this.selectedProduct.sale_rate,
                         quantity: 1,
-                        total: parseFloat(this.selectedProduct.sale_rate * 1).toFixed(2)
+                        total: parseFloat(this.selectedProduct.sale_rate * 1).toFixed(2),
+                        is_service: this.selectedProduct.is_service
                     })
                 }
                 this.clearProduct();
@@ -707,7 +748,8 @@
                         purchase_rate: this.selectedProduct.purchase_rate,
                         sale_rate: this.selectedProduct.sale_rate,
                         quantity: 1,
-                        total: parseFloat(this.selectedProduct.sale_rate * 1).toFixed(2)
+                        total: parseFloat(this.selectedProduct.sale_rate * 1).toFixed(2),
+                        is_service: this.selectedProduct.is_service
                     })
                 }
                 this.clearProduct();
@@ -749,7 +791,7 @@
                     display_name: 'select product'
                 }
                 this.stock = 0;
-                this.barcodeInput = '';                
+                this.barcodeInput = '';
             },
 
             calculateTotal() {
@@ -881,7 +923,7 @@
                         this.onProgress = false
                         var r = JSON.parse(err.request.response);
                         console.log(r);
-                        
+
                         if (err.request.status == '422' && r.errors != undefined && typeof r.errors == 'object') {
                             $.each(r.errors, (index, value) => {
                                 $.each(value, (ind, val) => {
@@ -926,57 +968,7 @@
                 };
                 this.selectedEmployee = null;
                 this.carts = [];
-                this.getCustomer();                
-            },
-
-            async getSale() {
-                await axios.post('/get-sale', {
-                    saleId: this.sale.id
-                }).then(res => {
-                    let sale = res.data[0];
-                    let saleKeys = Object.keys(this.sale);
-                    saleKeys.forEach(key => {
-                        this.sale[key] = sale[key];
-                    })
-
-                    sale.details.map(item => {
-                        let detail = {
-                            id: item.product_id,
-                            code: item.code,
-                            category_name: item.category_name,
-                            name: item.name,
-                            unit_name: item.unit_name,
-                            purchase_rate: item.purchase_rate,
-                            sale_rate: item.sale_rate,
-                            quantity: item.quantity,
-                            total: item.total
-                        };
-                        this.carts.push(detail);
-                    })
-                    sale.bank_details.map(item => {
-                        let detail = {
-                            id: item.bank_id,
-                            bank_name: item.bank_name,
-                            number: item.number,
-                            last_digit: item.last_digit,
-                            amount: item.amount
-                        };
-                        this.bankCart.push(detail);
-                    })
-
-                    this.selectedCustomer = {
-                        id: sale.customer_id ?? '',
-                        name: sale.customer_name,
-                        phone: sale.customer_phone,
-                        address: sale.customer_address,
-                        display_name: sale.customer_type == 'general' ? 'Walk In Customer' : `${sale.customer_name} - ${sale.customer_phone} - ${sale.customer_address}`,
-                        type: sale.customer_type
-                    }
-
-                    setTimeout(() => {
-                        this.selectedEmployee = this.employees.find(item => item.id == sale.employee_id);
-                    }, 1000);
-                })
+                this.getCustomer();
             }
         },
     })
