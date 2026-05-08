@@ -160,8 +160,8 @@
                             </div>
                             <div class="form-group row" style="display: flex; align-items: center;">
                                 <div class="col-12 col-md-7" style="font-size: 13px;">
-                                    <span>Stock:</span> <span class="text-success" v-text="stock"></span> <span v-text="selectedProduct.unit?.name"></span>
-                                    <span class="text-danger" v-if="stock <= 0"> (Out of Stock)</span>
+                                    <span v-if="selectedProduct.is_service == 0">Stock:</span> <span v-if="selectedProduct.is_service == 0" class="text-success" v-text="stock"></span> <span v-if="selectedProduct.unit && selectedProduct.is_service == 0" v-text="selectedProduct.unit.name"></span>
+                                    <span v-if="selectedProduct.is_service == 0 && stock <= 0" class="text-danger"> (Out of Stock)</span>
                                 </div>
                                 <div class="col-12 col-md-5 text-end">
                                     <button type="submit" class="btn btn-sm btnCart w-100">AddToCart</button>
@@ -597,14 +597,14 @@
 
                 if (cart != undefined) {
                     let newQuantity = parseFloat(cart.quantity) + parseFloat(this.selectedProduct.quantity)
-                    if (parseFloat(newQuantity) > parseFloat(this.stock)) {
+                    if (parseFloat(newQuantity) > parseFloat(this.stock) && cart.is_service == '0') {
                         toastr.error('Stock is unavailable');
                         return;
                     }
                     cart.quantity = newQuantity;
                     cart.total = parseFloat(cart.sale_rate * cart.quantity).toFixed(2);
                 } else {
-                    if (parseFloat(this.selectedProduct.quantity) > parseFloat(this.stock)) {
+                    if (parseFloat(this.selectedProduct.quantity) > parseFloat(this.stock) && this.selectedProduct.is_service == '0') {
                         toastr.error('Stock is unavailable');
                         return;
                     }
@@ -618,6 +618,7 @@
                         sale_rate: this.selectedProduct.sale_rate,
                         quantity: this.selectedProduct.quantity,
                         total: this.selectedProduct.total,
+                        is_service: this.selectedProduct.is_service
                     })
                 }
                 this.clearProduct();
@@ -865,7 +866,8 @@
                             purchase_rate: item.purchase_rate,
                             sale_rate: item.sale_rate,
                             quantity: item.quantity,
-                            total: item.total
+                            total: item.total,
+                            is_service: item.is_service
                         };
                         this.carts.push(detail);
                     })

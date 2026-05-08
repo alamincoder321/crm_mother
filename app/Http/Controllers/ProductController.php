@@ -37,6 +37,10 @@ class ProductController extends Controller
         if (!empty($request->brandId)) {
             $products = $products->where('brand_id', $request->brandId);
         }
+        
+        if (!empty($request->isService)) {
+            $products = $products->where('is_service', $request->isService == 'true' ? 1 : 0);
+        }
 
         if (!empty($request->search)) {
             $products = $products->where(function ($query) use ($request) {

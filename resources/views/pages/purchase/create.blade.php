@@ -387,7 +387,8 @@
 
             getProduct() {
                 axios.post('/get-product', {
-                        forSearch: 'yes'
+                        forSearch: 'yes',
+                        isService: 'false'
                     })
                     .then(res => {
                         this.products = res.data;
@@ -398,7 +399,7 @@
                     loading(true);
                     await axios.post("/get-product", {
                             search: val,
-                            is_service: 'false'
+                            isService: 'false'
                         })
                         .then(res => {
                             this.products = res.data;

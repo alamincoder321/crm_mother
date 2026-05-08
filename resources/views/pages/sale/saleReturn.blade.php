@@ -230,7 +230,8 @@
                         return_quantity: item.return_quantity,
                         sale_rate: item.sale_rate,
                         discount: item.discount,
-                        returnTotal: item.returnTotal
+                        returnTotal: item.returnTotal,
+                        is_service: item.is_service
                     }
                 });
 

@@ -22,6 +22,7 @@ class CreateSaleReturnDetailsTable extends Migration
             $table->decimal('sale_rate')->default(0);
             $table->decimal('discount')->default(0);
             $table->decimal('total')->default(0);
+            $table->enum('is_service', [1, 0])->default(0);
             $table->char('status', 1)->default('a');
             $table->foreignId('created_by')->nullable()->constrained('users', 'id');
             $table->dateTime('created_at')->useCurrent();

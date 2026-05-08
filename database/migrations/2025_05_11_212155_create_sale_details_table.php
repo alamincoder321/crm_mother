@@ -24,6 +24,7 @@ class CreateSaleDetailsTable extends Migration
             $table->decimal('vat')->default(0);
             $table->decimal('total')->default(0);
             $table->string('note')->nullable();
+            $table->enum('is_service', [1, 0])->default(0);
             $table->char('status', 1)->default('a');
             $table->foreignId('created_by')->nullable()->constrained('users', 'id');
             $table->dateTime('created_at')->useCurrent();
