@@ -126,6 +126,7 @@ class SaleController extends Controller
     {
         //check stock
         foreach ($request->carts as $key => $item) {
+            if($item['is_service'] == 1) continue;
             $stock = Product::stock(['productId' => $item['id']])[0]->stock;
             if ($item['quantity'] > $stock) {
                 return send_error("Stock unavailable this product: {$item['name']}", null, 422);
@@ -282,6 +283,7 @@ class SaleController extends Controller
             SaleDetail::where('sale_id', $sale->id)->forceDelete();
             //check stock
             foreach ($request->carts as $key => $item) {
+                if($item['is_service'] == 1) continue;
                 $stock = Product::stock(['productId' => $item['id']])[0]->stock;
                 if ($item['quantity'] > $stock) {
                     return send_error("Stock unavailable this product: {$item['name']}", null, 422);
