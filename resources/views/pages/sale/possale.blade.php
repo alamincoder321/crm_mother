@@ -501,14 +501,16 @@
                 }
                 for (const item of this.carts) {
                     try {
-                        const res = await axios.post('/get-currentStock', {
-                            productId: item.id
-                        });
-                        let stock = res.data.length > 0 ? res.data[0].stock : 0;
-
-                        if (parseFloat(item.quantity) > parseFloat(stock)) {
-                            toastr.error(`Unavailable stock for this product: ${item.name}`);
-                            return;
+                        if(item.is_service != '1'){
+                            const res = await axios.post('/get-currentStock', {
+                                productId: item.id
+                            });
+                            let stock = res.data.length > 0 ? res.data[0].stock : 0;
+    
+                            if (parseFloat(item.quantity) > parseFloat(stock)) {
+                                toastr.error(`Unavailable stock for this product: ${item.name}`);
+                                return;
+                            }
                         }
                     } catch (error) {
                         toastr.error(`Error checking stock for ${item.name}`);
@@ -757,18 +759,21 @@
             },
 
             async quantityRateTotal(cart) {
-                let stock = await axios.post('/get-currentStock', {
-                    productId: cart.id
-                }).then(res => {
-                    return res.data.length > 0 ? res.data[0].stock : 0;
-                });
+                var stock = 0;
+                if(cart.is_service == 0){
+                    stock = await axios.post('/get-currentStock', {
+                        productId: cart.id
+                    }).then(res => {
+                        return res.data.length > 0 ? res.data[0].stock : 0;
+                    });
+                }
 
                 this.carts = this.carts.map(item => {
                     if (item.id === cart.id) {
                         if (item.quantity == '') {
                             item.quantity = 1;
                         }
-                        if (parseFloat(item.quantity) > parseFloat(stock)) {
+                        if ((parseFloat(item.quantity) > parseFloat(stock)) && item.is_service == 0) {
                             toastr.error('Stock is unavailable');
                             item.quantity = stock;
                         }
@@ -907,7 +912,7 @@
                 let formdata = {
                     sale: this.sale,
                     customer: this.selectedCustomer,
-                    carts: this.carts,
+                    carts: this.carts.filter(item => item.quantity > 0),
                     bankCart: this.bankCart,
                 }
                 let url = this.sale.id != '' ? '/update-sale' : '/sale'
