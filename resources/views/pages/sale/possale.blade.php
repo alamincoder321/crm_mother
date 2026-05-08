@@ -69,6 +69,41 @@
         color: #fff;
         border-color: #0d6efd;
     }
+    
+    /* Horizontal scrollbar design */
+    .category-scroll {
+        border-top: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding: 5px 0;
+        overflow-x: auto;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    
+        /* Firefox */
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+    
+    /* Chrome, Edge, Safari */
+    .category-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .category-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .category-scroll::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+    
+    .category-scroll::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 </style>
 @endpush
 @section('content')
@@ -102,7 +137,7 @@
             <div class="card-header" style="padding: 7px 15px;">
                 <div class="row">
                     <div class="col-md-12 col-12">
-                        <div style="border-top: 1px solid gray;height: 45px; padding-top: 5px; border-bottom: 1px solid gray; padding-bottom: 5px; overflow-x: auto; display: flex; align-items: center; white-space: nowrap;">
+                        <div class="category-scroll">
                             <label
                                 for="category_all"
                                 class="category-label me-2"
