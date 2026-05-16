@@ -39,7 +39,7 @@ class ProductController extends Controller
         }
         
         if (!empty($request->isService)) {
-            $products = $products->where('is_service', $request->isService == 'true' ? 1 : 0);
+            $products = $products->where('is_service', $request->isService == 'true' ? '1' : '0');
         }
 
         if (!empty($request->search)) {
@@ -53,7 +53,7 @@ class ProductController extends Controller
         }
 
         if (!empty($request->forSearch)) {
-            $products = $products->limit(50)->latest()->get();
+            $products = $products->latest()->limit(50)->get();
         } else {
             if (!empty($request->per_page)) {
                 $products = $products->latest()->paginate($request->per_page ?? 20);

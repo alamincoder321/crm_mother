@@ -101,6 +101,7 @@ class Product extends Model
                             left join units u on u.id = p.unit_id
                             where p.status = 'a'
                             and p.branch_id = '$branchId'
+                            and p.is_service = '0'
                             $clauses");
 
 

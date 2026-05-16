@@ -224,7 +224,11 @@
                 this.isLoading = false;
                 axios.post('/get-currentStock', filter)
                     .then(res => {
-                        this.stocks = res.data
+                        if(this.searchType == 'current'){
+                            this.stocks = res.data.filter(item => parseFloat(item.stock) != 0);
+                        }else{
+                            this.stocks = res.data
+                        }
                         this.isLoading = true;
                     })
             },

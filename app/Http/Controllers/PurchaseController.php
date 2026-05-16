@@ -158,10 +158,10 @@ class PurchaseController extends Controller
                     'branch_id'     => $this->branchId,
                 ];
 
-                $stock = Product::stock(['productId' => $cart['id']])[0];
-                if($stock->stock > 0){
+                $stock = Product::stock(['productId' => $cart['id']]);
+                if(count($stock) > 0 && $stock[0]->stock > 0){
                     $product                = Product::find($cart['id']);
-                    $avg_rate               = ($stock->stock * $stock->purchase_rate + $cart['quantity'] * $cart['purchase_rate']) / ($stock->stock + $cart['quantity']);
+                    $avg_rate               = ($stock[0]->stock * $stock[0]->purchase_rate + $cart['quantity'] * $cart['purchase_rate']) / ($stock[0]->stock + $cart['quantity']);
                     $product->purchase_rate = $avg_rate;
                     $product->sale_rate     = $cart['sale_rate'] ;
                     $product->update();
@@ -250,10 +250,10 @@ class PurchaseController extends Controller
                     'branch_id'     => $this->branchId,
                 ];
 
-                $stock = Product::stock(['productId' => $cart['id']])[0];
-                if($stock->stock > 0){
+                $stock = Product::stock(['productId' => $cart['id']]);
+                if(count($stock) > 0 && $stock[0]->stock > 0){
                     $product                = Product::find($cart['id']);
-                    $avg_rate               = ($stock->stock * $stock->purchase_rate + $cart['quantity'] * $cart['purchase_rate']) / ($stock->stock + $cart['quantity']);
+                    $avg_rate               = ($stock[0]->stock * $stock[0]->purchase_rate + $cart['quantity'] * $cart['purchase_rate']) / ($stock[0]->stock + $cart['quantity']);
                     $product->purchase_rate = $avg_rate;
                     $product->sale_rate     = $cart['sale_rate'] ;
                     $product->update();

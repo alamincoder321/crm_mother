@@ -131,6 +131,7 @@ class PurchaseReturnController extends Controller
                     'quantity'           => $cart['return_quantity'],
                     'discount'           => $cart['discount'] ?? 0,
                     'total'              => $cart['returnTotal'],
+                    'is_service'         => $cart['is_service'] ?? 0,
                     'created_by'         => $this->userId,
                     'ipAddress'          => request()->ip(),
                     'branch_id'          => $this->branchId,
