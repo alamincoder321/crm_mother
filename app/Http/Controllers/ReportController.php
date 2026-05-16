@@ -111,4 +111,12 @@ class ReportController extends Controller
                 
         return response()->json($query);
     }
+
+    public function daybook()
+    {
+        if (!checkAccess('daybook')) {
+            return view('error.403');
+        }
+        return view('pages.report.daybook');
+    }
 }

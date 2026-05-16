@@ -309,6 +309,9 @@ Route::post('/get-other-expense-income', [ReportController::class, 'getOtherExpe
 Route::get('/dailyReport', [ReportController::class, 'dailyReport'])->name('dailyReport');
 Route::post('/get-dailyReport', [ReportController::class, 'getDailyReport'])->name('get.dailyReport');
 
+// daybook route
+Route::get('/daybook', [ReportController::class, 'daybook'])->name('daybook');
+
 
 Route::get('/pageSet/{page}', function ($page) {
     Session::put('sale_page', $page);
