@@ -310,6 +310,7 @@ Route::get('/dailyReport', [ReportController::class, 'dailyReport'])->name('dail
 Route::post('/get-dailyReport', [ReportController::class, 'getDailyReport'])->name('get.dailyReport');
 
 // daybook route
+Route::post('/get-opening-closing-balance', [ReportController::class, 'openingClosingBalance'])->name('opening.closing.balance');
 Route::get('/daybook', [ReportController::class, 'daybook'])->name('daybook');
 
 

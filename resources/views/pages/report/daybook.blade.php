@@ -63,9 +63,16 @@
                     <div id="reportContent" style="overflow-x: auto;">
                         <table class="table table-bordered table-hover">
                             <tr>
-                                <th class="text-center" style="padding: 8px 5px !important;" colspan="2">Receive</th>
+                                <th class="text-center" style="padding: 8px 5px !important;" colspan="2">In</th>
                                 <th></th>
-                                <th class="text-center" style="padding: 8px 5px !important;" colspan="2">Payment</th>
+                                <th class="text-center" style="padding: 8px 5px !important;" colspan="2">Out</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Opening Cash Bank Balance</strong></td>
+                                <td class="text-center"><strong>@{{openingBalance | formatCurrency }}</strong></td>
+
+                                <td></td>
+                                <td colspan="2"></td>
                             </tr>
                             <tr>
                                 <td><strong>Sales Receipt</strong></td>
@@ -87,7 +94,7 @@
                                         <tr v-for="sale in sales" :key="sale.id">
                                             <td class="text-center">@{{ sale.invoice }}</td>
                                             <td class="text-center">@{{ sale.customer_name }}</td>
-                                            <td class="text-end">@{{ sale.cashPaid }}</td>
+                                            <td class="text-end">@{{ parseFloat(sale.cashPaid - sale.returnAmount).toFixed(2) }}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -110,19 +117,161 @@
                                 </td>
                             </tr>
 
+                            <!-- receive customer and payment supplier section -->
                             <tr>
-                                <td class="text-center"><strong>Total Receive</strong></td>
-                                <td class="text-center"><strong>@{{totalSale | formatCurrency }}</strong></td>
+                                <td><strong>Receipts From Customers</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalCustomerReceipts | formatCurrency }}</strong></td>
 
                                 <td></td>
 
-                                <td class="text-center"><strong>Total Payment</strong></td>
-                                <td class="text-center"><strong>@{{totalPurchase | formatCurrency }}</strong></td>
+                                <td><strong>Payments To Suppliers</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalSupplierPayments | formatCurrency }}</strong></td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-center" style="padding: 6px 5px !important;">
-                                    <strong>Closing Balance: @{{ (totalSale - totalPurchase) | formatCurrency }}</strong>
+                                <td>
+                                    <table class="table table-bordered" :class="customerReceipts.length > 0 ? '' : 'd-none'" v-if="customerReceipts.length > 0">
+                                        <tr>
+                                            <td class="text-center">Customer</td>
+                                            <td class="text-center">Received</td>
+                                        </tr>
+                                        <tr v-for="receipt in customerReceipts" :key="receipt.id">
+                                            <td class="text-center">@{{ receipt.customer?.name }}</td>
+                                            <td class="text-end">@{{ receipt.amount }}</td>
+                                        </tr>
+                                    </table>
                                 </td>
+
+                                <td></td>
+
+                                <td>
+                                    <table class="table table-bordered" :class="supplierPayments.length > 0 ? '' : 'd-none'" v-if="supplierPayments.length > 0">
+                                        <tr>
+                                            <td class="text-center">Supplier</td>
+                                            <td class="text-center">Paid</td>
+                                        </tr>
+                                        <tr v-for="payment in supplierPayments" :key="payment.id">
+                                            <td class="text-center">@{{ payment.supplier?.name }}</td>
+                                            <td class="text-end">@{{ payment.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            
+                            <!-- receive supplier and payment customer section -->
+                            <tr>
+                                <td><strong>Receipts From Suppliers</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalSupplierReceipts | formatCurrency }}</strong></td>
+
+                                <td></td>
+
+                                <td><strong>Payments To Customers</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalCustomerPayments | formatCurrency }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table class="table table-bordered" :class="supplierReceipts.length > 0 ? '' : 'd-none'" v-if="supplierReceipts.length > 0">
+                                        <tr>
+                                            <td class="text-center">Supplier</td>
+                                            <td class="text-center">Received</td>
+                                        </tr>
+                                        <tr v-for="receipt in supplierReceipts" :key="receipt.id">
+                                            <td class="text-center">@{{ receipt.supplier?.name }}</td>
+                                            <td class="text-end">@{{ receipt.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <td></td>
+
+                                <td>
+                                    <table class="table table-bordered" :class="customerPayments.length > 0 ? '' : 'd-none'" v-if="customerPayments.length > 0">
+                                        <tr>
+                                            <td class="text-center">Customer</td>
+                                            <td class="text-center">Paid</td>
+                                        </tr>
+                                        <tr v-for="payment in customerPayments" :key="payment.id">
+                                            <td class="text-center">@{{ payment.customer?.name }}</td>
+                                            <td class="text-end">@{{ payment.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            
+                            <!-- expense and income section -->
+                            <tr>
+                                <td><strong>Income Total</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalIncome | formatCurrency }}</strong></td>
+
+                                <td></td>
+
+                                <td><strong>Expense Total</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalExpense | formatCurrency }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table class="table table-bordered" :class="incomes.length > 0 ? '' : 'd-none'" v-if="incomes.length > 0">
+                                        <tr>
+                                            <td class="text-center">Account</td>
+                                            <td class="text-center">Received</td>
+                                        </tr>
+                                        <tr v-for="income in incomes" :key="income.id">
+                                            <td class="text-center">@{{ income.account?.name }}</td>
+                                            <td class="text-end">@{{ income.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <td></td>
+
+                                <td>
+                                    <table class="table table-bordered" :class="expenses.length > 0 ? '' : 'd-none'" v-if="expenses.length > 0">
+                                        <tr>
+                                            <td class="text-center">Account</td>
+                                            <td class="text-center">Amount</td>
+                                        </tr>
+                                        <tr v-for="expense in expenses" :key="expense.id">
+                                            <td class="text-center">@{{ expense.account?.name }}</td>
+                                            <td class="text-end">@{{ expense.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <tr>
+                                <td colspan="2"></td>
+
+                                <td></td>
+
+                                <td><strong>Closing Cash Bank Balance</strong></td>
+                                <td class="text-center"><strong>@{{closingBalance | formatCurrency }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"><strong>Total</strong></td>
+                                <td class="text-center"><strong>@{{totalIn | formatCurrency }}</strong></td>
+
+                                <td></td>
+
+                                <td class="text-center"><strong>Total</strong></td>
+                                <td class="text-center"><strong>@{{totalOut | formatCurrency }}</strong></td>
                             </tr>
                         </table>
                     </div>
@@ -143,17 +292,52 @@
                 dateFrom: moment().format('YYYY-MM-DD'),
                 dateTo: moment().format('YYYY-MM-DD')
             },
+            openingBalance: 0,
+            closingBalance: 0,
             sales: [],
             purchases: [],
+            customerReceipts: [],
+            supplierReceipts: [],
+            supplierPayments: [],
+            customerPayments: [],
+            incomes: [],
+            expenses: [],
             isLoading: true
         },
 
         computed: {
             totalSale(){
-                return this.sales.reduce((pr, cu) => pr + parseFloat(cu.cashPaid), 0);
+                return this.sales.reduce((pr, cu) => pr + parseFloat(cu.cashPaid - cu.returnAmount), 0);
             },
             totalPurchase(){
                 return this.purchases.reduce((pr, cu) => pr + parseFloat(cu.paid), 0);
+            },
+            totalCustomerReceipts(){
+                return this.customerReceipts.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+            totalSupplierPayments(){
+                return this.supplierPayments.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+            totalSupplierReceipts(){
+                return this.supplierReceipts.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+            totalCustomerPayments(){
+                return this.customerPayments.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+
+            totalIncome(){
+                return this.incomes.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+
+            totalExpense(){
+                return this.expenses.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+
+            totalIn() {
+                return this.openingBalance + this.totalSale + this.totalCustomerReceipts + this.totalSupplierReceipts + this.totalIncome;
+            },
+            totalOut() {
+                return this.closingBalance + this.totalPurchase + this.totalSupplierPayments + this.totalCustomerPayments + this.totalExpense;
             }
         },
 
@@ -170,13 +354,34 @@
             }
         },
 
+        created() {
+            this.showReport();
+        },
+
         methods: {
             async showReport() {
                 this.isLoading = true;
                 await this.getSale();
                 await this.getPurchase();
+                await this.getCustomerReceipts();
+                await this.getSupplierPayments();
+                await this.getCustomerPayments();
+                await this.getSupplierReceipts();
+                await this.getOpeningBalance();
+                await this.getClosingBalance();
+                await this.getIncomes();
+                await this.getExpenses();
             },
 
+            async getOpeningBalance() {
+                let date = moment(this.filter.dateFrom).subtract(1, 'days').format('YYYY-MM-DD');
+                const response = await axios.post("/get-opening-closing-balance", {date: date});
+                this.openingBalance = response.data.balance;
+            },
+            async getClosingBalance() {
+                const response = await axios.post("/get-opening-closing-balance", {date: this.filter.dateTo});
+                this.closingBalance = response.data.balance;
+            },
             async getPurchase() {
                 const purchases = await axios.post("/get-purchase", this.filter);
                 this.purchases = purchases.data;
@@ -184,7 +389,41 @@
 
             async getSale() {
                 const sales = await axios.post("/get-sale", this.filter);
-                this.sales = sales.data;
+                this.sales = sales.data.filter(sale => sale.cashPaid > 0);
+            },
+            
+            async getCustomerReceipts() {
+                this.filter.type = 'customer';
+                const customerReceipts = await axios.post("/get-receive", this.filter);
+                this.customerReceipts = customerReceipts.data.filter(receipt => receipt.payment_method == 'cash');
+            },
+
+            async getSupplierPayments() {
+                this.filter.type = 'supplier';
+                const supplierPayments = await axios.post("/get-payment", this.filter);
+                this.supplierPayments = supplierPayments.data.filter(receipt => receipt.payment_method == 'cash');
+            },
+            async getCustomerPayments() {
+                this.filter.type = 'customer';
+                const customerPayments = await axios.post("/get-payment", this.filter);
+                this.customerPayments = customerPayments.data.filter(payment => payment.payment_method == 'cash');
+            },
+            async getSupplierReceipts() {
+                this.filter.type = 'supplier';
+                const supplierReceipts = await axios.post("/get-receive", this.filter);
+                this.supplierReceipts = supplierReceipts.data.filter(receipt => receipt.payment_method == 'cash');
+            },
+
+            async getIncomes() {
+                this.filter.type = 'income';
+                const response = await axios.post("/get-transaction", this.filter);
+                this.incomes = response.data;
+            },
+
+            async getExpenses() {
+                this.filter.type = 'expense';
+                const response = await axios.post("/get-transaction", this.filter);
+                this.expenses = response.data;
             },
 
             async print() {

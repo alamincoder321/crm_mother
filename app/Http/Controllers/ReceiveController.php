@@ -37,6 +37,9 @@ class ReceiveController extends Controller
         if (!empty($request->bankId)) {
             $transactions->where('bank_id', $request->bankId);
         }
+        if (!empty($request->paymentMethod)) {
+             $transactions->where('payment_method', $request->paymentMethod);
+        }
         if (!empty($request->type)) {
             $transactions->where('type', $request->type);
         }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountHead;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -110,6 +111,16 @@ class ReportController extends Controller
                 where u.status = 'a' $clauses");
                 
         return response()->json($query);
+    }
+
+    public function openingClosingBalance(Request $request)
+    {
+        $cashBalance = AccountHead::getCashBalance($request, $request->date)->cashbalance;
+        $bankBalance = array_reduce(Bank::getBankBalance($request, $request->date), function ($carry, $item) {
+            return $carry + $item->currentbalance;
+        }, 0);
+        $data['balance'] = $cashBalance + $bankBalance;
+        return response()->json($data);
     }
 
     public function daybook()
