@@ -35,6 +35,9 @@ class DamageController extends Controller
         if (!empty($request->supplierId)) {
             $damages->where('supplier_id', $request->supplierId);
         }
+        if (!empty($request->supplierType)) {
+            $damages->where('supplier_type', $request->supplierType);
+        }
         if (!empty($request->userId)) {
             $damages->where('created_by', $request->userId);
         }
@@ -74,6 +77,7 @@ class DamageController extends Controller
             $damage->supplier_address = $supplier->address ?? $damage->supplier_address;
             return $damage;
         }, $damages);
+        
         return response()->json($damages);
     }
 

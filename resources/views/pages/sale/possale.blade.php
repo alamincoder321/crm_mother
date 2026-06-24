@@ -957,7 +957,7 @@
                         toastr.success(res.data.message);
                         this.clearData();
                         this.sale.invoice = res.data.invoice;
-                        history.pushState(null, '', '/sale');
+                        history.pushState(null, '', '/pos');
                     })
                     .catch(err => {
                         this.onProgress = false

@@ -87,12 +87,10 @@
                                 <td>
                                     <table class="table table-bordered" :class="sales.length > 0 ? '' : 'd-none'" v-if="sales.length > 0">
                                         <tr>
-                                            <td class="text-center">Invoice</td>
                                             <td class="text-center">Customer</td>
                                             <td class="text-center">Received</td>
                                         </tr>
                                         <tr v-for="sale in sales" :key="sale.id">
-                                            <td class="text-center">@{{ sale.invoice }}</td>
                                             <td class="text-center">@{{ sale.customer_name }}</td>
                                             <td class="text-end">@{{ parseFloat(sale.cashPaid - sale.returnAmount).toFixed(2) }}</td>
                                         </tr>
@@ -104,12 +102,10 @@
                                 <td>
                                     <table class="table table-bordered" :class="purchases.length > 0 ? '' : 'd-none'" v-if="purchases.length > 0">
                                         <tr>
-                                            <td class="text-center">Invoice</td>
                                             <td class="text-center">Supplier</td>
                                             <td class="text-center">Paid</td>
                                         </tr>
                                         <tr v-for="purchase in purchases" :key="purchase.id">
-                                            <td class="text-center">@{{ purchase.invoice }}</td>
                                             <td class="text-center">@{{ purchase.supplier_name }}</td>
                                             <td class="text-end">@{{ purchase.paid }}</td>
                                         </tr>
@@ -156,7 +152,7 @@
                                     </table>
                                 </td>
                             </tr>
-                            
+
                             <!-- receive supplier and payment customer section -->
                             <tr>
                                 <td><strong>Receipts From Suppliers</strong></td>
@@ -196,7 +192,7 @@
                                     </table>
                                 </td>
                             </tr>
-                            
+
                             <!-- expense and income section -->
                             <tr>
                                 <td><strong>Income Total</strong></td>
@@ -237,6 +233,46 @@
                                 </td>
                             </tr>
 
+                            <!-- Investment receipts and payments section -->
+                            <tr>
+                                <td><strong>Investment Receipts Total</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalInvestmentReceipts | formatCurrency }}</strong></td>
+
+                                <td></td>
+
+                                <td><strong>Investment Payments Total</strong></td>
+                                <td rowspan="2" class="text-center"><strong>@{{totalInvestmentPayments | formatCurrency }}</strong></td>
+                            </tr>                            
+                            <tr>
+                                <td>
+                                    <table class="table table-bordered" :class="investmentReceipts.length > 0 ? '' : 'd-none'" v-if="investmentReceipts.length > 0">
+                                        <tr>
+                                            <td class="text-center">Account</td>
+                                            <td class="text-center">Received</td>
+                                        </tr>
+                                        <tr v-for="receipt in investmentReceipts" :key="receipt.id">
+                                            <td class="text-center">@{{ receipt.account?.name }}</td>
+                                            <td class="text-end">@{{ receipt.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <td></td>
+
+                                <td>
+                                    <table class="table table-bordered" :class="investmentPayments.length > 0 ? '' : 'd-none'" v-if="investmentPayments.length > 0">
+                                        <tr>
+                                            <td class="text-center">Account</td>
+                                            <td class="text-center">Amount</td>
+                                        </tr>
+                                        <tr v-for="payment in investmentPayments" :key="payment.id">
+                                            <td class="text-center">@{{ payment.account?.name }}</td>
+                                            <td class="text-end">@{{ payment.amount }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
 
 
 
@@ -257,6 +293,26 @@
 
 
                             <tr>
+                                <td><strong>Purchase Return Total</strong></td>
+                                <td class="text-center"><strong>@{{totalPurchaseReturn | formatCurrency }}</strong></td>
+
+                                <td></td>
+
+                                <td><strong>Sale Return Total</strong></td>
+                                <td class="text-center"><strong>@{{totalSaleReturn | formatCurrency }}</strong></td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Damage Total</strong></td>
+                                <td class="text-center"><strong>@{{totalDamage | formatCurrency }}</strong></td>
+
+                                <td></td>
+
+                                <td><strong>Salary Payment Total</strong></td>
+                                <td class="text-center"><strong>@{{totalSalaryPayment | formatCurrency }}</strong></td>
+                            </tr>
+
+                            <tr>
                                 <td colspan="2"></td>
 
                                 <td></td>
@@ -264,6 +320,7 @@
                                 <td><strong>Closing Cash Bank Balance</strong></td>
                                 <td class="text-center"><strong>@{{closingBalance | formatCurrency }}</strong></td>
                             </tr>
+
                             <tr>
                                 <td class="text-center"><strong>Total</strong></td>
                                 <td class="text-center"><strong>@{{totalIn | formatCurrency }}</strong></td>
@@ -302,49 +359,73 @@
             customerPayments: [],
             incomes: [],
             expenses: [],
+            investmentReceipts: [],
+            investmentPayments: [],
+            damages: [],
+            purchaseReturns: [],
+            saleReturns: [],
+            salaryPayments: [],
             isLoading: true
         },
 
         computed: {
-            totalSale(){
+            totalSale() {
                 return this.sales.reduce((pr, cu) => pr + parseFloat(cu.cashPaid - cu.returnAmount), 0);
             },
-            totalPurchase(){
+            totalPurchase() {
                 return this.purchases.reduce((pr, cu) => pr + parseFloat(cu.paid), 0);
             },
-            totalCustomerReceipts(){
+            totalCustomerReceipts() {
                 return this.customerReceipts.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
             },
-            totalSupplierPayments(){
+            totalSupplierPayments() {
                 return this.supplierPayments.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
             },
-            totalSupplierReceipts(){
+            totalSupplierReceipts() {
                 return this.supplierReceipts.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
             },
-            totalCustomerPayments(){
+            totalCustomerPayments() {
                 return this.customerPayments.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
             },
+            totalInvestmentReceipts() {
+                return this.investmentReceipts.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+            totalInvestmentPayments() {
+                return this.investmentPayments.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
 
-            totalIncome(){
+            totalIncome() {
                 return this.incomes.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
             },
 
-            totalExpense(){
+            totalExpense() {
                 return this.expenses.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
+            },
+            totalPurchaseReturn() {
+                return this.purchaseReturns.reduce((pr, cu) => pr + parseFloat(cu.total), 0);
+            },
+            totalSaleReturn() {
+                return this.saleReturns.reduce((pr, cu) => pr + parseFloat(cu.total), 0);
+            },
+            totalDamage() {
+                return this.damages.reduce((pr, cu) => pr + parseFloat(cu.total), 0);
+            },
+            totalSalaryPayment() {
+                return this.salaryPayments.reduce((pr, cu) => pr + parseFloat(cu.amount), 0);
             },
 
             totalIn() {
-                return this.openingBalance + this.totalSale + this.totalCustomerReceipts + this.totalSupplierReceipts + this.totalIncome;
+                return this.openingBalance + this.totalSale + this.totalCustomerReceipts + this.totalSupplierReceipts + this.totalIncome + this.totalInvestmentReceipts + this.totalDamage + this.totalPurchaseReturn;
             },
             totalOut() {
-                return this.closingBalance + this.totalPurchase + this.totalSupplierPayments + this.totalCustomerPayments + this.totalExpense;
+                return this.closingBalance + this.totalPurchase + this.totalSupplierPayments + this.totalCustomerPayments + this.totalExpense + this.totalInvestmentPayments + this.totalSaleReturn + this.totalSalaryPayment;
             }
         },
 
         filters: {
             formatCurrency(value) {
                 if (typeof value !== "number") {
-                    value = Number(value);
+                    value = parseFloat(value);
                 }
                 if (isNaN(value)) return "৳ 0.00";
                 return "৳ " + value.toLocaleString('en-US', {
@@ -371,59 +452,291 @@
                 await this.getClosingBalance();
                 await this.getIncomes();
                 await this.getExpenses();
+                await this.getInvestmentReceipts();
+                await this.getInvestmentPayments();
+                await this.getDamage();
+                await this.getSaleReturn();
+                await this.getPurchaseReturn();
+                await this.getSalaryPayment();
             },
 
             async getOpeningBalance() {
                 let date = moment(this.filter.dateFrom).subtract(1, 'days').format('YYYY-MM-DD');
-                const response = await axios.post("/get-opening-closing-balance", {date: date});
+                const response = await axios.post("/get-opening-closing-balance", {
+                    date: date
+                });
                 this.openingBalance = response.data.balance;
             },
             async getClosingBalance() {
-                const response = await axios.post("/get-opening-closing-balance", {date: this.filter.dateTo});
+                const response = await axios.post("/get-opening-closing-balance", {
+                    date: this.filter.dateTo
+                });
                 this.closingBalance = response.data.balance;
             },
+
             async getPurchase() {
-                const purchases = await axios.post("/get-purchase", this.filter);
-                this.purchases = purchases.data;
+                const {
+                    data
+                } = await axios.post("/get-purchase", this.filter);
+
+                this.purchases = Object.values(
+                    data.reduce((groups, purchase) => {
+
+                        const id = purchase.supplier_id;
+
+                        groups[id] ??= {
+                            ...purchase,
+                            paid: 0
+                        };
+
+                        groups[id].paid += parseFloat(purchase.paid);
+
+                        return groups;
+
+                    }, {})
+                );
             },
 
             async getSale() {
-                const sales = await axios.post("/get-sale", this.filter);
-                this.sales = sales.data.filter(sale => sale.cashPaid > 0);
+                const {
+                    data
+                } = await axios.post("/get-sale", this.filter);
+
+                this.sales = Object.values(
+                    data.reduce((groups, sale) => {
+                        if (sale.cashPaid <= 0) return groups;
+                        const id = sale.customer_id;
+                        groups[id] ??= {
+                            ...sale,
+                            cashPaid: 0
+                        };
+                        groups[id].cashPaid += parseFloat(sale.cashPaid);
+                        return groups;
+                    }, {})
+                );
             },
-            
+
             async getCustomerReceipts() {
-                this.filter.type = 'customer';
-                const customerReceipts = await axios.post("/get-receive", this.filter);
-                this.customerReceipts = customerReceipts.data.filter(receipt => receipt.payment_method == 'cash');
+                const filter = {
+                    ...this.filter,
+                    type: 'customer',
+                    payment_method: 'cash'
+                };
+
+                const {
+                    data
+                } = await axios.post("/get-receive", filter);
+
+                this.customerReceipts = Object.values(
+                    data.reduce((groups, receipt) => {
+                        if (receipt.payment_method != 'cash') return groups;
+                        const id = receipt.customer_id;
+
+                        groups[id] ??= {
+                            ...receipt,
+                            amount: 0
+                        };
+
+                        groups[id].amount += parseFloat(receipt.amount);
+
+                        return groups;
+
+                    }, {})
+                );
             },
 
             async getSupplierPayments() {
-                this.filter.type = 'supplier';
-                const supplierPayments = await axios.post("/get-payment", this.filter);
-                this.supplierPayments = supplierPayments.data.filter(receipt => receipt.payment_method == 'cash');
+                const filter = {
+                    ...this.filter,
+                    type: 'supplier',
+                    payment_method: 'cash'
+                };
+                const {
+                    data
+                } = await axios.post("/get-payment", filter);
+                this.supplierPayments = Object.values(
+                    data.reduce((groups, payment) => {
+                        if (payment.payment_method != 'cash') return groups;
+                        const id = payment.supplier_id;
+                        groups[id] ??= {
+                            ...payment,
+                            amount: 0
+                        };
+                        groups[id].amount += parseFloat(payment.amount);
+                        return groups;
+                    }, {})
+                );
             },
             async getCustomerPayments() {
-                this.filter.type = 'customer';
-                const customerPayments = await axios.post("/get-payment", this.filter);
-                this.customerPayments = customerPayments.data.filter(payment => payment.payment_method == 'cash');
+                const filter = {
+                    ...this.filter,
+                    type: 'customer',
+                    payment_method: 'cash'
+                };
+                const {
+                    data
+                } = await axios.post("/get-payment", filter);
+                this.customerPayments = Object.values(
+                    data.reduce((groups, payment) => {
+                        if (payment.payment_method != 'cash') return groups;
+                        const id = payment.customer_id;
+                        groups[id] ??= {
+                            ...payment,
+                            amount: 0
+                        };
+                        groups[id].amount += parseFloat(payment.amount);
+                        return groups;
+                    }, {})
+                );
             },
             async getSupplierReceipts() {
-                this.filter.type = 'supplier';
-                const supplierReceipts = await axios.post("/get-receive", this.filter);
-                this.supplierReceipts = supplierReceipts.data.filter(receipt => receipt.payment_method == 'cash');
+                const filter = {
+                    ...this.filter,
+                    type: 'supplier',
+                    payment_method: 'cash'
+                };
+                const {
+                    data
+                } = await axios.post("/get-receive", filter);
+                this.supplierReceipts = Object.values(
+                    data.reduce((groups, receipt) => {
+                        if (receipt.payment_method != 'cash') return groups;
+                        const id = receipt.supplier_id;
+                        groups[id] ??= {
+                            ...receipt,
+                            amount: 0
+                        };
+                        groups[id].amount += parseFloat(receipt.amount);
+                        return groups;
+                    }, {})
+                );
             },
 
             async getIncomes() {
-                this.filter.type = 'income';
-                const response = await axios.post("/get-transaction", this.filter);
-                this.incomes = response.data;
+                const filter = {
+                    ...this.filter,
+                    type: 'income'
+                };
+
+                const {
+                    data
+                } = await axios.post("/get-transaction", filter);
+
+                this.incomes = Object.values(
+                    data.reduce((groups, income) => {
+                        const id = income.account_id;
+                        groups[id] ??= {
+                            ...income,
+                            amount: 0
+                        };
+
+                        groups[id].amount += parseFloat(income.amount);
+                        return groups;
+
+                    }, {})
+                );
             },
 
             async getExpenses() {
-                this.filter.type = 'expense';
-                const response = await axios.post("/get-transaction", this.filter);
-                this.expenses = response.data;
+                const filter = {
+                    ...this.filter,
+                    type: 'expense'
+                };
+                const {
+                    data
+                } = await axios.post("/get-transaction", filter);
+                this.expenses = Object.values(
+                    data.reduce((groups, expense) => {
+                        const id = expense.account_id;
+                        groups[id] ??= {
+                            ...expense,
+                            amount: 0
+                        };
+                        groups[id].amount += parseFloat(expense.amount);
+                        return groups;
+                    }, {})
+                );
+            },
+
+            getInvestmentReceipts() {
+                const filter = {
+                    ...this.filter,
+                    type: 'deposit'
+                };
+
+                return axios.post("/get-invest-transaction", filter).then(response => {
+                    const data = response.data;
+                    this.investmentReceipts = Object.values(
+                        data.reduce((groups, receipt) => {
+                            const id = receipt.invest_account_id;
+                            groups[id] ??= {
+                                ...receipt,
+                                amount: 0
+                            };
+
+                            groups[id].amount += parseFloat(receipt.amount);
+                            return groups;
+
+                        }, {})
+                    );
+                });
+            },
+
+            getInvestmentPayments() {
+                const filter = {
+                    ...this.filter,
+                    type: 'withdraw'
+                };
+
+                return axios.post("/get-invest-transaction", filter).then(response => {
+                    const data = response.data;
+                    this.investmentPayments = Object.values(
+                        data.reduce((groups, payment) => {
+                            const id = payment.invest_account_id;
+                            groups[id] ??= {
+                                ...payment,
+                                amount: 0
+                            };
+
+                            groups[id].amount += parseFloat(payment.amount);
+                            return groups;
+
+                        }, {})
+                    );
+                });
+            },
+            
+            getPurchaseReturn() {
+                return axios.post("/get-purchase-return", this.filter).then(response => {
+                    const data = response.data;
+                    this.purchaseReturns = data.filter(pr => pr.supplier_id == null)
+                });
+            },
+            
+            getSaleReturn() {
+                return axios.post("/get-sale-return", this.filter).then(response => {
+                    const data = response.data;
+                    this.saleReturns = data.filter(pr => pr.customer_id == null)
+                });
+            },
+            
+            getSalaryPayment() {
+                return axios.post("/get-salary", this.filter).then(response => {
+                    const data = response.data;
+                    this.salaryPayments = data
+                });
+            },
+
+            getDamage() {
+                const filter = {
+                    ...this.filter,
+                    supplierType: 'regular'
+                };
+
+                return axios.post("/get-damage", filter).then(response => {
+                    const data = response.data;
+                    this.damages = data
+                });
             },
 
             async print() {

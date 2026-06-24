@@ -77,7 +77,7 @@ class AccountHead extends Model
                 
                 (select ifnull(sum(dm.total), 0) from damages dm
                 where dm.status = 'a'
-                and dm.supplier_id is null
+                and dm.supplier_id is not null
                 " . ($date == null ? "" : " and dm.date <= '$date'") . "
                 " . ($branchId == null ? "" : " and dm.branch_id = '$branchId'") . ") as damage_amount,
 

@@ -32,6 +32,10 @@ class InvestTransactionController extends Controller
         if (!empty($request->accountId)) {
             $investment_transaction = $investment_transaction->where('invest_account_id', $request->accountId);
         }
+        
+        if (!empty($request->type)) {
+            $investment_transaction = $investment_transaction->where('type', $request->type);
+        }
 
         $investment_transaction = $investment_transaction->orderBy('id', 'desc')->get();
 
