@@ -616,7 +616,8 @@ h6 {
   scrollbar-color: #aab7cf transparent;
   box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
   /* background-color: #fff; */
-  background-color: #007ebb;
+  /* background-color: #007ebb; */
+  background-color: #4e616a;
 }
 
 @media (max-width: 1199px) {

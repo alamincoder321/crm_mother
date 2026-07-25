@@ -15,7 +15,7 @@ $panel = session('panel');
 <style scoped>
     .displayFlex {
         transition: 1ms ease-in-out;
-        height: 115px;
+        height: 60px;
     }
 
     .displayFlex:hover {
@@ -29,21 +29,106 @@ $panel = session('panel');
 
     .displayFlex .card-body {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        justify-content: center;
-        text-align: center;
+        justify-content: flex-start;
+        gap: 5px;
     }
 
     .displayFlex .card-body i {
-        font-size: 25px;
-        border: 1px solid gray;
+        font-size: 22px;
         width: 30px;
         height: 30px;
+        padding: 20px;
+        background: #ccc;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 3px;
+        border-radius: 50%;
+    }
+
+    .displayFlex .card-body span {
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .cardInfo {
+        margin-bottom: 20px !important;
+        border: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, .08);
+        transition: .3s;
+        position: relative;
+    }
+
+    .cardInfo::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        background: #28a745;
+        /* Change this color dynamically */
+    }
+
+    .cardInfo:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, .12);
+    }
+
+    .cardInfo .card-body {
+        display: flex;
+        align-items: center;
+        padding: 18px;
+    }
+
+    .cardIcon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #e8f8ec;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 18px;
+    }
+
+    .cardIcon i {
+        font-size: 34px;
+        color: #28a745;
+    }
+
+    .cardContent {
+        flex: 1;
+    }
+
+    .cardTitle {
+        display: block;
+        color: #666;
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+
+    .cardValue {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #222;
+    }
+
+    .cardContent small {
+        color: #7a7a7a;
+        display: flex;
+        align-items: center;
+        margin-top: 8px;
+    }
+
+    .cardContent small i {
+        color: #28a745;
+        margin-right: 5px;
     }
 
     .textColor {
@@ -85,112 +170,7 @@ $panel = session('panel');
 
     @elseif($panel == 'SalePanel')
     <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-10 col-12 offset-md-1 mb-5">
-                <div class="card mb-0" style="box-shadow: 0px 5px 1px 2px #058ed152;">
-                    <div class="card-body p-3 text-center">
-                        <h2 class="m-0">Sale Panel</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('sale'))
-                <a href="/sale">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-cart-dash"></i>
-                            <span>Sale Entry</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('saleRecord'))
-                <a href="/sale-record">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-file-text"></i>
-                            <span>Sale Record</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('saleReturn'))
-                <a href="/sale-return">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-arrow-return-left"></i>
-                            <span>SaleReturn Entry</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('saleReturnRecord'))
-                <a href="/sale-return-record">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-file-text"></i>
-                            <span>SaleReturn Record</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('quotation'))
-                <a href="/quotation">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-file-plus"></i>
-                            <span>Quotation Entry</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('quotationRecord'))
-                <a href="/quotation-record">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-file-text"></i>
-                            <span>Quotation Record</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('stock'))
-                <a href="/stock">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-list"></i>
-                            <span>Stock Report</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-
-            <div class="col-md-2 col-6 mb-3">
-                @if(checkAccess('dailyReport'))
-                <a href="/dailyReport">
-                    <div class="card mb-0 displayFlex">
-                        <div class="card-body p-3">
-                            <i class="bi bi-book"></i>
-                            <span>Daily Report</span>
-                        </div>
-                    </div>
-                </a>
-                @endif
-            </div>
-        </div>
+        @include('pages.salePanel')
     </div>
 
     @elseif($panel == 'PurchasePanel')
@@ -887,7 +867,7 @@ $panel = session('panel');
                                 type: 'category',
                                 categories: monthlySale.map(s => s.date)
                             }
-                        };                      
+                        };
 
                         let topProducts = data.topProducts;
                         topProducts.forEach(product => {

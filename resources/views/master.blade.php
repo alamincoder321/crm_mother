@@ -7,6 +7,31 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{$company->title}}- @yield('title')</title>
     @include("layouts.style")
+    <style>
+        .sale-panel-header {
+            border-radius: 10px;
+            padding: 0px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sale-panel-header h2 {
+            margin: 0 20px;
+            font-size: 22px;
+            font-weight: 500;
+            font-style: italic;
+            color: #273444;
+            letter-spacing: .5px;
+        }
+
+        .header-line {
+            flex: 1;
+            max-width: 180px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #cfd8dc, transparent);
+        }
+    </style>
 </head>
 
 <body>

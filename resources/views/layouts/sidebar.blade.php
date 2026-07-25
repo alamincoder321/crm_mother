@@ -7,22 +7,22 @@ $panel = session('panel');
         @if ($panel == 'dashboard' || $panel == '')
         <li class="nav-item">
             <a class="nav-link {{Request::is('panel/dashboard') ? 'active' : ''}}" href="/">
-                <i class="bi bi-grid"></i>
+                <i class="ri-dashboard-fill"></i>
                 <span>Dashboard</span>
             </a>
         </li>
 
         <li class="nav-item">
             <a class="nav-link" href="/panel/SalePanel">
-                <i class="bi bi-cart-dash"></i>
+                <i class="ri-store-line"></i>
                 <span>Sales Panel</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="/panel/PurchasePanel">
-                <i class="bi bi-cart-plus"></i>
-                <span>Purchase Panel</span>
+            <a class="nav-link" href="/panel/InventoryPanel">
+                <i class="ri-briefcase-line"></i>
+                <span>Inventory Panel</span>
             </a>
         </li>
 
@@ -141,7 +141,7 @@ $panel = session('panel');
         </li>
         @endif
 
-        @elseif($panel == 'PurchasePanel')
+        @elseif($panel == 'InventoryPanel')
         <li class="nav-item">
             <a class="nav-link" href="/">
                 <i class="bi bi-grid"></i>
@@ -149,7 +149,7 @@ $panel = session('panel');
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link panel-link" href="/panel/PurchasePanel">
+            <a class="nav-link panel-link" href="/panel/InventoryPanel">
                 <span>Purchase Panel</span>
             </a>
         </li>

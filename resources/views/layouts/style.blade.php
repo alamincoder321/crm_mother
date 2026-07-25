@@ -9,6 +9,7 @@
 <!-- Vendor CSS Files -->
 <link href="{{asset('backend')}}/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link href="{{asset('backend')}}/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="{{asset('backend')}}/remixicon/remixicon.min.css" rel="stylesheet">
 <!-- Template Main CSS File -->
 <link href="{{asset('backend')}}/css/style.css" rel="stylesheet">
 <link href="{{asset('backend')}}/css/custom.css" rel="stylesheet">
